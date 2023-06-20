@@ -1,3 +1,5 @@
+NoTestsYet: There are no tests yet
+NoCandidatesYet: There are no candidates yet
 TimeRemaining: Time remaining
 PassedFailedExamNumber: Number of passed and failed exams
 ExamSuccessRate: Exam success rate

@@ -41,6 +41,7 @@ import Foundation
       , MsgNumberOfExaminees, MsgExam, MsgPopularity, MsgDescr
       , MsgTotal, MsgSuccessRate, MsgLogin, MsgLogout, MsgPassRate
       , MsgExamSuccessRate, MsgPass, MsgFail, MsgPassedFailedExamNumber
+      , MsgNoExamsYet
       )
     )
 

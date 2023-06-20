@@ -1,3 +1,5 @@
+NoTestsYet: Тестов пока нет
+NoCandidatesYet: Кандидатов пока нет
 TimeRemaining: Оставшееся время
 PassedFailedExamNumber: Количество сданных и проваленных экзаменов
 ExamSuccessRate: Коэффициент успешности экзамена

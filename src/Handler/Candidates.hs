@@ -75,7 +75,7 @@ import Foundation
       , MsgCandidate, MsgCancel, MsgSave, MsgBirthday, MsgPhoto, MsgSkills
       , MsgDelete, MsgDetails, MsgBack, MsgAge, MsgExams
       , MsgInvalidData, MsgClose, MsgPleaseConfirm, MsgAreYouSureDelete
-      , MsgLogin, MsgLogout
+      , MsgLogin, MsgLogout, MsgNoCandidatesYet
       , MsgNewRecordAdded, MsgRecordEdited, MsgRecordDeleted
       , MsgPass, MsgFail, MsgNoSkillsYet, MsgNoExamsYet, MsgPassExamInvite
       )

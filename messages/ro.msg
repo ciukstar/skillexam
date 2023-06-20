@@ -1,3 +1,5 @@
+NoTestsYet: Nu există încă teste
+NoCandidatesYet: Nu există încă candidați
 TimeRemaining: Timpul ramas
 PassedFailedExamNumber: Numărul de examene promovate și eșuate
 ExamSuccessRate: Rata de succes la examen

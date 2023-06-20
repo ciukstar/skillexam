@@ -2,3 +2,14 @@
 header.mdc-top-app-bar
   #profilePhoto
     border-radius: 50%
+
+main
+  div.no-content
+    margin: 2rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    gap: 2rem
+    i.material-symbols-outlined
+      font-size: 5rem

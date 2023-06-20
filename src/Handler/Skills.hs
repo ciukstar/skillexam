@@ -46,7 +46,7 @@ import Foundation
       , MsgClose, MsgPleaseConfirm, MsgAreYouSureDelete
       , MsgDuplicateValue, MsgInvalidData
       , MsgLogin, MsgLogout, MsgPhoto, MsgNewRecordAdded
-      , MsgRecordDeleted, MsgRecordEdited
+      , MsgRecordDeleted, MsgRecordEdited, MsgNoSkillsYet
       )
     )
 

@@ -1,26 +1,32 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  <ul.mdc-list role=listbox data-mdc-auto-init=MDCList>
-    $forall Entity eid (Test code name _ _ _ state) <- tests
-      <form method=get action=@{AdminR $ TestR eid}>
-        <button.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon role=listitem
-          :Just eid == meid:.mdc-list-item--activated
-          type=submit name=scrollY onclick="this.value = window.scrollY">
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__content>
-            <span.mdc-list-item__primary-text>#{name}
-            <span.mdc-list-item__secondary-text>#{code}
-            <span.mdc-list-item__secondary-text>
-              $case state
-                $of TestStatePublished
-                  _{MsgPublished}
-                $of TestStateUnpublished
-                  _{MsgUnpublished}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
+  $if null tests
+    <div.no-content>
+      <i.material-symbols-outlined>folder_open
+      <p>
+        _{MsgNoTestsYet}.
+  $else
+    <ul.mdc-list role=listbox data-mdc-auto-init=MDCList>
+      $forall Entity eid (Test code name _ _ _ state) <- tests
+        <form method=get action=@{AdminR $ TestR eid}>
+          <button.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon role=listitem
+            :Just eid == meid:.mdc-list-item--activated
+            type=submit name=scrollY onclick="this.value = window.scrollY">
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <span.mdc-list-item__primary-text>#{name}
+              <span.mdc-list-item__secondary-text>#{code}
+              <span.mdc-list-item__secondary-text>
+                $case state
+                  $of TestStatePublished
+                    _{MsgPublished}
+                  $of TestStateUnpublished
+                    _{MsgUnpublished}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
 
-        <li.mdc-list-divider role=separator>
+          <li.mdc-list-divider role=separator>
 
   <form method=get action=@{AdminR TestCreateFormR} #formGetCreate>
 

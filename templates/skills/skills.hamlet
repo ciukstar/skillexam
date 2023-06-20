@@ -1,37 +1,42 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
+  $if null skills
+    <div.no-content>
+      <i.material-symbols-outlined>folder_open
+      <p>
+        _{MsgNoSkillsYet}.
+  $else
+    <form method=get #formGetSkill>
 
-  <form method=get #formGetSkill>
-  
-  <ul.mdc-list data-mdc-auto-init=MDCList>
-    $forall Entity sid (Skill code name _) <- skills
-      $with ident <- fromSqlKey sid
-        $maybe q <- mq
-          <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
-            :Just sid == activated:.mdc-list-item--activated role=listitem
-            type=submit form=formGetSkill formaction=@{AdminR $ SkillR sid} 
-            name=location value="@{curr}?id=#{ident}&q=#{q}"
-            onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <span.mdc-list-item__primary-text>#{name}
-              <span.mdc-list-item__secondary-text>#{code}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-        $nothing
-          <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
-            :Just sid == activated:.mdc-list-item--activated role=listitem
-            type=submit form=formGetSkill formaction=@{AdminR $ SkillR sid} 
-            name=location value="@{curr}?id=#{ident}"
-            onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <span.mdc-list-item__primary-text>#{name}
-              <span.mdc-list-item__secondary-text>#{code}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
+    <ul.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity sid (Skill code name _) <- skills
+        $with ident <- fromSqlKey sid
+          $maybe q <- mq
+            <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
+              :Just sid == activated:.mdc-list-item--activated role=listitem
+              type=submit form=formGetSkill formaction=@{AdminR $ SkillR sid} 
+              name=location value="@{curr}?id=#{ident}&q=#{q}"
+              onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__content>
+                <span.mdc-list-item__primary-text>#{name}
+                <span.mdc-list-item__secondary-text>#{code}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+          $nothing
+            <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
+              :Just sid == activated:.mdc-list-item--activated role=listitem
+              type=submit form=formGetSkill formaction=@{AdminR $ SkillR sid} 
+              name=location value="@{curr}?id=#{ident}"
+              onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__content>
+                <span.mdc-list-item__primary-text>#{name}
+                <span.mdc-list-item__secondary-text>#{code}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
 
-        <li.mdc-list-divider role=separator>
+          <li.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper #wrapperFabAdd>
     <a.mdc-fab.mdc-fab--touch href=@{AdminR SkillCreateFormR} #fabAdd role=button aria-label=_{MsgAdd}>

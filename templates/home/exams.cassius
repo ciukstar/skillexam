@@ -5,9 +5,9 @@ main
     display: flex
     flex-direction: column
     align-items: center
-    gap: 1rem
+    gap: 2rem
     i.material-symbols-outlined
-      font-size: 64px
+      font-size: 5rem
   button.mdc-list-item
       width: 100%
       display: flex

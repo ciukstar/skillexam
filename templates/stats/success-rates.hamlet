@@ -29,21 +29,27 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
 
-  <ul.mdc-list data-mdc-auto-init=MDCList>
-    $forall (index,(tid, name, passed, total, rate)) <- passed
-      <a.mdc-list-item.mdc-list-item--with-two-lines
-        .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
-        :Just tid == mtid:.mdc-list-item--activated
-        href=@{StatsR $ TestSuccessRateR tid} role=menuitem
-        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start style="width:fit-content">
-          #{index}
-        <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>#{name}
-          <div.mdc-list-item__secondary-text>
-            <span.as-percentage data-rate=#{rate}>#{printf "%.3f" rate}
-            <span>&nbsp;&nbsp;&nbsp;(#{printf "%.0f" passed} / #{printf "%.0f" total})
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
-      <li.mdc-list-divider role=separator>
+  $if null passed
+    <div.no-content>
+      <i.material-symbols-outlined>folder_open
+      <p>
+        _{MsgNoExamsYet}.
+  $else
+    <ul.mdc-list data-mdc-auto-init=MDCList>
+      $forall (index,(tid, name, passed, total, rate)) <- passed
+        <a.mdc-list-item.mdc-list-item--with-two-lines
+          .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
+          :Just tid == mtid:.mdc-list-item--activated
+          href=@{StatsR $ TestSuccessRateR tid} role=menuitem
+          onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start style="width:fit-content">
+            #{index}
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>#{name}
+            <div.mdc-list-item__secondary-text>
+              <span.as-percentage data-rate=#{rate}>#{printf "%.3f" rate}
+              <span>&nbsp;&nbsp;&nbsp;(#{printf "%.0f" passed} / #{printf "%.0f" total})
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <li.mdc-list-divider role=separator>

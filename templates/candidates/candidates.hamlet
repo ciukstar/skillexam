@@ -1,28 +1,34 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  <ul.mdc-list>
-    $forall (Entity cid (Candidate fname gname aname _), Value nexams) <- candidates
-      <a.mdc-list-item.mdc-list-item--with-two-lines
-        .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
-        :Just cid == activated:.mdc-list-item--activated
-        href=@{AdminR $ CandidateR cid} role=listitem>
+  $if null candidates
+    <div.no-content>
+      <i.material-symbols-outlined>folder_open
+      <p>
+        _{MsgNoCandidatesYet}.
+  $else
+    <ul.mdc-list>
+      $forall (Entity cid (Candidate fname gname aname _), Value nexams) <- candidates
+        <a.mdc-list-item.mdc-list-item--with-two-lines
+          .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
+          :Just cid == activated:.mdc-list-item--activated
+          href=@{AdminR $ CandidateR cid} role=listitem>
 
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start>
-          <img.photo src=@{AdminR $ CandidatePhotoR cid} width=40 height=40 alt=_{MsgPhoto}
-            onerror="this.src='@{PhotoPlaceholderR}'">
-        <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>
-            #{fname} #{gname}
-            $maybe aname <- aname
-              \ #{aname}
-          <div.mdc-list-item__secondary-text>
-            _{MsgExams}: #{nexams}
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img.photo src=@{AdminR $ CandidatePhotoR cid} width=40 height=40 alt=_{MsgPhoto}
+              onerror="this.src = '@{PhotoPlaceholderR}'">
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{fname} #{gname}
+              $maybe aname <- aname
+                \ #{aname}
+            <div.mdc-list-item__secondary-text>
+              _{MsgExams}: #{nexams}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
 
-      <li.mdc-list-divider role=separator>
+        <li.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper #wrapperFabAdd>
     <a.mdc-fab.mdc-fab--touch #fabAdd href=@{AdminR CandidateCreateFormR} aria-label=_{MsgAdd}>

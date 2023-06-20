@@ -54,7 +54,7 @@ import Foundation
       , MsgAreYouSureDelete, MsgQuestions, MsgDuration, MsgPassMark
       , MsgMinutes, MsgPoints, MsgLogin, MsgLogout, MsgPhoto, MsgExamQuestions
       , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited, MsgExamState
-      , MsgPublished, MsgUnpublished, MsgPublish, MsgUnpublish
+      , MsgPublished, MsgUnpublished, MsgPublish, MsgUnpublish, MsgNoTestsYet
       )
     )
 
