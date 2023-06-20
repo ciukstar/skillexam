@@ -1,0 +1,55 @@
+
+<form method=get action=@{MyExamsSearchR} #formQ>
+
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label data-mdc-auto-init=MDCTextField
+    .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon>
+
+    <span.mdc-text-field__ripple>
+
+    $maybe rid <- mrid
+      <a.mdc-text-field__icon.mdc-icon-button tabindex=0
+        href="@{MyExamsR}?id=#{fromSqlKey rid}" role=button>
+        <i.material-symbols-outlined>close
+    $nothing
+      <a.mdc-text-field__icon.mdc-icon-button tabindex=0
+        href=@{MyExamsR} role=button>
+        <i.material-symbols-outlined>close
+
+    $maybe q <- mq
+      <input.mdc-text-field__input autofocus placeholder=_{MsgSearch}
+        type=search form=formQ name=q value=#{q}>
+    $nothing
+      <input.mdc-text-field__input autofocus placeholder=_{MsgSearch}
+        type=search form=formQ name=q>
+
+    <button.mdc-text-field__icon.mdc-icon-button tabindex=0
+      type=submit form=formQ>
+      <i.material-symbols-outlined>search
+
+    <span.mdc-line-ripple>
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe _ <- mcid
+    $maybe q <- mq
+      $if null tests
+        <div.no-content>
+          <i.material-symbols-outlined>search_off
+          <p>
+            _{MsgNoExamsFoundFor q}
+      $else
+        ^{list}
+        
+    $nothing
+      ^{list}
+      
+  $nothing
+
+    <div.login-prompt>
+      <p>
+        _{MsgLoginPrompt}
+      <a.mdc-button.mdc-button--raised href=@{SignInR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgLogin}

@@ -1,0 +1,35 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation_icon.mdc-theme--text-primary-on-light
+        href=@{AdminR $ TestR eid}?scrollY=#{scrollY} role=button aria-label=_{MsgBack}>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgTest}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (status,msg) <- msgs
+    <div.mdc-banner.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(#{status})">
+            <i.material-symbols-outlined.mdc-banner__icon>warning
+          <div.mdc-banner__text>#{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-icon-button.mdc-banner__primary-action>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  <form method=post action=@{AdminR $ TestR eid} enctype=#{enctype} novalidate>
+    ^{widget}
+    <div.actions>
+      <a.mdc-button.mdc-button href=@{AdminR $ TestR eid}?scrollY=#{scrollY} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__text>_{MsgCancel}
+
+      <button.mdc-button.mdc-button--raised type=submit name=scrollY value=#{scrollY}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__text>_{MsgSave}

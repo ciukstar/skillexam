@@ -1,0 +1,25 @@
+
+main
+  #headerEmpty
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    margin: 1rem
+    gap: 1rem
+    line-height: 1
+    text-align: center
+    i.material-symbols-outlined
+      font-size: 3rem
+    div.secondary
+      color: var(--mdc-theme-text-secondary-on-background, rgba(0, 0, 0, 0.54))
+  .mdc-list
+    button.mdc-list-item
+      width: 100%
+      border: 0
+      background-color: inherit
+      text-align: start
+      i.exam-status
+        color: white
+        border-radius: 50%
+        padding: 4px

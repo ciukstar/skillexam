@@ -1,0 +1,19 @@
+
+main
+  .mdc-list
+    button.mdc-list-item
+      border: 0
+      width: 100%
+      background-color: transparent
+      text-align: start
+
+      i.exam-status
+        font-size: 34px
+        padding: 6px
+        border-radius: 50%
+        color: white
+
+main a.mdc-fab
+  position: fixed
+  right: 1rem
+  bottom: 1rem

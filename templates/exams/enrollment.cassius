@@ -1,0 +1,18 @@
+
+main
+  margin: 0 1rem 1rem 1rem
+  form
+    display: flex
+    flex-direction: column
+    div.mdc-select
+      margin-top: 1rem
+    img.photo.avatar
+      border-radius: 50%
+            
+    div.actions
+      margin-top: 1rem
+      margin-bottom: 1rem
+      display: flex
+      flex-direction: row
+      justify-content: flex-end
+      gap: 0.5rem

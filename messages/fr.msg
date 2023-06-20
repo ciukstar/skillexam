@@ -1,0 +1,212 @@
+TimeRemaining: Temps restant
+PassedFailedExamNumber: Le nombre d'examens réussis et échoués
+ExamSuccessRate: Taux de réussite aux examens
+PassRate: Taux de réussite
+Test: Test
+Tests: Tests
+Total: Total
+NumberOfExaminees: Nombre de candidats
+SuccessRate: Taux de réussite
+Rating: Classement
+Select: Sélectionner
+ExamInfo: Informations sur l'examen
+PassExamInvite: Passer un examen pour évaluer et valider les compétences
+NoExamsYet: Il n'y a pas encore d'examens
+NoSkillsYet: Il n'y a pas encore de compétences
+DiagramERD: Diagramme entité-relation
+ExamDuration: Durée de l'examen
+ExamTime: La durée de l'examen
+NumberOfQuestions: Nombre de questions
+OfTotal: sur
+Overview: Aperçu
+ExamList: Liste des examens
+NoPublishedExamsYet: Il n'y a pas encore d'examens publiés
+Unpublish: Dépublier
+Publish: Publier
+Unpublished: Non publiée
+Published: Publié
+ExamState: État
+TopExams: Examens populaires
+TopSkilled: Top qualifié
+Data: Données
+Resources: Ressources
+SourceCode: Code source
+RecordEdited: Enregistrement modifié
+RecordDeleted: Enregistrement supprimé
+NewRecordAdded: Nouvel enregistrement ajouté
+MultiLineQuestion: Question sur plusieurs lignes
+SingleLineQuestion: Question sur une seule ligne
+MultiLine: Plusieurs lignes
+SingleLine: Une seule ligne
+EnrollForExam: S'inscrire à l'examen
+ResponseOptions: Possibilités de réponse
+ExamQuestions: Questions d'examen
+NoExamsFoundFor skey: Aucun examen trouvé pour "#{skey}"
+NoDataFound: Aucune donnée disponible
+SingleResponse: Réponse unique
+MultiResponse: Réponse multiple
+Instruction: Instruction
+Submitted: Soumis
+Completed: Terminé
+Analytics: Analytique
+MaxScore: Note maximale
+PassScore: Note de réussite
+Score: Note d'examen
+Fail: Échec
+Pass: Réussite
+Status: Statut
+ExamResults: Résultats d'examen
+Print: Imprimer
+Complete: Terminer
+Stop: Arrêter
+StopThisExam: Arrêter cet examen?
+TerminateThisExam: Terminer cet examen?
+DifficultyHigh: Élevée
+DifficultyMedium: Moyenne
+DifficultyLow: Faible
+Difficulty: Difficulté
+Points: Points
+Minutes: Minutes
+Popularity: Popularité
+LoginPrompt: Veuillez vous connecter pour trouver vos examens.
+NoExams: Vous n'avez pas encore passé d'examens.
+AssessedSkills: Compétences évaluées
+TakeThisExam: Passer cet examen
+DataAndAnalytics: Données et analyses
+Administration: Administration
+Configuration: Configuration
+Settings: Paramètres
+ChooseExam: Choisir examen
+PassMark: Note de passage
+TimeEnd: Heure de fin
+TimeStart: Heure de début
+Summary: Résumé
+Finish: Finir
+Authenticate: Authentifiez-vous
+Authentication: Authentification
+SignIn: Connectez-vous
+RegisterAsCandidate: S'inscrire comme candidat
+RegisterNewCandidate: Inscrire un nouveau candidat
+Logout: Se déconnecter
+Login: Se connecter
+MyExam: Mon examen
+MyExams: Mes examens
+TakeNewExam: Passer un nouvel examen
+TakeExam: Passer un examen
+Next: Suivant
+Previous: Précédent
+Attempt: Tentative
+Duration: Durée
+StartExam: Commencer l'examen
+Date: Date
+Day: Jour
+Enrollment: Enrôlement
+Enroll: S'inscrire
+Age: Âge
+FullName: Nom complet
+Actions: Actions
+Photo: Photo
+Birthday: Date d'anniversaire
+AdditionalName: Deuxième nom
+GivenName: Prénom
+FamilyName: Nom de famille
+Type: Type
+Distractor: Distracteur
+Key: Clé
+AnswerPoints: Points
+CorrectAnswer: Réponse correcte
+AnswerOption: Option de réponse
+AnswerOptions: Possibilités de réponse
+Answer: Réponse
+Answers: Réponses
+Option: Option
+Options: Options
+Text: Texte
+Ordinal: Ordinal
+Question: Question
+Questions: Questions
+Back: Retour
+BasicEntities: Entités de base
+DuplicateValue: Valeur en double
+Id: Id
+Details: Détails
+DeleteAreYouSure: Les données seront supprimées. Es-tu sûr?
+AreYouSureDelete: Etes-vous sûr que vous voulez supprimer?
+PleaseConfirm: Veuillez confirmer
+ConfirmationRequired: Confirmation requise
+InvalidFormData: Les données sont invalides
+InvalidData: Données invalides
+Close: Fermer
+Delete: Supprimer
+Edit: Modifier
+Descr: Description
+Name: Nom
+Code: Code
+Cancel: Annuler
+Save: Enregistrer
+Attributes: Attributs
+Search: Rechercher
+Add: Ajouter
+HomePage: Page d'accueil
+Candidate: Candidat
+Candidates: Candidats
+Exam: Examen
+Exams: Examens
+Skill: Compétence
+Skills: Compétences
+AppName: SkillExam
+MetaKeywords: QCM, Questions, Compétences, Évaluation, Candidat
+MetaDescription: Évaluation des compétences, QCM, Questions à choix multiples
+
+Docs: Documentation 
+Doc001: L'application «SkillExam» offre un moyen simple d'évaluer les compétences d'un candidat au moyen de questions à choix multiples.
+
+Doc002 hrefSkills: Les compétences à évaluer doivent être définies dans la rubrique <a href=#{hrefSkills}>«Compétences»</a> du groupe «Données», accessible depuis le menu principal. Les compétences peuvent être considérées comme des éléments permettant de regrouper les questions d'un test.
+
+Doc003 hrefTests: Les tests permettant d'évaluer les compétences d'un candidat sont définis dans la section <a href=#{hrefTests}>«Tests»</a> du groupe «Données» du menu principal. Un test est composé de questions.
+
+Doc004 hrefCandidates: Les candidats à l'examen sont enregistrés dans la section <a href=#{hrefCandidates}>«Candidats»</a> du groupe «Données» du menu principal.
+
+Doc005 hrefExams: Un candidat peut choisir un examen dans la liste des <a href=#{hrefExams}>«Examens»</a>, s'inscrire à l'examen et commencer l'examen.
+
+Doc006 hrefMyExams: À la fin de l'examen, un résumé est fourni et le candidat peut voir les résultats de l'examen dans la section <a href=#{hrefMyExams}>«Mes examens»</a>.
+
+Doc007 hrefSkills: Une Compétence est enregistrée dans la section <a href=#{hrefSkills}>«Compétences»</a> avec un code unique, un nom et une description.
+
+Doc008 hrefCandidates: Un Candidat est enregistré dans la rubrique <a href=#{hrefCandidates}>«Candidats»</a> en fournissant son nom complet et éventuellement une photo et sa date de naissance.
+
+Doc009 hrefTests: Un Test est défini dans la rubrique <a href=#{hrefTests}>«Tests»</a> en fournissant un code unique, un nom, éventuellement une description, sa durée en minutes, sa note de passage.
+
+Doc010: Il est recommandé qu'un test reste à l'état «Non publié» jusqu'à ce qu'il soit prêt à être publié en définissant et en configurant tous ses sous-composants: questions et options de réponse.
+
+Doc011: Un test est composé de plusieurs questions.
+
+Doc012: Un même test peut couvrir plusieurs compétences spécifiques à chaque question.
+
+Doc013: Une question pour un test particulier est définie en fournissant un nombre ordinal, la question elle-même sous forme de texte, le type de question, l'instruction et la compétence qu'elle aborde.
+
+Doc014: Si nécessaire, le texte de la question peut être formaté avec <code>HTML/CSS</code>.
+
+Doc015: Le type d'une Question peut être «Réponse unique» ou «Réponse multiple».
+
+Doc016: Pour les questions à «Réponse unique», le candidat est invité à sélectionner une seule réponse parmi les options proposées.
+
+Doc017: Pour les questions à «Réponse multiple», le candidat est invité à sélectionner toutes les réponses correctes parmi les options proposées.
+
+Doc018: Pour chaque question, plusieurs options de réponse sont proposées.
+
+Doc019: Une option de réponse est entrée en fournissant un index (numéro de séquence), une réponse textuelle, si la réponse est une «clé» ou une «distraction», et une valeur de score.
+
+Doc020: Si nécessaire, le texte de l'option de réponse peut être formaté avec <code>HTML/CSS</code>.
+
+Doc021: Une fois que toutes les options de réponse ont été fournies pour toutes les questions d'un test, le test peut être publié.
+
+Doc022 hrefExams: Un candidat peut désormais s'inscrire à un examen en choisissant un test dans la liste <a href=#{hrefExams}>«Examens»</a>.
+
+Doc023: Un Examen représente une instance particulière d'un test pour un candidat.
+
+Doc024: Il décrit quand l'examen a commencé et s'est terminé pour un candidat. Il suit également le nombre de tentatives d'un candidat pour réussir le même test.
+
+Doc025: Après l'inscription, le candidat commence l'examen et ses réponses sont enregistrées.
+
+Doc026: Une réponse représente l'option pour une question donnée qu'un candidat considère comme la bonne.

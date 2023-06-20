@@ -1,0 +1,69 @@
+
+Answer
+  exam ExamId OnDeleteCascade
+  stem StemId
+  option OptionId OnDeleteCascade
+  time UTCTime
+  UniqueAnswer exam stem option
+
+Exam
+  test TestId OnDeleteCascade
+  candidate CandidateId OnDeleteCascade
+  attempt Int
+  start UTCTime
+  end UTCTime Maybe
+  UniqueExam test candidate attempt
+
+Photo
+  candidate CandidateId OnDeleteCascade
+  photo ByteString
+  mime Text
+  UniquePhoto candidate
+
+Candidate
+  familyName Text
+  givenName Text
+  additionalName Text Maybe
+  bday Day Maybe
+
+
+Option
+  stem StemId OnDeleteCascade
+  ordinal Text
+  text Textarea
+  key Bool
+  points Double
+  UniqueOption stem ordinal
+
+
+Stem
+  test TestId OnDeleteCascade
+  skill SkillId OnDeleteCascade
+  ordinal Int
+  text Textarea
+  type StemType
+  instruc Textarea
+  UniqueStem test ordinal
+
+
+Test
+  code Text
+  name Text
+  duration Double
+  pass Double
+  descr Textarea Maybe
+  state TestState
+  UniqueExamCode code
+
+Skill
+  code Text
+  name Text
+  descr Textarea Maybe
+  UniqueSkillCode code
+
+
+User
+  ident Text
+  password Text Maybe
+  UniqueUser ident
+  deriving Typeable

@@ -1,0 +1,126 @@
+<header.mdc-top-app-bar.mdc-app-top-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+        href="@{AdminR TestsR}?scrollY=#{scrollY}&eid=#{fromSqlKey eid}" role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgTest}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <button.mdc-icon-button.mdc-top-app-bar__action-item.mdc-theme--text-primary-on-light
+        #openDialogDelete aria-label=_{MsgDelete}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button.mdc-top-app-bar__action-item.mdc-theme--text-primary-on-light
+        href=@{AdminR $ TestEditFormR eid}?scrollY=#{scrollY} role=button aria-label=_{MsgEdit}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<div.mdc-dialog data-mdc-auto-init=MDCDialog #delete>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1 aria-hidden=true 
+      aria-modal=true aria-labelledby=dialogTitle aria-describedby=dialogContent>
+      
+      <h4.mdc-dialog__title #dialogTitle>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content #dialogCotent>_{MsgAreYouSureDelete}
+      <div.mdc-dialog__actions>
+        <button.mdc-button.cancel href=@{AdminR TestsR} type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{AdminR $ TestsDeleteR}>
+          <button.mdc-button.mdc-button--raised type=submit name=id value=#{fromSqlKey eid}>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgDelete}
+    
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe Entity eid (Test code name duration pass descr state) <- test
+    
+    <div.mdc-data-table>
+      <div.mdc-data-table__table-container>
+        <table.mdc-data-table__table>
+          <tbody>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgCode}
+              <td.mdc-data-table__cell>#{code}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgName}
+              <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgDuration}
+              <td.mdc-data-table__cell>
+                <span>#{printf "%.0f" duration}
+                <span style="text-transform:lowercase">_{MsgMinutes}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgPassMark}
+              <td.mdc-data-table__cell>
+                <span>#{printf "%.0f" pass}
+                <span style="text-transform:lowercase">_{MsgPoints}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgDescr}
+              <td.mdc-data-table__cell>
+                $maybe description <- descr
+                  #{description}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgExamState}
+              <td.mdc-data-table__cell>
+                $case state
+                  $of TestStatePublished
+                    _{MsgPublished}
+                  $of TestStateUnpublished
+                    _{MsgUnpublished}
+
+    <ul.mdc-list role=menu style="padding:0">
+      <a.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-leading-icon.mdc-list-item--with-trailing-icon
+        href=@{AdminR $ StemsR eid} role=menuitem>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>quiz
+        <span.mdc-list-item__content>
+          <span.mdc-list-item__primary-text>
+            _{MsgQuestions}
+          <span.mdc-list-item__secondary-text>
+            _{MsgExamQuestions}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <li.mdc-list-divider role=separator>
+
+    <div.actions>
+      $case state
+        $of TestStateUnpublished
+          <form method=post action=@{AdminR $ TestPublishR eid} enctype=#{enctype}>
+            ^{widget}
+            <div.mdc-touch-target-wrapper>
+              <button.mdc-fab.mdc-fab--extended.mdc-fab--touch type=submit>
+                <span.mdc-fab__ripple>
+                <span.mdc-fab__focus-ring>
+                <i.mdc-fab__icon.material-symbols-outlined>publish
+                <span.mdc-fab__label>_{MsgPublish}
+                <div.mdc-fab__touch>
+        $of TestStatePublished
+          <form method=post action=@{AdminR $ TestUnpublishR eid} enctype=#{enctype}>
+            ^{widget}
+            <div.mdc-touch-target-wrapper>
+              <button.mdc-fab.mdc-fab--extended.mdc-fab--touch>
+                <span.mdc-fab__ripple>
+                <span.mdc-fab__focus-ring>
+                <i.mdc-fab__icon.material-symbols-outlined>unpublished
+                <span.mdc-fab__label>_{MsgUnpublish}
+                <div.mdc-fab__touch>
+
+  $forall (_,msg) <- msgs
+    <aside.mdc-snackbar.mdc-snackbar--leading data-mdc-auto-init=MDCSnackbar>
+      <div.mdc-snackbar__surface role=status aria-live=polite>
+        <div.mdc-snackbar__label aria-atomic=false>
+          #{msg}
+        <div.mdc-snackbar__actions aria-atomic=true>
+          <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>close

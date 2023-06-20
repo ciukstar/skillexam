@@ -1,0 +1,6 @@
+
+header.mdc-top-app-bar
+  background-color: var(--theme-background)
+  color: var(--theme-text-primary-on-light)
+  label.mdc-text-field
+    border-radius: 0

@@ -1,0 +1,94 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      $maybe pid <- prev
+        $maybe Entity qid _ <- stem
+          <button.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+            rel=prev aria-label=_{MsgPrevious}
+            type=submit form=formOptions formaction=@{StepR tid eid qid}
+            name=location value=@{StepR tid eid pid}>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>arrow_back
+      $nothing
+        <button.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light.terminate>
+          <i.material-symbols-outlined>close
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        $maybe cnt <- cnt
+          $maybe Entity _ (Stem _ _ ordinal _ _ _) <- stem
+            _{MsgQuestion} #{ordinal} (_{MsgOfTotal} #{cnt})
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe nid <- next
+        $maybe Entity qid _ <- stem
+          <button.mdc-icon-button.mdc-top-app-bar__navigation-icon
+            .mdc-theme--text-primary-on-light aria-label=_{MsgNext}
+            type=submit form=formOptions formaction=@{StepR tid eid qid} rel=next
+            name=location value=@{StepR tid eid nid}>
+            <i.material-symbols-outlined>arrow_forward
+
+<div.mdc-dialog.terminate data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+      <h4.mdc-dialog__title>
+        _{MsgPleaseConfirm}
+      <div.mdc-dialog__content>
+        _{MsgStopThisExam}
+      <div.mdc-dialog__actions>
+        <button.mdc-button.cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{TerminateR tid eid}>
+          <button.mdc-button.mdc-button--raised>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgStop}
+      
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe Entity qid (Stem _ _ _ text _ instruc) <- stem
+
+    <div style="display:flex;flex-direction:row;justify-content:flex-end">
+      <span style="display:flex;flex-direction:column">
+        <div>
+          <small style="color:grey">_{MsgTimeRemaining}
+          <small style="color:grey" #timer>
+        <div.mdc-linear-progress role="progressbar" data-mdc-auto-init=MDCLinearProgress #timerProgress
+          aria-label="Example Progress Bar" aria-valuemin=0 aria-valuemax=1 aria-valuenow=0
+          style="transform:rotate(180deg)">
+          <div.mdc-linear-progress__buffer>
+            <div.mdc-linear-progress__buffer-bar>
+            <div.mdc-linear-progress__buffer-dots>
+          <div.mdc-linear-progress__bar.mdc-linear-progress__primary-bar>
+            <span.mdc-linear-progress__bar-inner>
+          <div.mdc-linear-progress__bar.mdc-linear-progress__secondary-bar>
+            <span.mdc-linear-progress__bar-inner>
+          
+
+    <p>
+      #{preEscapedToMarkup $ unTextarea text}
+
+    <small>
+      <i>#{instruc}
+
+    <p>
+      <form method=post action=@{StepR tid eid qid} enctype=#{enctype} novalidate #formOptions>
+        <hr.top>
+        <div.inputs>
+          ^{widget}
+        <hr.bottom>
+        <div.actions>
+          $maybe nid <- next
+            <button.mdc-button.mdc-button--icon-trailing.mdc-button--outlined
+              type=submit rel=next name=location value=@{StepR tid eid nid}>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgNext}
+              <i.material-symbols-outlined>arrow_forward
+          $nothing
+            <button.mdc-button.mdc-button--raised type=submit formaction=@{CompleteR tid eid qid}>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgComplete}
+            

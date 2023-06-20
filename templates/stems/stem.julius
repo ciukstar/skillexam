@@ -1,0 +1,16 @@
+
+window.mdc.autoInit()
+
+document.getElementById('buttonDlgDelToggle').addEventListener('click',function (e) {
+  document.getElementById('dialogDelete').MDCDialog.open()
+})
+
+document.getElementById('buttonCancelDelete').addEventListener('click',function (e) {
+  document.getElementById('dialogDelete').MDCDialog.close()
+})
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.open()
+})

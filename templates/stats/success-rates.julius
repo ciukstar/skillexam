@@ -1,0 +1,18 @@
+
+window.mdc.autoInit();
+
+[document.getElementById('profilePhoto')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.getElementById('profileMenu').MDCMenuSurface.open()
+  })
+});
+
+Array.from(
+  document.querySelectorAll('span.as-percentage')
+).forEach(function (x) {
+  x.textContent = new Number(x.dataset.rate).toLocaleString(navigator.language,{
+    style: 'percent',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  })
+})

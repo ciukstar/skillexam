@@ -1,0 +1,67 @@
+
+<main.mdc-top-app-bar--fixed-adjust>
+  
+  $forall Entity eid (Test _ _ _ _ _ _) <- tests
+    $with ident <- fromSqlKey eid
+      <form method=get action=@{ExamInfoR eid} #form#{ident}>
+      
+  <ul.mdc-list role=list>
+    $if null tests
+      <div.no-data-banner>
+        <i.material-symbols-outlined>folder_open
+        <div>_{MsgNoPublishedExamsYet}.
+    $else
+      $forall Entity eid (Test code name _ _ _ _) <- tests
+        $with ident <- fromSqlKey eid
+          $maybe curr <- curr
+            $maybe q <- mq
+              <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list--with-trailing-icon
+                :Just eid == meid:.mdc-list-item--activated role=listitem
+                type=submit form=form#{ident} name=location value="@{curr}?eid=#{ident}&q=#{q}"
+                onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
+
+                <span.mdc-list-item__ripple>
+                <span.mdc-list-item__start>
+                <span.mdc-list-item__content>
+                  <span.mdc-list-item__primary-text>
+                    #{name}
+                  <span.mdc-list-item__secondary-text>
+                    #{code}
+                <span.mdc-list-item__end>
+                  <i.material-symbols-outlined>
+                    arrow_forward_ios
+              <li.mdc-list-divider role=separator>
+
+            $nothing
+              <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list--with-trailing-icon
+                :Just eid == meid:.mdc-list-item--activated role=listitem
+                type=submit form=form#{ident} name=location value="@{curr}?eid=#{ident}"
+                onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
+
+                <span.mdc-list-item__ripple>
+                <span.mdc-list-item__start>
+                <span.mdc-list-item__content>
+                  <span.mdc-list-item__primary-text>
+                    #{name}
+                  <span.mdc-list-item__secondary-text>
+                    #{code}
+                <span.mdc-list-item__end>
+                  <i.material-symbols-outlined>
+                    arrow_forward_ios
+              <li.mdc-list-divider role=separator>
+          $nothing
+            <button.mdc-list-item.mdc-list-item--with-two-lines.mdc-list--with-trailing-icon
+              :Just eid == meid:.mdc-list-item--activated role=listitem
+              type=submit form=form#{ident} name=location value=@{HomeR}>
+
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+              <span.mdc-list-item__content>
+                <span.mdc-list-item__primary-text>
+                  #{name}
+                <span.mdc-list-item__secondary-text>
+                  #{code}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>
+                  arrow_forward_ios
+            <li.mdc-list-divider role=separator>

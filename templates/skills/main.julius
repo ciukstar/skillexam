@@ -1,0 +1,7 @@
+
+let bp = document.querySelector('img.photo.profile')
+if (bp) {
+  bp.addEventListener('click',function (e) {
+    document.querySelector('div.mdc-menu.profile').MDCMenuSurface.open()
+  })
+}

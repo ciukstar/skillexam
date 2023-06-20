@@ -1,0 +1,26 @@
+
+div.mdc-dialog
+  div.mdc-dialog__actions
+    gap: 0.5rem
+
+main
+  div.mdc-data-table
+    width: 100%
+    border-left: 0
+    border-right: 0
+    border-radius: 0
+    table
+      tr th
+        font-weight: 500
+      	white-space: normal
+      tr td
+        white-space: normal
+        line-height: 1
+        padding-top: 0.5rem
+        padding-bottom: 0.5rem
+
+  div.actions
+    margin-top: 1rem
+    display: flex
+    flex-direction: row
+    justify-content: center

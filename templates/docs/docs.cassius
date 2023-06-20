@@ -1,0 +1,7 @@
+
+main
+  margin: 0 1rem
+  div.mdc-typography--headline4
+    padding-top: 1rem
+  img
+    width: 100%

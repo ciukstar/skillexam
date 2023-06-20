@@ -1,0 +1,35 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+        href=@{AdminR CandidatesR} role=button aria-label=_{MsgBack}>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgCandidate}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (status,msg) <- msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content>
+        <div.mdc-banner__graphic-text-wrapper>
+          <span.mdc-banner__graphic style="background-color: var(#{status})">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <span.mdc-banner__text>#{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-icon-button.mdc-banner__primary-action type=button aria-label=_{MsgClose}>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>close
+
+  <form method=post action=@{AdminR $ CandidateR cid} enctype=#{enctype} novalidate>
+    ^{widget}
+    <div.actions>
+      <a.mdc-button href=#{ult} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgCancel}
+      <button.mdc-button.mdc-button--raised type=submit>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgSave}

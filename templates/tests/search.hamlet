@@ -1,0 +1,26 @@
+
+<form method=get action=@{AdminR TestSearchR} #formQ>
+
+<form method=get action=@{AdminR TestsR} #formBack>
+  $maybe eid <- meid
+    <input type=number name=eid value=#{fromSqlKey eid} hidden>
+
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label data-mdc-auto-init=MDCTextField
+    .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon>
+    <span.mdc-text-field__ripple>
+    <button.mdc-icon-button.mdc-text-field__icon tabindex=0
+      type=submit form=formBack name=scrollY onclick="this.value = window.scrollY">
+      <i.material-symbols-outlined>close
+
+    $maybe q <- mq
+      <input.mdc-text-field__input autofocus
+        type=search name=q value=#{q} form=formQ placeholder=_{MsgSearch}>
+    $nothing
+      <input.mdc-text-field__input autofocus
+        type=search name=q form=formQ placeholder=_{MsgSearch}>
+
+    <button.mdc-icon-button.mdc-text-field__icon tabindex=0
+      type=submit form=formQ>
+      <i.material-symbols-outlined>search
+    <span.mdc-line-ripple>

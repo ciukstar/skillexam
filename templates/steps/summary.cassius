@@ -1,0 +1,19 @@
+
+main
+  margin: 0 1rem 1rem 1rem
+  h6.mdc-typography--headline6
+    margin: 1rem 0
+  div.mdc-data-table
+    width: 100%
+    tbody tr th
+      white-space: normal
+      font-weight: 500
+    tbody tr td
+      white-space: normal
+
+  div.actions
+    margin: 1rem
+    display: flex
+    flex-direction: row
+    justify-content: flex-end
+    gap: 1rem

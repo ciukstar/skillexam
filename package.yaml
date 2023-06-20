@@ -1,0 +1,106 @@
+name:    skillexam
+version: "0.0.0"
+
+dependencies:
+
+- base
+- yesod
+- yesod-core
+- yesod-auth
+- yesod-static
+- yesod-form
+- yesod-persistent
+- classy-prelude
+- classy-prelude-conduit
+- classy-prelude-yesod
+- bytestring
+- text
+- persistent
+- persistent-sqlite
+- persistent-template
+- template-haskell
+- shakespeare
+- hjsmin
+- monad-control
+- wai-extra
+- yaml
+- http-client-tls
+- http-conduit
+- directory
+- warp
+- data-default
+- aeson
+- conduit
+- monad-logger
+- fast-logger
+- wai-logger
+- file-embed
+- safe
+- unordered-containers
+- containers
+- vector
+- time
+- case-insensitive
+- wai
+- foreign-store
+- esqueleto
+- listsafe
+- base64-bytestring
+- text-icu
+- HPDF
+
+# The library contains all of our application code. The executable
+# defined below is just a thin wrapper.
+library:
+  source-dirs: src
+  when:
+  - condition: (flag(dev)) || (flag(library-only))
+    then:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O0
+      cpp-options: -DDEVELOPMENT
+    else:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O2
+
+# Runnable executable for our application
+executables:
+  skillexam:
+    main: main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - skillexam
+    when:
+    - condition: flag(library-only)
+      buildable: false
+
+# Test suite
+tests:
+  skillexam-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options: -Wall
+    dependencies:
+    - skillexam
+    - hspec >=2.0.0
+    - yesod-test
+    - microlens
+
+# Define flags used by "yesod devel" to make compilation faster
+flags:
+  library-only:
+    description: Build for use with "yesod devel"
+    manual: false
+    default: false
+  dev:
+    description: Turn on development settings, like auto-reload templates.
+    manual: false
+    default: false

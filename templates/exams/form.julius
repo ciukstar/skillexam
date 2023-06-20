@@ -1,0 +1,10 @@
+
+window.mdc.autoInit()
+
+document.querySelector('div.mdc-select.candidate').MDCSelect.listen('MDCSelect:change',function (e) {
+  document.getElementById('formExam').submit()
+})
+
+document.querySelector('div.mdc-select.exam').MDCSelect.listen('MDCSelect:change',function (e) {
+  document.getElementById('formExam').submit()
+})

@@ -1,0 +1,43 @@
+
+$maybe Entity _ (Test code name duration pass descr _) <- test
+  <div.mdc-data-table>
+    <div.mdc-data-table__table-container>
+      <table.mdc-data-table__table>
+        <tbody.mdc-data-table__content>
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgCode}
+            <td.mdc-data-table__cell>#{code}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgName}
+            <td.mdc-data-table__cell>#{name}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgDescr}
+            <td.mdc-data-table__cell>
+              $maybe Textarea descr <- descr
+                #{descr}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgDuration}
+            <td.mdc-data-table__cell>
+              <span>#{printf "%.0f" duration}
+              <span style="text-transform:lowercase">_{MsgMinutes}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgPassMark}
+            <td.mdc-data-table__cell>
+              <span>#{printf "%.0f" pass}
+              <span style="text-transform:lowercase">_{MsgPoints}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>
+              _{MsgPopularity}
+            <td.mdc-data-table__cell>
+              <span.as-percentage data-value=#{ratio}>#{ratio}
+              <span>&nbsp;&nbsp;&nbsp;(#{printf "%.0f" nbr} / #{printf "%.0f" total})
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>
+              _{MsgDifficulty}
+            <td.mdc-data-table__cell>
+              $if dRatio > 0.8
+                _{MsgDifficultyLow}
+              $elseif dRatio > 0.7
+                _{MsgDifficultyMedium}
+              $else
+                _{MsgDifficultyHigh}

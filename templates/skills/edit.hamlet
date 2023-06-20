@@ -1,0 +1,39 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button.mdc-theme--text-primary-on-light
+        href=@{AdminR $ SkillR sid} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgSkill}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (status,msg) <- msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__fixed>
+        <div.mdc-banner__content role=alertdialog aria-live=assertive>
+          <div.mdc-banner__graphic-text-wrapper>
+            <div.mdc-banner__graphic style="background-color:var(#{status})">
+              <i.mdc-banner__icon.material-symbols-outlined>warning
+            <span.mdc-banner__text>#{msg}
+          <div.mdc-banner__actions>
+            <button.mdc-icon-button.mdc-banner__primary-action type=button>
+              <span.mdc-icon-button__ripple>
+              <span.mdc-icon-button__focus-ring>
+              <span.mdc-icon-button__icon.material-symbols-outlined>close
+
+ <form method=post action=@{AdminR $ SkillR sid} enctype=#{enctype} #postSkill novalidate>
+   ^{widget}
+
+   <div.actions>
+     <a.mdc-button href=@{AdminR $ SkillR sid} role=button>
+       <span.mdc-button__ripple>
+       <span.mdc-button__focus-ring>
+       <span.mdc-button__text>_{MsgCancel}
+       
+     <button.mdc-button.mdc-button--raised type=submit>
+       <span.mdc-button__ripple>
+       <span.mdc-button__focus-ring>
+       <span.mdc-button__text>_{MsgSave}
+   

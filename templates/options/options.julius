@@ -1,0 +1,17 @@
+
+window.mdc.autoInit()
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  let fab = document.getElementById('fabAdd');
+  x.listen('MDCSnackbar:opening',function (e) {
+    fab.style.opacity = 0;
+    fab.style.visibility = 'hidden';
+  });
+  x.listen('MDCSnackbar:closing',function (e) {
+    fab.style.opacity = 1;
+    fab.style.visibility = 'visible';
+  });
+  x.open()
+})

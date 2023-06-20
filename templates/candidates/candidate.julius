@@ -1,0 +1,16 @@
+
+window.mdc.autoInit()
+
+document.querySelector('#buttonDelete').addEventListener('click',function (e) {
+  document.querySelector('#dlgDelete#{rawJS $ show $ fromSqlKey cid}').MDCDialog.open()
+})
+
+document.querySelector('#buttonCancel').addEventListener('click',function (e) {
+  document.querySelector('#dlgDelete#{rawJS $ show $ fromSqlKey cid}').MDCDialog.close()
+})
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.open()
+})

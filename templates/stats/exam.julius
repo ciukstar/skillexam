@@ -1,0 +1,7 @@
+
+[document.getElementById('examWeight')].forEach(function (x) {
+  x.textContent = new Number(x.textContent).toLocaleString(navigator.language,{
+    style: 'percent',
+    minimumFractionDigits: 1
+  })
+})

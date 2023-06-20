@@ -1,0 +1,121 @@
+
+let style = getComputedStyle(document.querySelector(':root'));
+let colorPass = style.getPropertyValue('--color-pass');
+let colorFail = style.getPropertyValue('--color-fail');
+
+echarts.init(document.getElementById('pie')).setOption({
+  title: {
+    text: #{renderMessage app langs MsgExamSuccessRate},
+    top: 8,
+    left: 8,
+    textStyle: { fontSize: 12 },
+    subtext: #{fromMaybe "" (fmap (testName . entityVal) test)},
+    itemGap: 4
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    show: false,
+    orient: 'horizontal',
+    bottom: 8
+  },
+  color: [colorPass,colorFail],
+  dataset: [{
+    source: [
+      { value: #{rawJS $ show rpass},
+	name: #{renderMessage app langs MsgPass}
+      },
+      { value: #{rawJS $ show rfail},
+	name: #{renderMessage app langs MsgFail}
+      }
+    ]
+  }],
+  series: [
+    {
+      name: 'First',
+      type: 'pie',
+      radius: '50%',
+      label: {
+        show: true
+      }
+    },
+    {
+      name: 'Second',
+      type: 'pie',
+      radius: '50%',
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: x => new Number(x.data.value).toLocaleString(navigator.language,{
+	  style: 'percent',
+	  minimumFractionDigits: 1,
+	  maximumFractionDigits: 1
+	}),
+        fontSize: 14
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+});
+
+echarts.init(document.getElementById('bar')).setOption({
+  grid: {
+    bottom: '15%'
+  },
+  title: {
+    text: #{renderMessage app langs MsgPassedFailedExamNumber},
+    top: 8,
+    left: 8,
+    textStyle: { fontSize: 12 },
+    subtext: #{fromMaybe "" (fmap (testName . entityVal) test)},
+    itemGap: 4
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    show: false,
+    orient: 'horizontal',
+    bottom: 8
+  },
+  xAxis: {
+    type: 'category',
+    data: [#{renderMessage app langs MsgPass},#{renderMessage app langs MsgFail}],
+    axisLine: { show: false },
+    axisTick: { show: false }
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      name: 'Total',
+      type: 'bar',
+      data: [
+        { value: #{rawJS $ show npass}, name: #{renderMessage app langs MsgPass}, itemStyle: { color: colorPass } },
+        { value: #{rawJS $ show nfail}, name: #{renderMessage app langs MsgFail}, itemStyle: { color: colorFail } }
+      ],
+      label: {
+        show: true,
+        fontSize: 14
+      },
+      itemStyle: {
+        borderRadius: 0
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+});

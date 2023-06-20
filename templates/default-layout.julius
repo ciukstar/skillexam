@@ -1,0 +1,18 @@
+
+window.mdc.autoInit();
+
+Array.from(document.querySelectorAll('button#leftMainMenuOpen')).forEach(function (x) {
+  x.addEventListener(
+    'click',
+    function (e) {
+      document.querySelector('aside#leftMainMenu').MDCDrawer.open = true;
+    }
+  )
+})
+
+document.querySelector(
+  'div.mdc-drawer__header .mdc-drawer__title'
+).addEventListener('click',function (e) {
+  document.querySelector('aside#leftMainMenu').MDCDrawer.open = false;
+})
+

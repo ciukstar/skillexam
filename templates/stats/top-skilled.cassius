@@ -1,0 +1,24 @@
+
+header.mdc-top-app-bar
+    #profilePhoto
+      border-radius: 50%
+
+main
+  div.header
+    margin: 1rem
+    display: flex
+    flex-direction: column
+
+  ul.mdc-list
+    margin-top: 0
+    padding-top: 0
+
+#dialogSkills
+  div.mdc-dialog__content
+    form
+      display: flex
+      flex-direction: column
+  div.mdc-dialog__actions
+    padding-right: 1rem
+    padding-bottom: 1rem
+    gap: 0.5rem

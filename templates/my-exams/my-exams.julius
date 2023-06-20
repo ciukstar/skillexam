@@ -1,0 +1,13 @@
+
+let bp = document.querySelector('img.photo.profile')
+if (bp) {
+  bp.addEventListener('click',function (e) {
+    document.querySelector('div.mdc-menu.profile').MDCMenuSurface.open()
+  })
+}
+
+Array.from(
+  document.querySelectorAll('div.mdc-list-item__secondary-text.examDate')
+).forEach(function (x) {
+  x.textContent = new Date(x.dataset.value).toLocaleString(navigator.language)
+})

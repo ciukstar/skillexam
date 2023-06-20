@@ -1,0 +1,42 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button.mdc-theme--text-primary-on-light 
+        href=#{rndr (StatsR TopSkilledR) params} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgRating}
+
+<main.mdc-top-app-bar--fixed-adjust>
+ 
+  $maybe Entity cid (Candidate fname gname aname _) <- candidate
+    <figure>
+      <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=56 height=56
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+      <figcaption>
+        #{fname} #{gname}
+          $maybe aname <- aname
+            \ #{aname}
+
+  <div.scores>
+    <span.total>
+      <div.mdc-typography--headline3>
+        #{printf "%.0f" total}
+      <small.mdc-theme--text-secondary-on-background>_{MsgRating}
+    <ol>
+      $forall ((_, Value name), Value score) <- skills
+        <li>
+          <div.skill-score>
+            <span.skill>#{name}
+            <span.score>#{printf "%.0f" score}
+          <div.mdc-linear-progress data-value=#{(/) score total} data-mdc-auto-init=MDCLinearProgress
+            aria-valuemin=0 aria-valuemax=1>
+            <div class="mdc-linear-progress__buffer">
+              <div class="mdc-linear-progress__buffer-bar">
+              <div class="mdc-linear-progress__buffer-dots">
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+              <span class="mdc-linear-progress__bar-inner">
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+              <span class="mdc-linear-progress__bar-inner">
+
+  

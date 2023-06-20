@@ -1,0 +1,18 @@
+
+window.mdc.autoInit()
+
+let dlg = document.querySelector('div.mdc-dialog#delete')
+
+document.querySelector('button#openDialogDelete').addEventListener('click',function (e) {
+  dlg.MDCDialog.open()
+})
+
+dlg.querySelector('button.cancel').addEventListener('click',function (e) {
+  dlg.MDCDialog.close()
+})
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.open()
+})

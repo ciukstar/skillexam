@@ -1,0 +1,49 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #leftMainMenuOpen>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title>_{MsgSuccessRate}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity cid (Candidate fname name aname _) <- user
+        <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
+          <img #profilePhoto src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
+            onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">
+          <div.mdc-menu.mdc-menu-surface.profile data-mdc-auto-init=MDCMenuSurface #profileMenu>
+            <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+              role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+              <form method=post action=@{SignOutR} #formLogout>
+                <li.mdc-deprecated-list-item role=menuitem onclick="formLogout.submit()">
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.material-symbols-outlined style="margin-right:1rem">logout
+                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button
+          href=@{SignInR} role=button aria-label=_{MsgLogin}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+  
+<main.mdc-top-app-bar--fixed-adjust>
+
+  <ul.mdc-list data-mdc-auto-init=MDCList>
+    $forall (index,(tid, name, passed, total, rate)) <- passed
+      <a.mdc-list-item.mdc-list-item--with-two-lines
+        .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
+        :Just tid == mtid:.mdc-list-item--activated
+        href=@{StatsR $ TestSuccessRateR tid} role=menuitem
+        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start style="width:fit-content">
+          #{index}
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>#{name}
+          <div.mdc-list-item__secondary-text>
+            <span.as-percentage data-rate=#{rate}>#{printf "%.3f" rate}
+            <span>&nbsp;&nbsp;&nbsp;(#{printf "%.0f" passed} / #{printf "%.0f" total})
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <li.mdc-list-divider role=separator>

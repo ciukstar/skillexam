@@ -1,0 +1,8 @@
+
+Array.from(
+  document.querySelectorAll('img.photo.profile')
+).filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.querySelector('div.mdc-menu.profile').MDCMenuSurface.open()
+  })
+})

@@ -1,0 +1,91 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+        href="@{AdminR $ StemsR eid}?id=#{fromSqlKey qid}&scrollY=#{scrollY}" role=button aria-label=_{MsgBack}>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgQuestion}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <button.mdc-top-app-bar__action-item.mdc-icon-button.mdc-theme--text-primary-on-light
+        #buttonDlgDelToggle type=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-top-app-bar__action-item.mdc-icon-button.mdc-theme--text-primary-on-light
+        href=@{AdminR $ StemEditFormR eid qid} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<div.mdc-dialog #dialogDelete data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog aria-modal=true tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgAreYouSureDelete}
+      <div.mdc-dialog__actions>
+        <button.mdc-button #buttonCancelDelete type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{AdminR $ StemsDeleteR eid}>
+          <button.mdc-button.mdc-button--raised type=submit name=id value=#{fromSqlKey qid}>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgDelete}
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe (Entity qid (Stem _ _ ordinal text qtype _), Entity _ (Test _ ename _ _ _ _), Entity _ (Skill _ sname _)) <- stem
+    <div.mdc-data-table>
+      <div.mdc-data-table__table-container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgOrdinal}
+              <td.mdc-data-table__cell>#{ordinal}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgQuestion}
+              <td.mdc-data-table__cell>
+                #{preEscapedToMarkup $ unTextarea text}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgType}
+              <td.mdc-data-table__cell>
+                $case qtype
+                  $of SingleRespose
+                    _{MsgSingleResponse}
+                  $of MultiResponse
+                    _{MsgMultiResponse}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgExam}
+              <td.mdc-data-table__cell>#{ename}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell>_{MsgSkill}
+              <td.mdc-data-table__cell>#{sname}
+    
+
+    <ul.mdc-list role=menu style="padding:0">
+      <a.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-leading-icon.mdc-list-item--with-trailing-icon
+        href=@{AdminR $ OptionsR eid qid} role=menuitem>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>format_list_numbered
+        <span.mdc-list-item__content>
+          <span.mdc-list-item__primary-text>
+            _{MsgOptions}
+          <span.mdc-list-item__secondary-text>
+            _{MsgResponseOptions}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <li.mdc-list-divider role=separator>
+
+  $forall (_,msg) <- msgs
+    <aside.mdc-snackbar.mdc-snackbar--leading data-mdc-auto-init=MDCSnackbar>
+      <div.mdc-snackbar__surface role=status aria-live=polite>
+        <div.mdc-snackbar__label aria-atomic=false>
+          #{msg}
+        <div.mdc-snackbar__actions aria-atomic=true>
+          <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>close

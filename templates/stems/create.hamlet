@@ -1,0 +1,38 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+        href=@{AdminR $ StemsR eid} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgQuestion}
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $forall (status,msg) <- msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic style="background-color:var(#{status})">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>
+            #{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-icon-button.mdc-banner__primary-action type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+  
+
+  $maybe Entity _ (Test _ name _ _ _ _) <- test
+    <h1.mdc-typography--headline5>#{name}
+
+    <form method=post action=@{AdminR $ StemsR eid} enctype=#{enctype} novalidate>
+      ^{widget}
+      <div.actions>
+        <a.mdc-button href=@{AdminR $ StemsR eid} role=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=submit>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>          
+          <span.mdc-button__label>_{MsgSave}

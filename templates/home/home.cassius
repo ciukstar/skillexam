@@ -1,0 +1,4 @@
+header.mdc-top-app-bar
+  img.photo
+    border-radius: 50%
+

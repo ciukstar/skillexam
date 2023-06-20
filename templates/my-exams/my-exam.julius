@@ -1,0 +1,7 @@
+
+
+Array.from(
+  document.querySelectorAll('tbody tr td.time')
+).forEach(function (x) {
+  x.textContent = new Date(x.dataset.value).toLocaleString(navigator.language) 
+})

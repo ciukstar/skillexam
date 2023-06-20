@@ -1,0 +1,11 @@
+main
+  margin: 0 1rem
+  display: flex
+  flex-direction: column
+  div.score
+    margin: 1.5rem
+  dl dt:not(:first-child)
+    margin-top: 1rem
+  dl dd
+    margin-inline-start: 0
+    

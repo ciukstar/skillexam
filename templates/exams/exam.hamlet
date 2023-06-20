@@ -1,0 +1,66 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
+        href="@{ExamFormR}?cid=#{fromSqlKey cid}&eid=#{fromSqlKey tid}" role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgExam}
+
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe (((Entity _ (Test code name duration pass descr _), Value nq), Value maxScore), Value attempt) <- test
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgCode}
+              <td.mdc-data-table__cell>#{code}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgName}
+              <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDescr}
+              <td.mdc-data-table__cell>
+                $maybe descr <- descr
+                  #{descr}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgNumberOfQuestions}
+              <td.mdc-data-table__cell>
+                $maybe nq <- nq
+                  #{nq}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDuration}
+              <td.mdc-data-table__cell>
+                <span>#{printf "%.0f" duration}
+                <span style="text-transform:lowercase">_{MsgMinutes}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgMaxScore}
+              <td.mdc-data-table__cell>
+                $maybe maxScore <- maxScore
+                  <span>#{printf "%.0f" maxScore}
+                  <span style="text-transform:lowercase">_{MsgPoints}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgPassScore}
+              <td.mdc-data-table__cell>
+                <span>#{printf "%.0f" pass}
+                <span style="text-transform:lowercase">_{MsgPoints}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgCandidate}
+              <td.mdc-data-table__cell>
+                $maybe Entity cid (Candidate fname gname aname _) <- candidate
+                  <div #candidateInfo>
+                    <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} height=24 width=24
+                      onerror="this.src = '@{PhotoPlaceholderR}'">
+                    <div>
+                      #{fname} #{gname}
+                      $maybe aname <- aname
+                        \ #{aname}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAttempt}
+              <td.mdc-data-table__cell>
+                $maybe attempt <- attempt
+                  #{attempt}

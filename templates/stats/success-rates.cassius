@@ -1,0 +1,6 @@
+
+header.mdc-top-app-bar
+  #profilePhoto
+    border-radius: 50%
+
+    

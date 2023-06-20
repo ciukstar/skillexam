@@ -1,0 +1,45 @@
+<header.mdc-top-app-bar.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-icon-button.mdc-top-app-bar__navigation-icon #leftMainMenuOpen>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title>
+        _{MsgExams}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe eid <- meid      
+        <a.mdc-icon-button.mdc-top-app-bar__action-item
+          href="@{SearchExamR}?eid=#{fromSqlKey eid}" role=button 
+          onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>search
+      $nothing
+        <a.mdc-icon-button.mdc-top-app-bar__action-item
+          href=@{SearchExamR} role=button
+          onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>search
+        
+        
+      $maybe cid <- mcid
+        $maybe Entity _ (Candidate fname name aname _) <- candidate
+          <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
+            <img.photo.profile src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
+              onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">
+            <div.mdc-menu.mdc-menu-surface.profile data-mdc-auto-init=MDCMenuSurface>
+              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list 
+                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+                <form method=post action=@{SignOutR} #formLogout>
+                  <li.mdc-deprecated-list-item role=menuitem onclick="formLogout.submit()">
+                    <span.mdc-deprecated-list-item__ripple>
+                    <i.material-symbols-outlined style="margin-right:1rem">logout
+                    <span.mdc-deprecated-list-item__text>_{MsgLogout}
+      $nothing
+        <a.mdc-icon-button.mdc-top-app-bar__action-item
+          href=@{SignInR} role=button aria-label=_{MsgLogin}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login

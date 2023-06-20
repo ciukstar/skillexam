@@ -1,0 +1,25 @@
+
+header.mdc-top-app-bar
+  background-color: var(--theme-background)
+  color: var(--theme-text-primary-on-light)
+  label.mdc-text-field
+    border-radius: 0
+
+main
+  div.no-content
+    margin: 2rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    gap: 2rem
+    i.material-symbols-outlined
+      font-size: 5rem
+
+  div.login-prompt
+    margin: 2rem
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    gap: 2rem
