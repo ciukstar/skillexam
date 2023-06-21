@@ -28,7 +28,7 @@ import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields (intField, textField, unTextarea)
 import Settings (widgetFile)
-import Settings.StaticFiles (echarts_pie_bars_5_4_2_min_js)
+import Settings.StaticFiles (echarts_pie_bars_5_4_2_min_js, echarts_gauge_5_4_2_min_js)
 
 import Foundation
     ( Handler
@@ -185,9 +185,10 @@ getTopExamR tid = do
     total <- maybe 1 unValue <$> runDB ( selectOne $ do
         _ <- from $ table @Exam
         return (countRows :: SqlExpr (Value Double)) )
-        
+
     defaultLayout $ do
         setTitleI MsgExam
+        addScript $ StaticR echarts_gauge_5_4_2_min_js
         $(widgetFile "stats/exam")
 
 

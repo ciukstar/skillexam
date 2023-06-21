@@ -3,7 +3,7 @@
 
 module Demo.DemoDataEN (populateEN) where
 
-import qualified Data.ByteString.Base64 as B64
+import qualified Data.ByteString.Base64 as B64 (decode)
 import Text.Shakespeare.Text (st)
 import Data.Time.Calendar (addGregorianYearsClip)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay), addUTCTime)

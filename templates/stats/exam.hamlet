@@ -9,11 +9,8 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
   $maybe Entity _ (Test _ name _ _ descr _) <- test
-    <div.score>
-      <div.mdc-typography--headline4 #examWeight>
-        #{attempts / total}
-      <small.mdc-theme--text-secondary-on-light>
-        #{printf "%.0f" attempts} / #{printf "%.0f" total}
+
+    <div #gauge>
 
     <dl>
       <dt.mdc-typography--body2.mdc-theme--text-secondary-on-light>_{MsgExam}
