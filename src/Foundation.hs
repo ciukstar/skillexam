@@ -6,6 +6,7 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Foundation where
 
@@ -93,6 +94,8 @@ import Import.NoFoundation
 import Settings.StaticFiles
     ( material_components_web_min_css
     , material_components_web_min_js
+    , js_cookie_3_0_5_min_js
+    , css_outlined_css
     )
 
 import Data.Maybe (Maybe (..), fromMaybe)
@@ -186,9 +189,10 @@ instance Yesod App where
       currRoute <- getCurrentRoute
       
       pc <- widgetToPageContent $ do
-        addStylesheet $ StaticR material_components_web_min_css
-        addScript $ StaticR material_components_web_min_js
-        $(widgetFile "default-layout")
+          addStylesheet $ StaticR css_outlined_css
+          addStylesheet $ StaticR material_components_web_min_css
+          addScript $ StaticR material_components_web_min_js
+          $(widgetFile "default-layout")
       
       langs <- languages
       let lang = fromMaybe "en" . LS.head $ langs 

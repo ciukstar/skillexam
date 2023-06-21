@@ -21,6 +21,8 @@ module Application
     , db
     ) where
 
+import System.Environment.Blank (getEnv)
+import Network.Wai.Middleware.Gzip (gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress))
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
 import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
                                              sqlDatabase, sqlPoolSize)
@@ -111,7 +113,6 @@ import Handler.Home
     )
 import Handler.SignIn (getSignInR, postSignInR, postSignOutR)
 import Handler.Common ( getFaviconR, getRobotsR, getPhotoPlaceholderR )
-import System.Environment.Blank (getEnv)
 
 import Demo.DemoDataFR (populateFR)
 import Demo.DemoDataRO (populateRO)
@@ -176,7 +177,7 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    return $ logWare $ defaultMiddlewaresNoLogging appPlain
+    return $ logWare $ defaultMiddlewaresNoLogging $ gzip def { gzipFiles = GzipCompress } appPlain
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =
