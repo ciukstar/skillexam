@@ -5,7 +5,6 @@ module Demo.DemoDataFR (populateFR) where
 
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Text.Shakespeare.Text (st)
-import ClassyPrelude.Yesod (ReaderT)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Calendar (addGregorianYearsClip)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay), addUTCTime)
@@ -189,272 +188,272 @@ populateFR = do
                                      , photoMime = "image/avif"
                                      }
                      
-    skill001 <- insert $ Skill
+    s001 <- insert $ Skill
         { skillCode = "Jakarta EE"
         , skillName = "Java Enterprise Edition"
         , skillDescr = Just "Compétences en programmation en Java Enterprise Edition"
         }
 
-    test001 <- insert $ Test
+    t001 <- insert $ Test
         { testCode = "E101"
-        , testName = "Java Programming Basics"
+        , testName = "Principes de base de la programmation Java"
         , testDuration = 120
         , testPass = 25
-        , testDescr = Just $ Textarea "Test basic Java Programming Skills"
+        , testDescr = Just $ Textarea "Testez les compétences de base en programmation Java"
         , testState = TestStatePublished
         }
 
-    stem001 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q001 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 1
-               , stemText = Textarea "Who invented Java Programming?"
+               , stemText = Textarea "Qui a inventé la programmation Java ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis001_1 <- insert $ Option
-        { optionStem = stem001
+    d001_1 <- insert $ Option
+        { optionStem = q001
         , optionOrdinal = "a)"
         , optionText = Textarea "Guido van Rossum"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key001 <- insert $ Option
-        { optionStem = stem001
+    k001 <- insert $ Option
+        { optionStem = q001
         , optionOrdinal = "b)"
         , optionText = Textarea "James Gosling"
         , optionKey = True
         , optionPoints = 3
         }
 
-    dis001_2 <- insert $ Option
-        { optionStem = stem001
+    d001_2 <- insert $ Option
+        { optionStem = q001
         , optionOrdinal = "c)"
         , optionText = Textarea "Dennis Ritchie"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis001_3 <- insert $ Option
-        { optionStem = stem001
+    d001_3 <- insert $ Option
+        { optionStem = q001
         , optionOrdinal = "d)"
         , optionText = Textarea "Bjarne Stroustrup"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem002 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q002 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 2
-               , stemText = Textarea "Which statement is true about Java?"
+               , stemText = Textarea "Quelle affirmation est vraie à propos de Java ?"
                , stemType = MultiResponse
-               , stemInstruc = Textarea "Select all correct"
+               , stemInstruc = Textarea "Sélectionnez toutes les bonnes"
                }
 
-    dis002_1 <- insert $ Option
-        { optionStem = stem002
+    d002_1 <- insert $ Option
+        { optionStem = q002
         , optionOrdinal = "a)"
-        , optionText = Textarea "Java is a sequence-dependent programming language"
+        , optionText = Textarea "Java est un langage de programmation dépendant de la séquence"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis002_2 <- insert $ Option
-        { optionStem = stem002
+    d002_2 <- insert $ Option
+        { optionStem = q002
         , optionOrdinal = "b)"
-        , optionText = Textarea "Java is a code dependent programming language"
+        , optionText = Textarea "Java est un langage de programmation dépendant du code"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key002_1 <- insert $ Option
-        { optionStem = stem002
+    k002_1 <- insert $ Option
+        { optionStem = q002
         , optionOrdinal = "c)"
-        , optionText = Textarea "Java is a platform-dependent programming language"
+        , optionText = Textarea "Java est un langage de programmation dépendant de la plate-forme"
         , optionKey = True
         , optionPoints = 2
         }
 
-    key002_2 <- insert $ Option
-        { optionStem = stem002
+    k002_2 <- insert $ Option
+        { optionStem = q002
         , optionOrdinal = "d)"
-        , optionText = Textarea "Java is a platform-independent programming language"
+        , optionText = Textarea "Java est un langage de programmation indépendant de la plate-forme"
         , optionKey = True
         , optionPoints = 5
         }
 
-    stem003 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q003 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 3
-               , stemText = Textarea "Which component is used to compile, debug and execute the java programs?"
+               , stemText = Textarea "Quel composant est utilisé pour compiler, déboguer et exécuter les programmes Java ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis003_1 <- insert $ Option
-        { optionStem = stem003
+    d003_1 <- insert $ Option
+        { optionStem = q003
         , optionOrdinal = "a)"
         , optionText = Textarea "JRE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis003_2 <- insert $ Option
-        { optionStem = stem003
+    d003_2 <- insert $ Option
+        { optionStem = q003
         , optionOrdinal = "b)"
         , optionText = Textarea "JIT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key003 <- insert $ Option
-        { optionStem = stem003
+    k003 <- insert $ Option
+        { optionStem = q003
         , optionOrdinal = "c)"
         , optionText = Textarea "JDK"
         , optionKey = True
         , optionPoints = 3
         }
 
-    dis003_3 <- insert $ Option
-        { optionStem = stem003
+    d003_3 <- insert $ Option
+        { optionStem = q003
         , optionOrdinal = "d)"
         , optionText = Textarea "JVM"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem004 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q004 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 4
-               , stemText = Textarea "Number of primitive data types in Java are?"
+               , stemText = Textarea "Nombre de types de données primitifs en Java sont ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis004_1 <- insert $ Option
-        { optionStem = stem004
+    d004_1 <- insert $ Option
+        { optionStem = q004
         , optionOrdinal = "a)"
         , optionText = Textarea "6"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis004_2 <- insert $ Option
-        { optionStem = stem004
+    d004_2 <- insert $ Option
+        { optionStem = q004
         , optionOrdinal = "b)"
         , optionText = Textarea "7"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key004 <- insert $ Option
-        { optionStem = stem004
+    k004 <- insert $ Option
+        { optionStem = q004
         , optionOrdinal = "c)"
         , optionText = Textarea "8"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis004_3 <- insert $ Option
-        { optionStem = stem004
+    d004_3 <- insert $ Option
+        { optionStem = q004
         , optionOrdinal = "d)"
         , optionText = Textarea "9"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem005 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q005 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 5
-               , stemText = Textarea "What is the size of float and double in java?"
+               , stemText = Textarea "Quelle est la taille de float et double en java ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key005 <- insert $ Option
-        { optionStem = stem005
+    k005 <- insert $ Option
+        { optionStem = q005
         , optionOrdinal = "a)"
-        , optionText = Textarea "32 and 64"
+        , optionText = Textarea "32 et 64"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis005_1 <- insert $ Option
-        { optionStem = stem005
+    d005_1 <- insert $ Option
+        { optionStem = q005
         , optionOrdinal = "b)"
-        , optionText = Textarea "32 and 32"
+        , optionText = Textarea "32 et 32"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis005_2 <- insert $ Option
-        { optionStem = stem005
+    d005_2 <- insert $ Option
+        { optionStem = q005
         , optionOrdinal = "c)"
-        , optionText = Textarea "64 and 64"
+        , optionText = Textarea "64 et 64"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis005_3 <- insert $ Option
-        { optionStem = stem005
+    d005_3 <- insert $ Option
+        { optionStem = q005
         , optionOrdinal = "d)"
-        , optionText = Textarea "64 and 32"
+        , optionText = Textarea "64 et 32"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem006 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q006 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 6
-               , stemText = Textarea "Automatic type conversion is possible in which of the possible cases?"
+               , stemText = Textarea "La conversion automatique des types est possible dans lequel des cas possibles ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis006_1 <- insert $ Option
-        { optionStem = stem006
+    d006_1 <- insert $ Option
+        { optionStem = q006
         , optionOrdinal = "a)"
-        , optionText = Textarea "Byte to int"
+        , optionText = Textarea "<code>Byte</code> en <code>int</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key006 <- insert $ Option
-        { optionStem = stem006
+    k006 <- insert $ Option
+        { optionStem = q006
         , optionOrdinal = "b)"
-        , optionText = Textarea "Int to long"
+        , optionText = Textarea "<code>Int</code> en <code>long</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis006_2 <- insert $ Option
-        { optionStem = stem006
+    d006_2 <- insert $ Option
+        { optionStem = q006
         , optionOrdinal = "c)"
-        , optionText = Textarea "Long to int"
+        , optionText = Textarea "<code>Long</code> en <code>int</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis006_3 <- insert $ Option
-        { optionStem = stem006
+    d006_3 <- insert $ Option
+        { optionStem = q006
         , optionOrdinal = "d)"
-        , optionText = Textarea "Short to int"
+        , optionText = Textarea "<code>Short</code> en <code>int</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem007 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q007 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 7
-               , stemText = Textarea [st|Find the output of the following code.
+               , stemText = Textarea [st|Trouvez la sortie du code suivant.
 <code>
 <pre>
   int Integer = 24;
@@ -464,46 +463,46 @@ populateFR = do
 </pre>
 </code>|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis007_1 <- insert $ Option
-        { optionStem = stem007
+    d007_1 <- insert $ Option
+        { optionStem = q007
         , optionOrdinal = "a)"
-        , optionText = Textarea "Compile error"
+        , optionText = Textarea "Erreur de compilation"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis007_2 <- insert $ Option
-        { optionStem = stem007
+    d007_2 <- insert $ Option
+        { optionStem = q007
         , optionOrdinal = "b)"
-        , optionText = Textarea "Throws exception"
+        , optionText = Textarea "Lève une exception"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis007_3 <- insert $ Option
-        { optionStem = stem007
+    d007_3 <- insert $ Option
+        { optionStem = q007
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>I</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key007 <- insert $ Option
-        { optionStem = stem007
+    k007 <- insert $ Option
+        { optionStem = q007
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>24 I</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem008 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q008 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 8
-               , stemText = Textarea [st|Find the output of the following program.
+               , stemText = Textarea [st|Trouvez la sortie du programme suivant.
 <code>
 <pre>
   public class Solution{
@@ -516,1378 +515,1381 @@ populateFR = do
 </pre>
 </code>|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis008_1 <- insert $ Option
-        { optionStem = stem008
+    d008_1 <- insert $ Option
+        { optionStem = q008
         , optionOrdinal = "a)"
         , optionText = Textarea "50"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis008_2 <- insert $ Option
-        { optionStem = stem008
+    d008_2 <- insert $ Option
+        { optionStem = q008
         , optionOrdinal = "b)"
         , optionText = Textarea "10"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key008 <- insert $ Option
-        { optionStem = stem008
+    k008 <- insert $ Option
+        { optionStem = q008
         , optionOrdinal = "c)"
-        , optionText = Textarea "Compile error"
+        , optionText = Textarea "Erreur de compilation"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis008_3 <- insert $ Option
-        { optionStem = stem008
+    d008_3 <- insert $ Option
+        { optionStem = q008
         , optionOrdinal = "d)"
         , optionText = Textarea "Exception"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem009 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q009 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 9
-               , stemText = Textarea "Select the valid statement."
+               , stemText = Textarea "Sélectionnez la déclaration valide."
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis009_1 <- insert $ Option
-        { optionStem = stem009
+    d009_1 <- insert $ Option
+        { optionStem = q009
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>char[] ch = new char(5)</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key009 <- insert $ Option
-        { optionStem = stem009
+    k009 <- insert $ Option
+        { optionStem = q009
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>char[] ch = new char[5]</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis009_2 <- insert $ Option
-        { optionStem = stem009
+    d009_2 <- insert $ Option
+        { optionStem = q009
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>char[] ch = new char()</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis009_3 <- insert $ Option
-        { optionStem = stem009
+    d009_3 <- insert $ Option
+        { optionStem = q009
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>char[] ch = new char[]</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem010 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q010 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 10
-               , stemText = Textarea [st|Find the output of the following program.
+               , stemText = Textarea [st|Trouvez la sortie du programme suivant.
 <code>
 <pre>
 public class Solution {
-    public static void main(String[] args){
-        int[]  x = {120, 200, 016};
-        for(int i = 0; i < x.length; i++){
-                 System.out.print(x[i] + “ “);
-        }
+  public static void main(String[] args){
+    int[]  x = {120, 200, 016};
+    for(int i = 0; i < x.length; i++){
+         System.out.print(x[i] + “ “);
     }
+  }
 }
 </pre>
 </code>|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis010_1 <- insert $ Option
-        { optionStem = stem010
+    d010_1 <- insert $ Option
+        { optionStem = q010
         , optionOrdinal = "a)"
         , optionText = Textarea "120 200 016"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key010 <- insert $ Option
-        { optionStem = stem010
+    k010 <- insert $ Option
+        { optionStem = q010
         , optionOrdinal = "b)"
         , optionText = Textarea "120 200 14"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis010_2 <- insert $ Option
-        { optionStem = stem010
+    d010_2 <- insert $ Option
+        { optionStem = q010
         , optionOrdinal = "c)"
         , optionText = Textarea "120 200 16"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis010_3 <- insert $ Option
-        { optionStem = stem010
+    d010_3 <- insert $ Option
+        { optionStem = q010
         , optionOrdinal = "d)"
-        , optionText = Textarea "None"
+        , optionText = Textarea "Aucune"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem011 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q011 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 11
-               , stemText = Textarea "When an array is passed to a method, what does the method receive?"
+               , stemText = Textarea "Lorsqu'un tableau est passé à une méthode, que reçoit la méthode ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key011 <- insert $ Option
-        { optionStem = stem011
+    k011 <- insert $ Option
+        { optionStem = q011
         , optionOrdinal = "a)"
-        , optionText = Textarea "The reference of the array"
+        , optionText = Textarea "La référence du tableau"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis011_1 <- insert $ Option
-        { optionStem = stem011
+    d011_1 <- insert $ Option
+        { optionStem = q011
         , optionOrdinal = "b)"
-        , optionText = Textarea "A copy of the array"
+        , optionText = Textarea "Une copie du tableau"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis011_2 <- insert $ Option
-        { optionStem = stem011
+    d011_2 <- insert $ Option
+        { optionStem = q011
         , optionOrdinal = "c)"
-        , optionText = Textarea "Length of the array"
+        , optionText = Textarea "Longueur du tableau"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis011_3 <- insert $ Option
-        { optionStem = stem011
+    d011_3 <- insert $ Option
+        { optionStem = q011
         , optionOrdinal = "d)"
-        , optionText = Textarea "Copy of first element"
+        , optionText = Textarea "Copie du premier élément"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem012 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q012 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 12
-               , stemText = Textarea "Select the valid statement to declare and initialize an array."
+               , stemText = Textarea "Sélectionnez l'instruction valide pour déclarer et initialiser un tableau."
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis012_1 <- insert $ Option
-        { optionStem = stem012
+    d012_1 <- insert $ Option
+        { optionStem = q012
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>int[] A = {}</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key012 <- insert $ Option
-        { optionStem = stem012
+    k012 <- insert $ Option
+        { optionStem = q012
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>int[] A = {1, 2, 3}</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis012_2 <- insert $ Option
-        { optionStem = stem012
+    d012_2 <- insert $ Option
+        { optionStem = q012
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>int[] A = (1, 2, 3)</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis012_3 <- insert $ Option
-        { optionStem = stem012
+    d012_3 <- insert $ Option
+        { optionStem = q012
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>int[][] A = {1,2,3}</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem013 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q013 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 13
-               , stemText = Textarea "Find the value of <code>A[1]</code> after execution of the following program."
+               , stemText = Textarea [st|Étant donné,
+<code><pre>int values[ ] = {1,2,3,4,5,6,7,8,9,10};
+for(int i=0;i< Y; ++i)
+System.out.println(values[i]);
+</pre></code>
+Trouver la valeur de <code>value[i]</code> ?|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis013_1 <- insert $ Option
-        { optionStem = stem013
+    d013_1 <- insert $ Option
+        { optionStem = q013
         , optionOrdinal = "a)"
-        , optionText = Textarea "0"
+        , optionText = Textarea "10"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key013 <- insert $ Option
-        { optionStem = stem013
+    d013_2 <- insert $ Option
+        { optionStem = q013
         , optionOrdinal = "b)"
-        , optionText = Textarea "1"
+        , optionText = Textarea "11"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d013_3 <- insert $ Option
+        { optionStem = q013
+        , optionOrdinal = "c)"
+        , optionText = Textarea "15"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    k013 <- insert $ Option
+        { optionStem = q013
+        , optionOrdinal = "d)"
+        , optionText = Textarea "Aucune de ces réponses"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis013_2 <- insert $ Option
-        { optionStem = stem013
-        , optionOrdinal = "c)"
-        , optionText = Textarea "2"
-        , optionKey = False
-        , optionPoints = 0
-        }
-
-    dis013_3 <- insert $ Option
-        { optionStem = stem013
-        , optionOrdinal = "d)"
-        , optionText = Textarea "3"
-        , optionKey = False
-        , optionPoints = 0
-        }
-
-    stem014 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q014 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 14
-               , stemText = Textarea "Arrays in java are-"
+               , stemText = Textarea "Les tableaux en Java sont:"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis014_1 <- insert $ Option
-        { optionStem = stem014
+    d014_1 <- insert $ Option
+        { optionStem = q014
         , optionOrdinal = "a)"
-        , optionText = Textarea "Object references"
+        , optionText = Textarea "Références d'objet"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key014 <- insert $ Option
-        { optionStem = stem014
+    k014 <- insert $ Option
+        { optionStem = q014
         , optionOrdinal = "b)"
-        , optionText = Textarea "objects"
+        , optionText = Textarea "objets"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis014_2 <- insert $ Option
-        { optionStem = stem014
+    d014_2 <- insert $ Option
+        { optionStem = q014
         , optionOrdinal = "c)"
-        , optionText = Textarea "Primitive data type"
+        , optionText = Textarea "Type de données primitif"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis014_3 <- insert $ Option
-        { optionStem = stem014
+    d014_3 <- insert $ Option
+        { optionStem = q014
         , optionOrdinal = "d)"
-        , optionText = Textarea "None"
+        , optionText = Textarea "Aucune"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem015 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q015 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 15
-               , stemText = Textarea "Identify the corrected definition of a package."
+               , stemText = Textarea "Identifier la définition corrigée d'un package."
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis015_1 <- insert $ Option
-        { optionStem = stem015
+    d015_1 <- insert $ Option
+        { optionStem = q015
         , optionOrdinal = "a)"
-        , optionText = Textarea "A package is a collection of editing tools"
+        , optionText = Textarea "Un package est un ensemble d'outils d'édition"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis015_2 <- insert $ Option
-        { optionStem = stem015
+    d015_2 <- insert $ Option
+        { optionStem = q015
         , optionOrdinal = "b)"
-        , optionText = Textarea "A package is a collection of classes"
+        , optionText = Textarea "Un package est un ensemble de classes"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key015 <- insert $ Option
-        { optionStem = stem015
+    k015 <- insert $ Option
+        { optionStem = q015
         , optionOrdinal = "c)"
-        , optionText = Textarea "A package is a collection of classes and interfaces"
+        , optionText = Textarea "Un package est un ensemble de classes et d'interfaces"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis015_3 <- insert $ Option
-        { optionStem = stem015
+    d015_3 <- insert $ Option
+        { optionStem = q015
         , optionOrdinal = "d)"
-        , optionText = Textarea "A package is a collection of interfaces"
+        , optionText = Textarea "Un package est un ensemble d'interfaces"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem016 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q016 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 16
-               , stemText = Textarea [st|Identify the correct restriction on static methods.
+               , stemText = Textarea [st|Identifiez la restriction correcte sur les méthodes statiques.
   <ol>
-    <li>They must access only static data</li>
-    <li>They can only call other static methods.</li>
-    <li>They cannot refer to this or super.</li>
+    <li>Ils ne doivent accéder qu'aux données statiques.</li>
+    <li>Ils ne peuvent appeler que d'autres méthodes statiques.</li>
+    <li>Ils ne peuvent pas se référer à <code>this</code> ou à <code>super</code>.</li>
   </ol>|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis016_1 <- insert $ Option
-        { optionStem = stem016
+    d016_1 <- insert $ Option
+        { optionStem = q016
         , optionOrdinal = "a)"
-        , optionText = Textarea "I and II"
+        , optionText = Textarea "I et II"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis016_2 <- insert $ Option
-        { optionStem = stem016
+    d016_2 <- insert $ Option
+        { optionStem = q016
         , optionOrdinal = "b)"
-        , optionText = Textarea "II and III"
+        , optionText = Textarea "II et III"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis016_3 <- insert $ Option
-        { optionStem = stem016
+    d016_3 <- insert $ Option
+        { optionStem = q016
         , optionOrdinal = "c)"
         , optionText = Textarea "Only III"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key016 <- insert $ Option
-        { optionStem = stem016
+    k016 <- insert $ Option
+        { optionStem = q016
         , optionOrdinal = "d)"
-        , optionText = Textarea "I, II and III"
+        , optionText = Textarea "I, II et III"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem017 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q017 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 17
-               , stemText = Textarea "Identify the keyword among the following that makes a variable belong to a class,rather than being defined for each instance of the class."
+               , stemText = Textarea "Identifiez le mot-clé parmi les suivants qui fait qu'une variable appartient à une classe, plutôt que d'être définie pour chaque instance de la classe."
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis017_1 <- insert $ Option
-        { optionStem = stem017
+    d017_1 <- insert $ Option
+        { optionStem = q017
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>final</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key017 <- insert $ Option
-        { optionStem = stem017
+    k017 <- insert $ Option
+        { optionStem = q017
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>static</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis017_2 <- insert $ Option
-        { optionStem = stem017
+    d017_2 <- insert $ Option
+        { optionStem = q017
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>volatile</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis017_3 <- insert $ Option
-        { optionStem = stem017
+    d017_3 <- insert $ Option
+        { optionStem = q017
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>abstract</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem018 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q018 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 18
-               , stemText = Textarea [st|Identify what can directly access and change the value of the variable <code>res</code>.
-<code>
-<pre>
+               , stemText = Textarea [st|Identifier ce qui peut accéder directement et modifier la valeur de la variable <code>res</code>.
+<code><pre>
   package com.mypackage;
   public class Solution{
       private int res = 100;
   }
-</pre>
-</code>
+</pre></code>
 |]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis018_1 <- insert $ Option
-        { optionStem = stem018
+    d018_1 <- insert $ Option
+        { optionStem = q018
         , optionOrdinal = "a)"
-        , optionText = Textarea "Any class"
+        , optionText = Textarea "N'importe quelle classe"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key018 <- insert $ Option
-        { optionStem = stem018
+    k018 <- insert $ Option
+        { optionStem = q018
         , optionOrdinal = "b)"
-        , optionText = Textarea "Only Solution class"
+        , optionText = Textarea "Seule la classe Solution"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis018_2 <- insert $ Option
-        { optionStem = stem018
+    d018_2 <- insert $ Option
+        { optionStem = q018
         , optionOrdinal = "c)"
-        , optionText = Textarea "Any class that extends Solution"
+        , optionText = Textarea "Toute classe qui étend Solution"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis018_3 <- insert $ Option
-        { optionStem = stem018
+    d018_3 <- insert $ Option
+        { optionStem = q018
         , optionOrdinal = "d)"
-        , optionText = Textarea "None"
+        , optionText = Textarea "Aucune"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem019 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q019 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 19
-               , stemText = Textarea "In which of the following is <code>toString()</code> method defined?"
+               , stemText = Textarea "Dans lequel des éléments suivants la méthode <code>toString()</code> est-elle définie ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key019 <- insert $ Option
-        { optionStem = stem019
+    k019 <- insert $ Option
+        { optionStem = q019
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>java.lang.Object</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis019_1 <- insert $ Option
-        { optionStem = stem019
+    d019_1 <- insert $ Option
+        { optionStem = q019
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>java.lang.String</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis019_2 <- insert $ Option
-        { optionStem = stem019
+    d019_2 <- insert $ Option
+        { optionStem = q019
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>java.lang.util</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis019_3 <- insert $ Option
-        { optionStem = stem019
+    d019_3 <- insert $ Option
+        { optionStem = q019
         , optionOrdinal = "d)"
-        , optionText = Textarea "None"
+        , optionText = Textarea "Aucune"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem020 <- insert $ Stem
-               { stemTest = test001
-               , stemSkill = skill001
+    q020 <- insert $ Stem
+               { stemTest = t001
+               , stemSkill = s001
                , stemOrdinal = 20
-               , stemText = Textarea "<code>compareTo()</code> returns"
+               , stemText = Textarea "<code>compareTo()</code> renvoie"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis020_1 <- insert $ Option
-        { optionStem = stem020
+    d020_1 <- insert $ Option
+        { optionStem = q020
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>true</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis020_2 <- insert $ Option
-        { optionStem = stem020
+    d020_2 <- insert $ Option
+        { optionStem = q020
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>false</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key020 <- insert $ Option
-        { optionStem = stem020
+    k020 <- insert $ Option
+        { optionStem = q020
         , optionOrdinal = "c)"
-        , optionText = Textarea "An <code>int</code> value"
+        , optionText = Textarea "Une valeur <code>int</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis020_3 <- insert $ Option
-        { optionStem = stem020
+    d020_3 <- insert $ Option
+        { optionStem = q020
         , optionOrdinal = "d)"
-        , optionText = Textarea "None"
+        , optionText = Textarea "Aucune"
         , optionKey = False
         , optionPoints = 0
         }
 
-    r001 <- insert $ Exam
-        { examTest = test001
+    e001 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c001
         , examAttempt = 1
         , examStart = addUTCTime (-20) now
         , examEnd = pure $ addUTCTime (-10) now
         }
 
-    forM_ [ (stem001,dis001_3)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,dis005_2)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,dis010_3)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_1)
-          , (stem016,key016)
-          , (stem017,key017)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r001
+    forM_ [ (q001,d001_3)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,d005_2)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,d010_3)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_1)
+          , (q016,k016)
+          , (q017,k017)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e001
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r002 <- insert $ Exam
-        { examTest = test001
+    e002 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c002
         , examAttempt = 1
         , examStart = addUTCTime (-40) now
         , examEnd = pure $ addUTCTime (-10) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,dis004_1)
-          , (stem005,dis005_2)
-          , (stem006,dis006_3)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,dis011_1)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,dis014_1)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,dis018_3)
-          , (stem019,dis019_3)
-          , (stem020,dis020_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r002
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,d004_1)
+          , (q005,d005_2)
+          , (q006,d006_3)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,d011_1)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,d014_1)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,d018_3)
+          , (q019,d019_3)
+          , (q020,d020_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e002
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r003 <- insert $ Exam
-        { examTest = test001
+    e003 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c003
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-10) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,dis004_1)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,dis011_1)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r003
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,d004_1)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,d011_1)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e003
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r004 <- insert $ Exam
-        { examTest = test001
+    e004 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c004
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-15) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,dis004_1)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r004
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,d004_1)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e004
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r005 <- insert $ Exam
-        { examTest = test001
+    e005 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c005
         , examAttempt = 1
         , examStart = addUTCTime (-50) now
         , examEnd = pure $ addUTCTime (-15) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r005
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e005
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r006 <- insert $ Exam
-        { examTest = test001
+    e006 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c006
         , examAttempt = 1
         , examStart = addUTCTime (-3000) now
         , examEnd = pure $ addUTCTime (-2955) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,dis019_1)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r006
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,d019_1)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e006
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r007 <- insert $ Exam
-        { examTest = test001
+    e007 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c007
         , examAttempt = 1
         , examStart = addUTCTime (-4000) now
         , examEnd = pure $ addUTCTime (-3950) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,dis010_2)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r007
+    forM_ [ (q001,k001)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,d010_2)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e007
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r008 <- insert $ Exam
-        { examTest = test001
+    e008 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c008
         , examAttempt = 1
         , examStart = addUTCTime (-5000) now
         , examEnd = pure $ addUTCTime (-4965) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,dis002_2)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,dis010_2)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,key013)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r008
+    forM_ [ (q001,k001)
+          , (q002,d002_2)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,d010_2)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,k013)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e008
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r009 <- insert $ Exam
-        { examTest = test001
+    e009 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c009
         , examAttempt = 1
         , examStart = addUTCTime (-6000) now
         , examEnd = pure $ addUTCTime (-5960) now
         }
 
-    forM_ [ (stem001,key001)
-          , (stem002,dis002_2)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,key010)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,dis013_3)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r009
+    forM_ [ (q001,k001)
+          , (q002,d002_2)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,k010)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,d013_3)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e009
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r010 <- insert $ Exam
-        { examTest = test001
+    e010 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c010
         , examAttempt = 1
         , examStart = addUTCTime (-6040) now
         , examEnd = pure $ addUTCTime (-6000) now
         }
 
-    forM_ [ (stem001,dis001_3)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,dis010_2)
-          , (stem011,key011)
-          , (stem012,key012)
-          , (stem013,dis013_3)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r010
+    forM_ [ (q001,d001_3)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,d010_2)
+          , (q011,k011)
+          , (q012,k012)
+          , (q013,d013_3)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e010
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r011 <- insert $ Exam
-        { examTest = test001
+    e011 <- insert $ Exam
+        { examTest = t001
         , examCandidate = c011
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
         }
 
-    forM_ [ (stem001,dis001_3)
-          , (stem002,key002_1)
-          , (stem002,key002_2)
-          , (stem003,key003)
-          , (stem004,key004)
-          , (stem005,key005)
-          , (stem006,key006)
-          , (stem007,key007)
-          , (stem008,key008)
-          , (stem009,key009)
-          , (stem010,dis010_2)
-          , (stem011,dis011_2)
-          , (stem012,dis012_1)
-          , (stem013,dis013_3)
-          , (stem014,key014)
-          , (stem015,dis015_3)
-          , (stem016,key016)
-          , (stem017,dis017_1)
-          , (stem018,key018)
-          , (stem019,key019)
-          , (stem020,key020)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r011
+    forM_ [ (q001,d001_3)
+          , (q002,k002_1)
+          , (q002,k002_2)
+          , (q003,k003)
+          , (q004,k004)
+          , (q005,k005)
+          , (q006,k006)
+          , (q007,k007)
+          , (q008,k008)
+          , (q009,k009)
+          , (q010,d010_2)
+          , (q011,d011_2)
+          , (q012,d012_1)
+          , (q013,d013_3)
+          , (q014,k014)
+          , (q015,d015_3)
+          , (q016,k016)
+          , (q017,d017_1)
+          , (q018,k018)
+          , (q019,k019)
+          , (q020,k020)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e011
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    skill101 <- insert $ Skill
+    s101 <- insert $ Skill
         { skillCode = "Python 101"
-        , skillName = "Python programming. Basics"
-        , skillDescr = Just "Skills for programming in Python"
+        , skillName = "Bases de la programmation Python"
+        , skillDescr = Just "Compétences pour la programmation en Python"
         }
 
-    test101 <- insert $ Test
+    t101 <- insert $ Test
         { testCode = "E201"
-        , testName = "Introduction to Python programming"
+        , testName = "Introduction à la programmation Python"
         , testDuration = 10
         , testPass = 8
-        , testDescr = Just $ Textarea "Test basic Python Programming Skills"
+        , testDescr = Just $ Textarea "Testez les compétences de base en programmation Python"
         , testState = TestStatePublished
         }
 
-    stem101 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q101 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 1
-               , stemText = Textarea "Who developed Python Programming Language?"
+               , stemText = Textarea "Qui a développé le langage de programmation Python ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis101_1 <- insert $ Option
-        { optionStem = stem101
+    d101_1 <- insert $ Option
+        { optionStem = q101
         , optionOrdinal = "a)"
         , optionText = Textarea "Wick van Rossum"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis101_2 <- insert $ Option
-        { optionStem = stem101
+    d101_2 <- insert $ Option
+        { optionStem = q101
         , optionOrdinal = "b)"
         , optionText = Textarea "Rasmus Lerdorf"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key101 <- insert $ Option
-        { optionStem = stem101
+    k101 <- insert $ Option
+        { optionStem = q101
         , optionOrdinal = "c)"
         , optionText = Textarea "Guido van Rossum"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis101_3 <- insert $ Option
-        { optionStem = stem101
+    d101_3 <- insert $ Option
+        { optionStem = q101
         , optionOrdinal = "d)"
         , optionText = Textarea "Niene Stom"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem102 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q102 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 2
-               , stemText = Textarea "Which type of Programming does Python support?"
+               , stemText = Textarea "Quel type de programmation Python prend-il en charge ?"
                , stemType = MultiResponse
-               , stemInstruc = Textarea "Select all true"
+               , stemInstruc = Textarea "Sélectionnez tout vrai"
                }
 
-    key102_1 <- insert $ Option
-        { optionStem = stem102
+    k102_1 <- insert $ Option
+        { optionStem = q102
         , optionOrdinal = "a)"
-        , optionText = Textarea "object-oriented programming"
+        , optionText = Textarea "programmation orientée objet"
         , optionKey = True
         , optionPoints = 1
         }
 
-    key102_2 <- insert $ Option
-        { optionStem = stem102
+    k102_2 <- insert $ Option
+        { optionStem = q102
         , optionOrdinal = "b)"
-        , optionText = Textarea "structured programming"
+        , optionText = Textarea "programmation structurée"
         , optionKey = True
         , optionPoints = 1
         }
 
-    key102_3 <- insert $ Option
-        { optionStem = stem102
+    k102_3 <- insert $ Option
+        { optionStem = q102
         , optionOrdinal = "c)"
-        , optionText = Textarea "functional programming"
+        , optionText = Textarea "programmation fonctionnelle"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis102 <- insert $ Option
-        { optionStem = stem102
+    d102 <- insert $ Option
+        { optionStem = q102
         , optionOrdinal = "d)"
-        , optionText = Textarea "procedural programming"
+        , optionText = Textarea "programmation procédurale"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem103 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q103 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 3
-               , stemText = Textarea "Is Python case sensitive when dealing with identifiers?"
+               , stemText = Textarea "Python est-il sensible à la casse lorsqu'il s'agit d'identificateurs ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis103_1 <- insert $ Option
-        { optionStem = stem103
+    d103_1 <- insert $ Option
+        { optionStem = q103
         , optionOrdinal = "a)"
-        , optionText = Textarea "no"
+        , optionText = Textarea "Non"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key103 <- insert $ Option
-        { optionStem = stem103
+    k103 <- insert $ Option
+        { optionStem = q103
         , optionOrdinal = "b)"
-        , optionText = Textarea "yes"
+        , optionText = Textarea "Oui"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis103_2 <- insert $ Option
-        { optionStem = stem103
+    d103_2 <- insert $ Option
+        { optionStem = q103
         , optionOrdinal = "c)"
-        , optionText = Textarea "machine dependent"
+        , optionText = Textarea "dépendant de la machine"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis103_3 <- insert $ Option
-        { optionStem = stem103
+    d103_3 <- insert $ Option
+        { optionStem = q103
         , optionOrdinal = "d)"
-        , optionText = Textarea "none of the mentioned"
+        , optionText = Textarea "aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem104 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q104 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 4
-               , stemText = Textarea "Which of the following is the correct extension of the Python file?"
+               , stemText = Textarea "Laquelle des extensions suivantes est l'extension correcte du fichier Python ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis104_1 <- insert $ Option
-        { optionStem = stem104
+    d104_1 <- insert $ Option
+        { optionStem = q104
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>.python</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis104_2 <- insert $ Option
-        { optionStem = stem104
+    d104_2 <- insert $ Option
+        { optionStem = q104
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>.pl</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key104 <- insert $ Option
-        { optionStem = stem104
+    k104 <- insert $ Option
+        { optionStem = q104
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>.py</code>"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis104_3 <- insert $ Option
-        { optionStem = stem104
+    d104_3 <- insert $ Option
+        { optionStem = q104
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>.p</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem105 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q105 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 5
-               , stemText = Textarea "Is Python code compiled or interpreted?"
+               , stemText = Textarea "Le code Python est-il compilé ou interprété ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key105 <- insert $ Option
-        { optionStem = stem105
+    k105 <- insert $ Option
+        { optionStem = q105
         , optionOrdinal = "a)"
-        , optionText = Textarea "Python code is both compiled and interpreted"
+        , optionText = Textarea "Le code Python est à la fois compilé et interprété"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis105_1 <- insert $ Option
-        { optionStem = stem105
+    d105_1 <- insert $ Option
+        { optionStem = q105
         , optionOrdinal = "b)"
-        , optionText = Textarea "Python code is neither compiled nor interpreted"
+        , optionText = Textarea "Le code Python n'est ni compilé ni interprété"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis105_2 <- insert $ Option
-        { optionStem = stem105
+    d105_2 <- insert $ Option
+        { optionStem = q105
         , optionOrdinal = "c)"
-        , optionText = Textarea "Python code is only compiled"
+        , optionText = Textarea "Le code Python est seulement compilé"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis105_3 <- insert $ Option
-        { optionStem = stem105
+    d105_3 <- insert $ Option
+        { optionStem = q105
         , optionOrdinal = "d)"
-        , optionText = Textarea "Python code is only interpreted"
+        , optionText = Textarea "Le code Python est uniquement interprété"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem106 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q106 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 6
-               , stemText = Textarea "All keywords in Python are in&nbsp;_________"
+               , stemText = Textarea "Tous les mots-clés en Python sont dans&nbsp;_________"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis106_1 <- insert $ Option
-        { optionStem = stem106
+    d106_1 <- insert $ Option
+        { optionStem = q106
         , optionOrdinal = "a)"
-        , optionText = Textarea "Capitalized"
+        , optionText = Textarea "En majuscule"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis106_2 <- insert $ Option
-        { optionStem = stem106
+    d106_2 <- insert $ Option
+        { optionStem = q106
         , optionOrdinal = "b)"
-        , optionText = Textarea "lower case"
+        , optionText = Textarea "minuscule"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis106_3 <- insert $ Option
-        { optionStem = stem106
+    d106_3 <- insert $ Option
+        { optionStem = q106
         , optionOrdinal = "c)"
-        , optionText = Textarea "UPPER CASE"
+        , optionText = Textarea "HAUT DE CASSE"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key106 <- insert $ Option
-        { optionStem = stem106
+    k106 <- insert $ Option
+        { optionStem = q106
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem107 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q107 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 7
-               , stemText = Textarea [st|What will be the value of the following Python expression?
+               , stemText = Textarea [st|Quelle sera la valeur de l'expression Python suivante ?
 <code>
 <pre>
   4 + 3 % 5
 </pre>
 </code>|]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key107 <- insert $ Option
-        { optionStem = stem107
+    k107 <- insert $ Option
+        { optionStem = q107
         , optionOrdinal = "a)"
         , optionText = Textarea "7"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis107_1 <- insert $ Option
-        { optionStem = stem107
+    d107_1 <- insert $ Option
+        { optionStem = q107
         , optionOrdinal = "b)"
         , optionText = Textarea "2"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis107_2 <- insert $ Option
-        { optionStem = stem107
+    d107_2 <- insert $ Option
+        { optionStem = q107
         , optionOrdinal = "c)"
         , optionText = Textarea "4"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis107_3 <- insert $ Option
-        { optionStem = stem107
+    d107_3 <- insert $ Option
+        { optionStem = q107
         , optionOrdinal = "d)"
         , optionText = Textarea "1"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem108 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q108 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 8
-               , stemText = Textarea "Which of the following is used to define a block of code in Python language?"
+               , stemText = Textarea "Lequel des éléments suivants est utilisé pour définir un bloc de code en langage Python ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key108 <- insert $ Option
-        { optionStem = stem108
+    k108 <- insert $ Option
+        { optionStem = q108
         , optionOrdinal = "a)"
-        , optionText = Textarea "Indentation"
+        , optionText = Textarea "Échancrure"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis108_1 <- insert $ Option
-        { optionStem = stem108
+    d108_1 <- insert $ Option
+        { optionStem = q108
         , optionOrdinal = "b)"
-        , optionText = Textarea "Key"
+        , optionText = Textarea "Clé"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis108_2 <- insert $ Option
-        { optionStem = stem108
+    d108_2 <- insert $ Option
+        { optionStem = q108
         , optionOrdinal = "c)"
-        , optionText = Textarea "Brackets"
+        , optionText = Textarea "Supports"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis108_3 <- insert $ Option
-        { optionStem = stem108
+    d108_3 <- insert $ Option
+        { optionStem = q108
         , optionOrdinal = "d)"
-        , optionText = Textarea "All of the mentioned"
+        , optionText = Textarea "Tous les mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem109 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q109 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 9
-               , stemText = Textarea "Which keyword is used for function in Python language?"
+               , stemText = Textarea "Quel mot clé est utilisé pour la fonction en langage Python ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis109_1 <- insert $ Option
-        { optionStem = stem109
+    d109_1 <- insert $ Option
+        { optionStem = q109
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>Function</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key109 <- insert $ Option
-        { optionStem = stem109
+    k109 <- insert $ Option
+        { optionStem = q109
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>def</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis109_2 <- insert $ Option
-        { optionStem = stem109
+    d109_2 <- insert $ Option
+        { optionStem = q109
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>Fun</code>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis109_3 <- insert $ Option
-        { optionStem = stem109
+    d109_3 <- insert $ Option
+        { optionStem = q109
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>Define</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem110 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q110 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 10
-               , stemText = Textarea "Which of the following character is used to give single-line comments in Python?"
+               , stemText = Textarea "Lequel des caractères suivants est utilisé pour donner des commentaires sur une seule ligne en Python ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis110_1 <- insert $ Option
-        { optionStem = stem110
+    d110_1 <- insert $ Option
+        { optionStem = q110
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>//</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key110 <- insert $ Option
-        { optionStem = stem110
+    k110 <- insert $ Option
+        { optionStem = q110
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>#</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis110_2 <- insert $ Option
-        { optionStem = stem110
+    d110_2 <- insert $ Option
+        { optionStem = q110
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>!</code>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis110_3 <- insert $ Option
-        { optionStem = stem110
+    d110_3 <- insert $ Option
+        { optionStem = q110
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>/*</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem111 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q111 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 11
-               , stemText = Textarea [st|What will be the output of the following Python code?
+               , stemText = Textarea [st|Quelle sera la sortie du code Python suivant ?
 <pre>
 <code>
   i = 1
@@ -1901,1870 +1903,1868 @@ public class Solution {
 </pre>
 |]
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis111_1 <- insert $ Option
-        { optionStem = stem111
+    d111_1 <- insert $ Option
+        { optionStem = q111
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>1 2 3</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key111 <- insert $ Option
-        { optionStem = stem111
+    k111 <- insert $ Option
+        { optionStem = q111
         , optionOrdinal = "b)"
-        , optionText = Textarea "error"
+        , optionText = Textarea "erreur"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis111_2 <- insert $ Option
-        { optionStem = stem111
+    d111_2 <- insert $ Option
+        { optionStem = q111
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>1 2</code>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis111_3 <- insert $ Option
-        { optionStem = stem111
+    d111_3 <- insert $ Option
+        { optionStem = q111
         , optionOrdinal = "d)"
-        , optionText = Textarea "none of the mentioned"
+        , optionText = Textarea "aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem112 <- insert $ Stem
-               { stemTest = test101
-               , stemSkill = skill101
+    q112 <- insert $ Stem
+               { stemTest = t101
+               , stemSkill = s101
                , stemOrdinal = 12
-               , stemText = Textarea "Which of the following functions can help us to find the version of python that we are currently working on?"
+               , stemText = Textarea "Laquelle des fonctions suivantes peut nous aider à trouver la version de python sur laquelle nous travaillons actuellement ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis112_1 <- insert $ Option
-        { optionStem = stem112
+    d112_1 <- insert $ Option
+        { optionStem = q112
         , optionOrdinal = "a)"
         , optionText = Textarea "<code>sys.version(1)</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis112_2 <- insert $ Option
-        { optionStem = stem112
+    d112_2 <- insert $ Option
+        { optionStem = q112
         , optionOrdinal = "b)"
         , optionText = Textarea "<code>sys.version(0)</code>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis112_3 <- insert $ Option
-        { optionStem = stem112
+    d112_3 <- insert $ Option
+        { optionStem = q112
         , optionOrdinal = "c)"
         , optionText = Textarea "<code>sys.version()</code>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key112 <- insert $ Option
-        { optionStem = stem112
+    k112 <- insert $ Option
+        { optionStem = q112
         , optionOrdinal = "d)"
         , optionText = Textarea "<code>sys.version</code>"
         , optionKey = True
         , optionPoints = 1
         }
 
-    r101 <- insert $ Exam
-        { examTest = test101
+    e101 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c001
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,dis103_2)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,dis106_3)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,dis110_2)
-          , (stem111,key111)
-          , (stem112,dis112_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r101
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,d103_2)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,d106_3)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,d110_2)
+          , (q111,k111)
+          , (q112,d112_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e101
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r102 <- insert $ Exam
-        { examTest = test101
+    e102 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c002
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-35) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,dis103_2)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,dis106_3)
-          , (stem107,key107)
-          , (stem108,dis108_2)
-          , (stem109,key109)
-          , (stem110,dis110_2)
-          , (stem111,key111)
-          , (stem112,dis112_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r102
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,d103_2)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,d106_3)
+          , (q107,k107)
+          , (q108,d108_2)
+          , (q109,k109)
+          , (q110,d110_2)
+          , (q111,k111)
+          , (q112,d112_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e102
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r103 <- insert $ Exam
-        { examTest = test101
+    e103 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c003
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-47) now
         }
 
-    forM_ [ (stem101,dis101_1)
-          , (stem102,key102_1)
-          , (stem102,dis102)
-          , (stem102,key102_3)
-          , (stem103,dis103_2)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,dis106_3)
-          , (stem107,key107)
-          , (stem108,dis108_2)
-          , (stem109,key109)
-          , (stem110,dis110_2)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r103
+    forM_ [ (q101,d101_1)
+          , (q102,k102_1)
+          , (q102,d102)
+          , (q102,k102_3)
+          , (q103,d103_2)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,d106_3)
+          , (q107,k107)
+          , (q108,d108_2)
+          , (q109,k109)
+          , (q110,d110_2)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e103
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r104 <- insert $ Exam
-        { examTest = test101
+    e104 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c004
         , examAttempt = 1
         , examStart = addUTCTime (-65) now
         , examEnd = pure $ addUTCTime (-56) now
         }
 
-    forM_ [ (stem101,dis101_1)
-          , (stem102,key102_1)
-          , (stem102,dis102)
-          , (stem102,key102_3)
-          , (stem103,dis103_2)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,dis108_2)
-          , (stem109,key109)
-          , (stem110,dis110_2)
-          , (stem111,dis111_1)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r104
+    forM_ [ (q101,d101_1)
+          , (q102,k102_1)
+          , (q102,d102)
+          , (q102,k102_3)
+          , (q103,d103_2)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,d108_2)
+          , (q109,k109)
+          , (q110,d110_2)
+          , (q111,d111_1)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e104
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r105 <- insert $ Exam
-        { examTest = test101
+    e105 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c005
         , examAttempt = 1
         , examStart = addUTCTime (-80) now
         , examEnd = pure $ addUTCTime (-50) now
         }
 
-    forM_ [ (stem101,dis101_1)
-          , (stem102,key102_1)
-          , (stem102,dis102)
-          , (stem102,key102_3)
-          , (stem103,dis103_2)
-          , (stem104,dis104_1)
-          , (stem105,dis105_2)
-          , (stem106,dis106_3)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,dis110_2)
-          , (stem111,dis111_1)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r105
+    forM_ [ (q101,d101_1)
+          , (q102,k102_1)
+          , (q102,d102)
+          , (q102,k102_3)
+          , (q103,d103_2)
+          , (q104,d104_1)
+          , (q105,d105_2)
+          , (q106,d106_3)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,d110_2)
+          , (q111,d111_1)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e105
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r106 <- insert $ Exam
-        { examTest = test101
+    e106 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c006
         , examAttempt = 1
         , examStart = addUTCTime (-90) now
         , examEnd = pure $ addUTCTime (-80) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,key103)
-          , (stem104,dis104_1)
-          , (stem105,key105)
-          , (stem106,dis106_3)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,key110)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r106
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,k103)
+          , (q104,d104_1)
+          , (q105,k105)
+          , (q106,d106_3)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,k110)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e106
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r107 <- insert $ Exam
-        { examTest = test101
+    e107 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c007
         , examAttempt = 1
         , examStart = addUTCTime (-100) now
         , examEnd = pure $ addUTCTime (-95) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,key103)
-          , (stem104,dis104_1)
-          , (stem105,key105)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,key110)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r107
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,k103)
+          , (q104,d104_1)
+          , (q105,k105)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,k110)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e107
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r108 <- insert $ Exam
-        { examTest = test101
+    e108 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c008
         , examAttempt = 1
         , examStart = addUTCTime (-103) now
         , examEnd = pure $ addUTCTime (-96) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,key103)
-          , (stem104,dis104_1)
-          , (stem105,dis105_2)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,key110)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r108
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,k103)
+          , (q104,d104_1)
+          , (q105,d105_2)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,k110)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e108
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r109 <- insert $ Exam
-        { examTest = test101
+    e109 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c009
         , examAttempt = 1
         , examStart = addUTCTime (-203) now
         , examEnd = pure $ addUTCTime (-194) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem103,key103)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,dis110_1)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r109
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q103,k103)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,d110_1)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e109
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r110 <- insert $ Exam
-        { examTest = test101
+    e110 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c010
         , examAttempt = 1
         , examStart = addUTCTime (-302) now
         , examEnd = pure $ addUTCTime (-296) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_3)
-          , (stem103,key103)
-          , (stem104,key104)
-          , (stem105,key105)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,dis110_1)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r110
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_3)
+          , (q103,k103)
+          , (q104,k104)
+          , (q105,k105)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,d110_1)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e110
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r111 <- insert $ Exam
-        { examTest = test101
+    e111 <- insert $ Exam
+        { examTest = t101
         , examCandidate = c011
         , examAttempt = 1
         , examStart = addUTCTime (-312) now
         , examEnd = pure $ addUTCTime (-302) now
         }
 
-    forM_ [ (stem101,key101)
-          , (stem102,key102_1)
-          , (stem102,key102_2)
-          , (stem102,key102_3)
-          , (stem102,dis102)
-          , (stem103,key103)
-          , (stem104,key104)
-          , (stem105,dis105_3)
-          , (stem106,key106)
-          , (stem107,key107)
-          , (stem108,key108)
-          , (stem109,key109)
-          , (stem110,dis110_1)
-          , (stem111,key111)
-          , (stem112,key112)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r111
+    forM_ [ (q101,k101)
+          , (q102,k102_1)
+          , (q102,k102_2)
+          , (q102,k102_3)
+          , (q102,d102)
+          , (q103,k103)
+          , (q104,k104)
+          , (q105,d105_3)
+          , (q106,k106)
+          , (q107,k107)
+          , (q108,k108)
+          , (q109,k109)
+          , (q110,d110_1)
+          , (q111,k111)
+          , (q112,k112)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e111
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    skill201 <- insert $ Skill
-        { skillCode = "Basic Chemical Engineering"
-        , skillName = "Basic Chemical Engineering"
-        , skillDescr = Just "Skills for Basic Chemical Engineering"
+    s201 <- insert $ Skill
+        { skillCode = "Génie chimique de base"
+        , skillName = "Génie chimique de base"
+        , skillDescr = Just "Compétences pour le génie chimique de base"
         }
 
-    test201 <- insert $ Test
+    t201 <- insert $ Test
         { testCode = "E202"
-        , testName = "Chemical Engineering"
+        , testName = "Ingénieur chimiste"
         , testDuration = 20
         , testPass = 8
-        , testDescr = Just $ Textarea "Test basic Basic Chemical Engineering"
+        , testDescr = Just $ Textarea "Tester les compétences de base en génie chimique"
         , testState = TestStatePublished
         }
 
-    stem201 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q201 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 1
-               , stemText = Textarea "What is the unit of specific gravity?"
+               , stemText = Textarea "Quelle est l'unité de gravité spécifique ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key201 <- insert $ Option
-        { optionStem = stem201
+    k201 <- insert $ Option
+        { optionStem = q201
         , optionOrdinal = "a)"
-        , optionText = Textarea "Dimensionless"
+        , optionText = Textarea "Adimensionnelle"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis201_1 <- insert $ Option
-        { optionStem = stem201
+    d201_1 <- insert $ Option
+        { optionStem = q201
         , optionOrdinal = "b)"
         , optionText = Textarea "m/s<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis201_2 <- insert $ Option
-        { optionStem = stem201
+    d201_2 <- insert $ Option
+        { optionStem = q201
         , optionOrdinal = "c)"
         , optionText = Textarea "N/m<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis201_3 <- insert $ Option
-        { optionStem = stem201
+    d201_3 <- insert $ Option
+        { optionStem = q201
         , optionOrdinal = "d)"
         , optionText = Textarea "Kg/m<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem202 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q202 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 2
-               , stemText = Textarea "Which of the following has the same number of moles as in 398 grams of CuSO<sub>4</sub>?"
+               , stemText = Textarea "Lequel des éléments suivants a le même nombre de moles que dans 398 grammes de CuSO<sub>4</sub> ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis202_1 <- insert $ Option
-        { optionStem = stem202
+    d202_1 <- insert $ Option
+        { optionStem = q202
         , optionOrdinal = "a)"
-        , optionText = Textarea "35 grams of nitrogen"
+        , optionText = Textarea "35 grammes d'azote"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis202_2 <- insert $ Option
-        { optionStem = stem202
+    d202_2 <- insert $ Option
+        { optionStem = q202
         , optionOrdinal = "b)"
-        , optionText = Textarea "58.5 grams of Sodium chloride"
+        , optionText = Textarea "58,5 grammes de chlorure de sodium"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis202_3 <- insert $ Option
-        { optionStem = stem202
+    d202_3 <- insert $ Option
+        { optionStem = q202
         , optionOrdinal = "c)"
-        , optionText = Textarea "2 grams of hydrogen"
+        , optionText = Textarea "2 grammes d'hydrogène"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key202 <- insert $ Option
-        { optionStem = stem202
+    k202 <- insert $ Option
+        { optionStem = q202
         , optionOrdinal = "d)"
-        , optionText = Textarea "40 grams of oxygen"
+        , optionText = Textarea "40 grammes d'oxygène"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem203 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q203 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 3
-               , stemText = Textarea "What is the specific gravity of 5 Kg of water occupied in 10 m<sup>3</sup> with respect to 500 g/m<sup>3</sup>?"
+               , stemText = Textarea "Quelle est la densité de 5 Kg d'eau occupée dans 10 m<sup>3</sup> par rapport à 500 g/m<sup>3</sup> ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis203_1 <- insert $ Option
-        { optionStem = stem203
+    d203_1 <- insert $ Option
+        { optionStem = q203
         , optionOrdinal = "a)"
         , optionText = Textarea "2"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis203_2 <- insert $ Option
-        { optionStem = stem203
+    d203_2 <- insert $ Option
+        { optionStem = q203
         , optionOrdinal = "b)"
         , optionText = Textarea "5"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis203_3 <- insert $ Option
-        { optionStem = stem203
+    d203_3 <- insert $ Option
+        { optionStem = q203
         , optionOrdinal = "c)"
-        , optionText = Textarea "0.5"
+        , optionText = Textarea "0,5"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key203 <- insert $ Option
-        { optionStem = stem203
+    k203 <- insert $ Option
+        { optionStem = q203
         , optionOrdinal = "d)"
         , optionText = Textarea "1"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem204 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q204 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 4
-               , stemText = Textarea "What is the unit of mole fraction?"
+               , stemText = Textarea "Quelle est l'unité de la fraction molaire ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis204_1 <- insert $ Option
-        { optionStem = stem204
+    d204_1 <- insert $ Option
+        { optionStem = q204
         , optionOrdinal = "a)"
         , optionText = Textarea "N/m<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis204_2 <- insert $ Option
-        { optionStem = stem204
+    d204_2 <- insert $ Option
+        { optionStem = q204
         , optionOrdinal = "b)"
         , optionText = Textarea "m<sup>-2</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis204_3 <- insert $ Option
-        { optionStem = stem204
+    d204_3 <- insert $ Option
+        { optionStem = q204
         , optionOrdinal = "c)"
         , optionText = Textarea "Kg/m<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key204 <- insert $ Option
-        { optionStem = stem204
+    k204 <- insert $ Option
+        { optionStem = q204
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem205 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q205 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 5
-               , stemText = Textarea "What is the weight of 10 moles of a mixture with composition 15% O<sub>2</sub>, 25% SO<sub>2</sub>, 30% COCl<sub>2</sub>, 25% SO<sub>3</sub> and 5% N<sub>2</sub>?"
+               , stemText = Textarea "Quel est le poids de 10 moles d'un mélange de composition 15 % O<sub>2</sub>, 25 % SO<sub>2</sub>, 30 % COCl<sub>2</sub>, 25 % SO<sub>3</sub> et 5 % N<sub>2</sub> ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis205_1 <- insert $ Option
-        { optionStem = stem205
+    d205_1 <- insert $ Option
+        { optionStem = q205
         , optionOrdinal = "a)"
         , optionText = Textarea "564"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis205_2 <- insert $ Option
-        { optionStem = stem205
+    d205_2 <- insert $ Option
+        { optionStem = q205
         , optionOrdinal = "b)"
         , optionText = Textarea "475"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis205_3 <- insert $ Option
-        { optionStem = stem205
+    d205_3 <- insert $ Option
+        { optionStem = q205
         , optionOrdinal = "c)"
         , optionText = Textarea "867"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key205 <- insert $ Option
-        { optionStem = stem205
+    k205 <- insert $ Option
+        { optionStem = q205
         , optionOrdinal = "d)"
         , optionText = Textarea "719"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem206 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q206 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 6
-               , stemText = Textarea "What is the 100<sup>o</sup>C in degree Fahrenheit?"
+               , stemText = Textarea "Qu'est-ce que 100<sup>o</sup>C en degrés Fahrenheit ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis206_1 <- insert $ Option
-        { optionStem = stem206
+    d206_1 <- insert $ Option
+        { optionStem = q206
         , optionOrdinal = "a)"
         , optionText = Textarea "100<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key206 <- insert $ Option
-        { optionStem = stem206
+    k206 <- insert $ Option
+        { optionStem = q206
         , optionOrdinal = "b)"
         , optionText = Textarea "212<sup>o</sup>F"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis206_2 <- insert $ Option
-        { optionStem = stem206
+    d206_2 <- insert $ Option
+        { optionStem = q206
         , optionOrdinal = "c)"
         , optionText = Textarea "460<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis206_3 <- insert $ Option
-        { optionStem = stem206
+    d206_3 <- insert $ Option
+        { optionStem = q206
         , optionOrdinal = "d)"
         , optionText = Textarea "0<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem207 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q207 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 7
-               , stemText = Textarea "What is the pressure of 1900 Torr in the bar?"
+               , stemText = Textarea "Quelle est la pression de 1900 Torr dans le bar ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis207_1 <- insert $ Option
-        { optionStem = stem207
+    d207_1 <- insert $ Option
+        { optionStem = q207
         , optionOrdinal = "a)"
-        , optionText = Textarea "2.46"
+        , optionText = Textarea "2,46"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis207_2 <- insert $ Option
-        { optionStem = stem207
+    d207_2 <- insert $ Option
+        { optionStem = q207
         , optionOrdinal = "b)"
-        , optionText = Textarea "2.87"
+        , optionText = Textarea "2,87"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key207 <- insert $ Option
-        { optionStem = stem207
+    k207 <- insert $ Option
+        { optionStem = q207
         , optionOrdinal = "c)"
-        , optionText = Textarea "2.40"
+        , optionText = Textarea "2,40"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis207_3 <- insert $ Option
-        { optionStem = stem207
+    d207_3 <- insert $ Option
+        { optionStem = q207
         , optionOrdinal = "d)"
-        , optionText = Textarea "2.68"
+        , optionText = Textarea "2,68"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem208 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q208 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 8
-               , stemText = Textarea "Which of the following is not a pressure measuring device?"
+               , stemText = Textarea "Lequel des éléments suivants n'est pas un appareil de mesure de la pression ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key208 <- insert $ Option
-        { optionStem = stem208
+    k208 <- insert $ Option
+        { optionStem = q208
         , optionOrdinal = "a)"
-        , optionText = Textarea "Galvanometer"
+        , optionText = Textarea "Galvanomètre"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis208_1 <- insert $ Option
-        { optionStem = stem208
+    d208_1 <- insert $ Option
+        { optionStem = q208
         , optionOrdinal = "b)"
-        , optionText = Textarea "Manometer"
+        , optionText = Textarea "Manomètre"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis208_2 <- insert $ Option
-        { optionStem = stem208
+    d208_2 <- insert $ Option
+        { optionStem = q208
         , optionOrdinal = "c)"
-        , optionText = Textarea "Barometer"
+        , optionText = Textarea "Baromètre"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis208_3 <- insert $ Option
-        { optionStem = stem208
+    d208_3 <- insert $ Option
+        { optionStem = q208
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem209 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q209 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 9
-               , stemText = Textarea "Which of the following is used for the pressure measurement of only liquid?"
+               , stemText = Textarea "Lequel des éléments suivants est utilisé pour mesurer la pression d'un liquide uniquement ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis209_1 <- insert $ Option
-        { optionStem = stem209
+    d209_1 <- insert $ Option
+        { optionStem = q209
         , optionOrdinal = "a)"
-        , optionText = Textarea "Differential Manometer"
+        , optionText = Textarea "Manomètre différentiel"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis209_2 <- insert $ Option
-        { optionStem = stem209
+    d209_2 <- insert $ Option
+        { optionStem = q209
         , optionOrdinal = "b)"
-        , optionText = Textarea "Manometer"
+        , optionText = Textarea "Manomètre"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key209 <- insert $ Option
-        { optionStem = stem209
+    k209 <- insert $ Option
+        { optionStem = q209
         , optionOrdinal = "c)"
-        , optionText = Textarea "Piezometer"
+        , optionText = Textarea "Piézomètre"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis209_3 <- insert $ Option
-        { optionStem = stem209
+    d209_3 <- insert $ Option
+        { optionStem = q209
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem210 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q210 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 10
-               , stemText = Textarea "Which of the following is a state function?"
+               , stemText = Textarea "Laquelle des fonctions suivantes est une fonction d'état ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key210 <- insert $ Option
-        { optionStem = stem210
+    k210 <- insert $ Option
+        { optionStem = q210
         , optionOrdinal = "a)"
-        , optionText = Textarea "Entropy"
+        , optionText = Textarea "Entropie"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis210_1 <- insert $ Option
-        { optionStem = stem210
+    d210_1 <- insert $ Option
+        { optionStem = q210
         , optionOrdinal = "b)"
-        , optionText = Textarea "Heat"
+        , optionText = Textarea "Chaleur"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis210_2 <- insert $ Option
-        { optionStem = stem210
+    d210_2 <- insert $ Option
+        { optionStem = q210
         , optionOrdinal = "c)"
-        , optionText = Textarea "Work"
+        , optionText = Textarea "Travail"
         , optionKey = False
         , optionPoints = 0
         }
         
-    dis210_3 <- insert $ Option
-        { optionStem = stem210
+    d210_3 <- insert $ Option
+        { optionStem = q210
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem211 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q211 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 11
-               , stemText = Textarea "Water boiling in a container is an example of which of the following?"
+               , stemText = Textarea "L'eau bouillante dans un récipient est un exemple de laquelle des propositions suivantes ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis211_1 <- insert $ Option
-        { optionStem = stem211
+    d211_1 <- insert $ Option
+        { optionStem = q211
         , optionOrdinal = "a)"
         , optionText = Textarea "Semi-batch"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis211_2 <- insert $ Option
-        { optionStem = stem211
+    d211_2 <- insert $ Option
+        { optionStem = q211
         , optionOrdinal = "b)"
         , optionText = Textarea "Batch"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis211_3 <- insert $ Option
-        { optionStem = stem211
+    d211_3 <- insert $ Option
+        { optionStem = q211
         , optionOrdinal = "c)"
-        , optionText = Textarea "Batch & Semi-batch"
+        , optionText = Textarea "Batch et Semi-batch"
         , optionKey = False
         , optionPoints = 0
         }
         
-    key211 <- insert $ Option
-        { optionStem = stem211
+    k211 <- insert $ Option
+        { optionStem = q211
         , optionOrdinal = "d)"
-        , optionText = Textarea "Neither of them"
+        , optionText = Textarea "Aucun d'eux"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem212 <- insert $ Stem
-               { stemTest = test201
-               , stemSkill = skill201
+    q212 <- insert $ Stem
+               { stemTest = t201
+               , stemSkill = s201
                , stemOrdinal = 12
-               , stemText = Textarea "Which of the following is true about limiting reagents?"
+               , stemText = Textarea "Laquelle des affirmations suivantes est vraie concernant la limitation des réactifs ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis212_1 <- insert $ Option
-        { optionStem = stem212
+    d212_1 <- insert $ Option
+        { optionStem = q212
         , optionOrdinal = "a)"
-        , optionText = Textarea "Consumes partially"
+        , optionText = Textarea "Consomme partiellement"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis212_2 <- insert $ Option
-        { optionStem = stem212
+    d212_2 <- insert $ Option
+        { optionStem = q212
         , optionOrdinal = "b)"
-        , optionText = Textarea "Does not react"
+        , optionText = Textarea "Ne réagit pas"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key212 <- insert $ Option
-        { optionStem = stem212
+    k212 <- insert $ Option
+        { optionStem = q212
         , optionOrdinal = "c)"
-        , optionText = Textarea "Consumes completely"
+        , optionText = Textarea "Consomme complètement"
         , optionKey = True
         , optionPoints = 1
         }
         
-    dis212_3 <- insert $ Option
-        { optionStem = stem212
+    d212_3 <- insert $ Option
+        { optionStem = q212
         , optionOrdinal = "d)"
-        , optionText = Textarea "None of the mentioned"
+        , optionText = Textarea "Aucun des mentionnés"
         , optionKey = False
         , optionPoints = 0
         }
 
-    r201 <- insert $ Exam
-        { examTest = test201
+    e201 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c001
         , examAttempt = 1
         , examStart = addUTCTime (-3012) now
         , examEnd = pure $ addUTCTime (-3002) now
         }
 
-    forM_ [ (stem201,key201)
-          , (stem202,key202)
-          , (stem203,key203)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,key207)
-          , (stem208,key208)
-          , (stem209,key209)
-          , (stem210,dis210_1)
-          , (stem211,key211)
-          , (stem212,key212)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r201
+    forM_ [ (q201,k201)
+          , (q202,k202)
+          , (q203,k203)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,k207)
+          , (q208,k208)
+          , (q209,k209)
+          , (q210,d210_1)
+          , (q211,k211)
+          , (q212,k212)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e201
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r202 <- insert $ Exam
-        { examTest = test201
+    e202 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c002
         , examAttempt = 1
         , examStart = addUTCTime (-4015) now
         , examEnd = pure $ addUTCTime (-4005) now
         }
 
-    forM_ [ (stem201,dis201_1)
-          , (stem202,dis201_2)
-          , (stem203,dis203_3)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,key207)
-          , (stem208,key208)
-          , (stem209,key209)
-          , (stem210,dis210_1)
-          , (stem211,key211)
-          , (stem212,key212)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r202
+    forM_ [ (q201,d201_1)
+          , (q202,d201_2)
+          , (q203,d203_3)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,k207)
+          , (q208,k208)
+          , (q209,k209)
+          , (q210,d210_1)
+          , (q211,k211)
+          , (q212,k212)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e202
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r203 <- insert $ Exam
-        { examTest = test201
+    e203 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c004
         , examAttempt = 1
         , examStart = addUTCTime (-2015) now
         , examEnd = pure $ addUTCTime (-2005) now
         }
 
-    forM_ [ (stem201,dis201_1)
-          , (stem202,dis201_2)
-          , (stem203,key203)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,key207)
-          , (stem208,dis208_1)
-          , (stem209,key209)
-          , (stem210,key210)
-          , (stem211,key211)
-          , (stem212,key212)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r203
+    forM_ [ (q201,d201_1)
+          , (q202,d201_2)
+          , (q203,k203)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,k207)
+          , (q208,d208_1)
+          , (q209,k209)
+          , (q210,k210)
+          , (q211,k211)
+          , (q212,k212)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e203
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r204 <- insert $ Exam
-        { examTest = test201
+    e204 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c006
         , examAttempt = 1
         , examStart = addUTCTime (-1013) now
         , examEnd = pure $ addUTCTime (-1003) now
         }
 
-    forM_ [ (stem201,key201)
-          , (stem202,key202)
-          , (stem203,key203)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,dis207_3)
-          , (stem208,key208)
-          , (stem209,key209)
-          , (stem210,key210)
-          , (stem211,key211)
-          , (stem212,key212)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r204
+    forM_ [ (q201,k201)
+          , (q202,k202)
+          , (q203,k203)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,d207_3)
+          , (q208,k208)
+          , (q209,k209)
+          , (q210,k210)
+          , (q211,k211)
+          , (q212,k212)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e204
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r205 <- insert $ Exam
-        { examTest = test201
+    e205 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c008
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1003) now
         }
 
-    forM_ [ (stem201,key201)
-          , (stem202,key202)
-          , (stem203,dis203_2)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,dis207_3)
-          , (stem208,key208)
-          , (stem209,key209)
-          , (stem210,dis210_3)
-          , (stem211,key211)
-          , (stem212,dis212_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r205
+    forM_ [ (q201,k201)
+          , (q202,k202)
+          , (q203,d203_2)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,d207_3)
+          , (q208,k208)
+          , (q209,k209)
+          , (q210,d210_3)
+          , (q211,k211)
+          , (q212,d212_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e205
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r206 <- insert $ Exam
-        { examTest = test201
+    e206 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c010
         , examAttempt = 1
         , examStart = addUTCTime (-2021) now
         , examEnd = pure $ addUTCTime (-2002) now
         }
 
-    forM_ [ (stem201,key201)
-          , (stem202,key202)
-          , (stem203,key203)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,key207)
-          , (stem208,key208)
-          , (stem209,key209)
-          , (stem210,dis210_3)
-          , (stem211,key211)
-          , (stem212,dis212_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r206
+    forM_ [ (q201,k201)
+          , (q202,k202)
+          , (q203,k203)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,k207)
+          , (q208,k208)
+          , (q209,k209)
+          , (q210,d210_3)
+          , (q211,k211)
+          , (q212,d212_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e206
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r207 <- insert $ Exam
-        { examTest = test201
+    e207 <- insert $ Exam
+        { examTest = t201
         , examCandidate = c011
         , examAttempt = 1
         , examStart = addUTCTime (-5021) now
         , examEnd = pure $ addUTCTime (-5001) now
         }
 
-    forM_ [ (stem201,dis201_2)
-          , (stem202,key202)
-          , (stem203,dis203_1)
-          , (stem204,key204)
-          , (stem205,dis205_3)
-          , (stem206,key206)
-          , (stem207,dis207_1)
-          , (stem208,key208)
-          , (stem209,dis209_2)
-          , (stem210,key210)
-          , (stem211,dis211_3)
-          , (stem212,key212)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r207
+    forM_ [ (q201,d201_2)
+          , (q202,k202)
+          , (q203,d203_1)
+          , (q204,k204)
+          , (q205,d205_3)
+          , (q206,k206)
+          , (q207,d207_1)
+          , (q208,k208)
+          , (q209,d209_2)
+          , (q210,k210)
+          , (q211,d211_3)
+          , (q212,k212)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e207
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    skill301 <- insert $ Skill
+    s301 <- insert $ Skill
                 { skillCode = "SQL"
                 , skillName = "SQL"
                 , skillDescr = Just "Skills for writing SQL"
                 }
 
-    test301 <- insert $ Test
+    t301 <- insert $ Test
         { testCode = "E301"
         , testName = "SQL"
         , testDuration = 30
         , testPass = 9
-        , testDescr = Just $ Textarea "SQL programming"
+        , testDescr = Just $ Textarea "Programmation SQL"
         , testState = TestStatePublished
         }
 
-    stem301 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q301 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 1
-               , stemText = Textarea "What is the full form of SQL?"
+               , stemText = Textarea "Quelle est la forme complète de SQL ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis301_1 <- insert $ Option
-        { optionStem = stem301
+    d301_1 <- insert $ Option
+        { optionStem = q301
         , optionOrdinal = "a."
         , optionText = Textarea "Structured Query List"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key301 <- insert $ Option
-        { optionStem = stem301
+    k301 <- insert $ Option
+        { optionStem = q301
         , optionOrdinal = "b."
         , optionText = Textarea "Structure Query Language"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis301_2 <- insert $ Option
-        { optionStem = stem301
+    d301_2 <- insert $ Option
+        { optionStem = q301
         , optionOrdinal = "c."
         , optionText = Textarea "Sample Query Language"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis301_3 <- insert $ Option
-        { optionStem = stem301
+    d301_3 <- insert $ Option
+        { optionStem = q301
         , optionOrdinal = "d."
-        , optionText = Textarea "None of these"
+        , optionText = Textarea "Aucun d'eux"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem302 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q302 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 2
-               , stemText = Textarea "Which of the following is not a valid SQL type?"
+               , stemText = Textarea "Lequel des éléments suivants n'est pas un type SQL valide ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis302_1 <- insert $ Option
-        { optionStem = stem302
+    d302_1 <- insert $ Option
+        { optionStem = q302
         , optionOrdinal = "a."
         , optionText = Textarea "FLOAT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis302_2 <- insert $ Option
-        { optionStem = stem302
+    d302_2 <- insert $ Option
+        { optionStem = q302
         , optionOrdinal = "b."
         , optionText = Textarea "NUMERIC"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key302 <- insert $ Option
-        { optionStem = stem302
+    k302 <- insert $ Option
+        { optionStem = q302
         , optionOrdinal = "c."
         , optionText = Textarea "DECIMAL"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis302_3 <- insert $ Option
-        { optionStem = stem302
+    d302_3 <- insert $ Option
+        { optionStem = q302
         , optionOrdinal = "d."
         , optionText = Textarea "CHARACTER"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem303 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q303 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 3
-               , stemText = Textarea "Which of the following is not a DDL command?"
+               , stemText = Textarea "Laquelle des commandes suivantes n'est pas une commande DDL ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis303_1 <- insert $ Option
-        { optionStem = stem303
+    d303_1 <- insert $ Option
+        { optionStem = q303
         , optionOrdinal = "a."
         , optionText = Textarea "TRUNCATE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis303_2 <- insert $ Option
-        { optionStem = stem303
+    d303_2 <- insert $ Option
+        { optionStem = q303
         , optionOrdinal = "b."
         , optionText = Textarea "ALTER"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis303_3 <- insert $ Option
-        { optionStem = stem303
+    d303_3 <- insert $ Option
+        { optionStem = q303
         , optionOrdinal = "c."
         , optionText = Textarea "CREATE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key303 <- insert $ Option
-        { optionStem = stem303
+    k303 <- insert $ Option
+        { optionStem = q303
         , optionOrdinal = "d."
         , optionText = Textarea "UPDATE"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem304 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q304 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 4
-               , stemText = Textarea "Which of the following are TCL commands?"
+               , stemText = Textarea "Parmi les commandes suivantes, lesquelles sont des commandes TCL ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key304 <- insert $ Option
-        { optionStem = stem304
+    k304 <- insert $ Option
+        { optionStem = q304
         , optionOrdinal = "a."
-        , optionText = Textarea "COMMIT and ROLLBACK"
+        , optionText = Textarea "COMMIT et ROLLBACK"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis304_1 <- insert $ Option
-        { optionStem = stem304
+    d304_1 <- insert $ Option
+        { optionStem = q304
         , optionOrdinal = "b."
-        , optionText = Textarea "UPDATE and TRUNCATE"
+        , optionText = Textarea "UPDATE et TRUNCATE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis304_2 <- insert $ Option
-        { optionStem = stem304
+    d304_2 <- insert $ Option
+        { optionStem = q304
         , optionOrdinal = "c."
-        , optionText = Textarea "SELECT and INSERT"
+        , optionText = Textarea "SELECT et INSERT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis304_3 <- insert $ Option
-        { optionStem = stem304
+    d304_3 <- insert $ Option
+        { optionStem = q304
         , optionOrdinal = "d."
-        , optionText = Textarea "GRANT and REVOKE"
+        , optionText = Textarea "GRANT et REVOKE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem305 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q305 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 5
-               , stemText = Textarea "Which statement is used to delete all rows in a table without having the action logged?"
+               , stemText = Textarea "Quelle instruction est utilisée pour supprimer toutes les lignes d'une table sans que l'action soit consignée ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis305_1 <- insert $ Option
-        { optionStem = stem305
+    d305_1 <- insert $ Option
+        { optionStem = q305
         , optionOrdinal = "a."
         , optionText = Textarea "DELETE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis305_2 <- insert $ Option
-        { optionStem = stem305
+    d305_2 <- insert $ Option
+        { optionStem = q305
         , optionOrdinal = "b."
         , optionText = Textarea "REMOVE"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis305_3 <- insert $ Option
-        { optionStem = stem305
+    d305_3 <- insert $ Option
+        { optionStem = q305
         , optionOrdinal = "c."
         , optionText = Textarea "DROP"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key305 <- insert $ Option
-        { optionStem = stem305
+    k305 <- insert $ Option
+        { optionStem = q305
         , optionOrdinal = "d."
         , optionText = Textarea "TRUNCATE"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem306 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q306 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 6
-               , stemText = Textarea "SQL Views are also known as"
+               , stemText = Textarea "Les vues SQL sont également appelées"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis306_1 <- insert $ Option
-        { optionStem = stem306
+    d306_1 <- insert $ Option
+        { optionStem = q306
         , optionOrdinal = "a."
-        , optionText = Textarea "Simple tables"
+        , optionText = Textarea "Tableaux simples"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key306 <- insert $ Option
-        { optionStem = stem306
+    k306 <- insert $ Option
+        { optionStem = q306
         , optionOrdinal = "b."
-        , optionText = Textarea "Virtual tables"
+        , optionText = Textarea "Tables virtuelles"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis306_2 <- insert $ Option
-        { optionStem = stem306
+    d306_2 <- insert $ Option
+        { optionStem = q306
         , optionOrdinal = "c."
-        , optionText = Textarea "Complex tables"
+        , optionText = Textarea "Tableaux complexes"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis306_3 <- insert $ Option
-        { optionStem = stem306
+    d306_3 <- insert $ Option
+        { optionStem = q306
         , optionOrdinal = "d."
-        , optionText = Textarea "Actual Tables"
+        , optionText = Textarea "Tableaux réels"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem307 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q307 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 7
-               , stemText = Textarea "How many Primary keys can have in a table?"
+               , stemText = Textarea "Combien de clés primaires peut-on avoir dans une table ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    key307 <- insert $ Option
-        { optionStem = stem307
+    k307 <- insert $ Option
+        { optionStem = q307
         , optionOrdinal = "a."
-        , optionText = Textarea "Only 1"
+        , optionText = Textarea "Seulement 1"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis307_1 <- insert $ Option
-        { optionStem = stem307
+    d307_1 <- insert $ Option
+        { optionStem = q307
         , optionOrdinal = "b."
-        , optionText = Textarea "Only 2"
+        , optionText = Textarea "Seulement 2"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis307_2 <- insert $ Option
-        { optionStem = stem307
+    d307_2 <- insert $ Option
+        { optionStem = q307
         , optionOrdinal = "c."
-        , optionText = Textarea "Depends on no of Columns"
+        , optionText = Textarea "Dépend du nombre de colonnes"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis307_3 <- insert $ Option
-        { optionStem = stem307
+    d307_3 <- insert $ Option
+        { optionStem = q307
         , optionOrdinal = "d."
-        , optionText = Textarea "Depends on DBA"
+        , optionText = Textarea "Dépend du DBA"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem308 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q308 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 8
-               , stemText = Textarea "Which datatype can store unstructured data in a column?"
+               , stemText = Textarea "Quel type de données peut stocker des données non structurées dans une colonne ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis308_1 <- insert $ Option
-        { optionStem = stem308
+    d308_1 <- insert $ Option
+        { optionStem = q308
         , optionOrdinal = "a."
         , optionText = Textarea "CHAR"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key308 <- insert $ Option
-        { optionStem = stem308
+    k308 <- insert $ Option
+        { optionStem = q308
         , optionOrdinal = "b."
         , optionText = Textarea "RAW"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis308_2 <- insert $ Option
-        { optionStem = stem308
+    d308_2 <- insert $ Option
+        { optionStem = q308
         , optionOrdinal = "c."
         , optionText = Textarea "NUMERIC"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis308_3 <- insert $ Option
-        { optionStem = stem308
+    d308_3 <- insert $ Option
+        { optionStem = q308
         , optionOrdinal = "d."
         , optionText = Textarea "VARCHAR"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem309 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q309 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 9
-               , stemText = Textarea "Which of the following is not Constraint in SQL?"
+               , stemText = Textarea "Lequel des éléments suivants n'est pas une contrainte en SQL ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis309_1 <- insert $ Option
-        { optionStem = stem309
+    d309_1 <- insert $ Option
+        { optionStem = q309
         , optionOrdinal = "a."
         , optionText = Textarea "Primary Key"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis309_2 <- insert $ Option
-        { optionStem = stem309
+    d309_2 <- insert $ Option
+        { optionStem = q309
         , optionOrdinal = "b."
         , optionText = Textarea "Not Null"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis309_3 <- insert $ Option
-        { optionStem = stem309
+    d309_3 <- insert $ Option
+        { optionStem = q309
         , optionOrdinal = "c."
         , optionText = Textarea "Check"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key309 <- insert $ Option
-        { optionStem = stem309
+    k309 <- insert $ Option
+        { optionStem = q309
         , optionOrdinal = "d."
         , optionText = Textarea "Union"
         , optionKey = True
         , optionPoints = 1
         }
 
-    stem310 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q310 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 10
-               , stemText = Textarea "Which of the following is not a valid aggregate function?"
+               , stemText = Textarea "Laquelle des fonctions suivantes n'est pas une fonction d'agrégation valide ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis310_1 <- insert $ Option
-        { optionStem = stem310
+    d310_1 <- insert $ Option
+        { optionStem = q310
         , optionOrdinal = "a."
         , optionText = Textarea "COUNT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key310 <- insert $ Option
-        { optionStem = stem310
+    k310 <- insert $ Option
+        { optionStem = q310
         , optionOrdinal = "b."
         , optionText = Textarea "COMPUTE"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis310_2 <- insert $ Option
-        { optionStem = stem310
+    d310_2 <- insert $ Option
+        { optionStem = q310
         , optionOrdinal = "c."
         , optionText = Textarea "SUM"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis310_3 <- insert $ Option
-        { optionStem = stem310
+    d310_3 <- insert $ Option
+        { optionStem = q310
         , optionOrdinal = "d."
         , optionText = Textarea "MAX"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem311 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q311 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 11
-               , stemText = Textarea "Which data manipulation command is used to combines the records from one or more tables?"
+               , stemText = Textarea "Quelle commande de manipulation de données est utilisée pour combiner les enregistrements d'une ou plusieurs tables ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis311_1 <- insert $ Option
-        { optionStem = stem311
+    d311_1 <- insert $ Option
+        { optionStem = q311
         , optionOrdinal = "a."
         , optionText = Textarea "SELECT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis311_2 <- insert $ Option
-        { optionStem = stem311
+    d311_2 <- insert $ Option
+        { optionStem = q311
         , optionOrdinal = "b."
         , optionText = Textarea "PROJECT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key311 <- insert $ Option
-        { optionStem = stem311
+    k311 <- insert $ Option
+        { optionStem = q311
         , optionOrdinal = "c."
         , optionText = Textarea "JOIN"
         , optionKey = True
         , optionPoints = 1
         }
 
-    dis311_3 <- insert $ Option
-        { optionStem = stem311
+    d311_3 <- insert $ Option
+        { optionStem = q311
         , optionOrdinal = "d."
         , optionText = Textarea "PRODUCT"
         , optionKey = False
         , optionPoints = 0
         }
 
-    stem312 <- insert $ Stem
-               { stemTest = test301
-               , stemSkill = skill301
+    q312 <- insert $ Stem
+               { stemTest = t301
+               , stemSkill = s301
                , stemOrdinal = 12
-               , stemText = Textarea "Which operator is used to compare a value to a specified list of values?"
+               , stemText = Textarea "Quel opérateur est utilisé pour comparer une valeur à une liste de valeurs spécifiée ?"
                , stemType = SingleRespose
-               , stemInstruc = Textarea "Select one"
+               , stemInstruc = Textarea "Choisissez une"
                }
 
-    dis312_1 <- insert $ Option
-        { optionStem = stem312
+    d312_1 <- insert $ Option
+        { optionStem = q312
         , optionOrdinal = "a."
         , optionText = Textarea "ANY"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis312_2 <- insert $ Option
-        { optionStem = stem312
+    d312_2 <- insert $ Option
+        { optionStem = q312
         , optionOrdinal = "b."
         , optionText = Textarea "BETWEEN"
         , optionKey = False
         , optionPoints = 0
         }
 
-    dis312_3 <- insert $ Option
-        { optionStem = stem312
+    d312_3 <- insert $ Option
+        { optionStem = q312
         , optionOrdinal = "c."
         , optionText = Textarea "ALL"
         , optionKey = False
         , optionPoints = 0
         }
 
-    key312 <- insert $ Option
-        { optionStem = stem312
+    k312 <- insert $ Option
+        { optionStem = q312
         , optionOrdinal = "d."
         , optionText = Textarea "IN"
         , optionKey = True
         , optionPoints = 1
         }
 
-    r301 <- insert $ Exam
-        { examTest = test301
+    e301 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c001
         , examAttempt = 1
         , examStart = addUTCTime (-4024) now
         , examEnd = pure $ addUTCTime (-4001) now
         }
 
-    forM_ [ (stem301,dis301_2)
-          , (stem302,key302)
-          , (stem303,dis303_1)
-          , (stem304,key304)
-          , (stem305,dis305_3)
-          , (stem306,key306)
-          , (stem307,dis307_1)
-          , (stem308,key308)
-          , (stem309,dis309_2)
-          , (stem310,key310)
-          , (stem311,dis311_3)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r301
+    forM_ [ (q301,d301_2)
+          , (q302,k302)
+          , (q303,d303_1)
+          , (q304,k304)
+          , (q305,d305_3)
+          , (q306,k306)
+          , (q307,d307_1)
+          , (q308,k308)
+          , (q309,d309_2)
+          , (q310,k310)
+          , (q311,d311_3)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e301
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r302 <- insert $ Exam
-        { examTest = test301
+    e302 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c002
         , examAttempt = 1
         , examStart = addUTCTime (-3024) now
         , examEnd = pure $ addUTCTime (-3001) now
         }
 
-    forM_ [ (stem301,key301)
-          , (stem302,key302)
-          , (stem303,dis303_1)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,dis307_1)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r302
+    forM_ [ (q301,k301)
+          , (q302,k302)
+          , (q303,d303_1)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,d307_1)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e302
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r303 <- insert $ Exam
-        { examTest = test301
+    e303 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c003
         , examAttempt = 1
         , examStart = addUTCTime (-2024) now
         , examEnd = pure $ addUTCTime (-2001) now
         }
 
-    forM_ [ (stem301,key301)
-          , (stem302,key302)
-          , (stem303,key303)
-          , (stem304,dis304_2)
-          , (stem305,key305)
-          , (stem306,dis306_2)
-          , (stem307,dis307_1)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r303
+    forM_ [ (q301,k301)
+          , (q302,k302)
+          , (q303,k303)
+          , (q304,d304_2)
+          , (q305,k305)
+          , (q306,d306_2)
+          , (q307,d307_1)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e303
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r304 <- insert $ Exam
-        { examTest = test301
+    e304 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c004
         , examAttempt = 1
         , examStart = addUTCTime (-1026) now
         , examEnd = pure $ addUTCTime (-1002) now
         }
 
-    forM_ [ (stem301,dis301_1)
-          , (stem302,key302)
-          , (stem303,key303)
-          , (stem304,dis304_2)
-          , (stem305,key305)
-          , (stem306,dis306_2)
-          , (stem307,dis307_1)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,dis312_3)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r304
+    forM_ [ (q301,d301_1)
+          , (q302,k302)
+          , (q303,k303)
+          , (q304,d304_2)
+          , (q305,k305)
+          , (q306,d306_2)
+          , (q307,d307_1)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,d312_3)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e304
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r305 <- insert $ Exam
-        { examTest = test301
+    e305 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c005
         , examAttempt = 1
         , examStart = addUTCTime (-926) now
         , examEnd = pure $ addUTCTime (-900) now
         }
 
-    forM_ [ (stem301,key301)
-          , (stem302,key302)
-          , (stem303,key303)
-          , (stem304,dis304_2)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r305
+    forM_ [ (q301,k301)
+          , (q302,k302)
+          , (q303,k303)
+          , (q304,d304_2)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e305
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r306 <- insert $ Exam
-        { examTest = test301
+    e306 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c006
         , examAttempt = 1
         , examStart = addUTCTime (-823) now
         , examEnd = pure $ addUTCTime (-800) now
         }
 
-    forM_ [ (stem301,key301)
-          , (stem302,key302)
-          , (stem303,key303)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r306
+    forM_ [ (q301,k301)
+          , (q302,k302)
+          , (q303,k303)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e306
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r307 <- insert $ Exam
-        { examTest = test301
+    e307 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c007
         , examAttempt = 1
         , examStart = addUTCTime (-720) now
         , examEnd = pure $ addUTCTime (-700) now
         }
 
-    forM_ [ (stem301,dis301_3)
-          , (stem302,key302)
-          , (stem303,key303)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r307
+    forM_ [ (q301,d301_3)
+          , (q302,k302)
+          , (q303,k303)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e307
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r308 <- insert $ Exam
-        { examTest = test301
+    e308 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c008
         , examAttempt = 1
         , examStart = addUTCTime (-820) now
         , examEnd = pure $ addUTCTime (-803) now
         }
 
-    forM_ [ (stem301,dis301_3)
-          , (stem302,key302)
-          , (stem303,dis303_2)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,key312)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r308
+    forM_ [ (q301,d301_3)
+          , (q302,k302)
+          , (q303,d303_2)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,k312)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e308
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r309 <- insert $ Exam
-        { examTest = test301
+    e309 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c009
         , examAttempt = 1
         , examStart = addUTCTime (-920) now
         , examEnd = pure $ addUTCTime (-904) now
         }
 
-    forM_ [ (stem301,dis301_3)
-          , (stem302,key302)
-          , (stem303,dis303_2)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,key306)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,dis312_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r309
+    forM_ [ (q301,d301_3)
+          , (q302,k302)
+          , (q303,d303_2)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,k306)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,d312_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e309
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r310 <- insert $ Exam
-        { examTest = test301
+    e310 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c010
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1005) now
         }
 
-    forM_ [ (stem301,dis301_3)
-          , (stem302,key302)
-          , (stem303,dis303_2)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,dis306_2)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,key309)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,dis312_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r310
+    forM_ [ (q301,d301_3)
+          , (q302,k302)
+          , (q303,d303_2)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,d306_2)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,k309)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,d312_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e310
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
 
-    r311 <- insert $ Exam
-        { examTest = test301
+    e311 <- insert $ Exam
+        { examTest = t301
         , examCandidate = c011
         , examAttempt = 1
         , examStart = addUTCTime (-1112) now
         , examEnd = pure $ addUTCTime (-1100) now
         }
 
-    forM_ [ (stem301,key301)
-          , (stem302,key302)
-          , (stem303,dis303_2)
-          , (stem304,key304)
-          , (stem305,key305)
-          , (stem306,dis306_2)
-          , (stem307,key307)
-          , (stem308,key308)
-          , (stem309,dis309_1)
-          , (stem310,key310)
-          , (stem311,key311)
-          , (stem312,dis312_1)
-          ] $ \(s,o) -> insert_ $ Answer { answerExam = r311
+    forM_ [ (q301,k301)
+          , (q302,k302)
+          , (q303,d303_2)
+          , (q304,k304)
+          , (q305,k305)
+          , (q306,d306_2)
+          , (q307,k307)
+          , (q308,k308)
+          , (q309,d309_1)
+          , (q310,k310)
+          , (q311,k311)
+          , (q312,d312_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e311
                                          , answerStem = s
                                          , answerOption = o
                                          , answerTime = now
                                          }
-
-    return ()
