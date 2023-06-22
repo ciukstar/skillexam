@@ -19,6 +19,6 @@
         <dt.mdc-typography--body2.mdc-theme--text-secondary-on-light>_{MsgDescr}
         <dd>#{unTextarea descr}
       <dt.mdc-typography--body2.mdc-theme--text-secondary-on-light>_{MsgNumberOfExaminees}
-      <dd>#{printf "%.0f" attempts}
-      <dt.mdc-typography--body2.mdc-theme--text-secondary-on-light>_{MsgTotal}
-      <dd>#{printf "%.0f" total}
+      <dd>#{printf "%.0f" examinees}
+      <dt.mdc-typography--body2.mdc-theme--text-secondary-on-light>_{MsgTotalCandidates}
+      <dd>#{printf "%.0f" candidates}

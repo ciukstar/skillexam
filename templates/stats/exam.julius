@@ -56,13 +56,13 @@ echarts.init(document.getElementById('gauge')).setOption({
         fontSize: 40,
         offsetCenter: [0, '-20%'],
 	formatter: x => Number(x).toLocaleString(navigator.language,{
-	  style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1
+	  style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 1
 	})
       },
       data: [
         {
-          value: #{rawJS $ show $ attempts / total},
-	  name: '#{rawJS $ printf "%.0f" attempts} / #{rawJS $ printf "%.0f" total}'
+          value: #{rawJS $ show $ examinees / candidates},
+	  name: '#{rawJS $ printf "%.0f" examinees} / #{rawJS $ printf "%.0f" candidates}'
         }
       ]
     }

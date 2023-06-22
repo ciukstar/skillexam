@@ -1,3 +1,4 @@
+TotalCandidates: Total candidați
 NoTestsYet: Nu există încă teste
 NoCandidatesYet: Nu există încă candidați
 TimeRemaining: Timpul ramas

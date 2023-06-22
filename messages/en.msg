@@ -1,3 +1,4 @@
+TotalCandidates: Total candidates
 NoTestsYet: There are no tests yet
 NoCandidatesYet: There are no candidates yet
 TimeRemaining: Time remaining

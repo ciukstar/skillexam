@@ -11,6 +11,6 @@ Array.from(
   document.querySelectorAll('span.as-percentage')
 ).forEach(function (x) {
   x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
-    style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1
+    style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 1
   })
 });

@@ -1,3 +1,4 @@
+TotalCandidates: Всего кандидатов
 NoTestsYet: Тестов пока нет
 NoCandidatesYet: Кандидатов пока нет
 TimeRemaining: Оставшееся время

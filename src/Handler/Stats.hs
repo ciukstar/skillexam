@@ -39,9 +39,9 @@ import Foundation
       ( MsgTopSkilled, MsgSkills, MsgCancel, MsgSelect
       , MsgPhoto, MsgRating, MsgCandidate, MsgTopExams
       , MsgNumberOfExaminees, MsgExam, MsgPopularity, MsgDescr
-      , MsgTotal, MsgSuccessRate, MsgLogin, MsgLogout, MsgPassRate
+      , MsgSuccessRate, MsgLogin, MsgLogout, MsgPassRate
       , MsgExamSuccessRate, MsgPass, MsgFail, MsgPassedFailedExamNumber
-      , MsgNoExamsYet
+      , MsgNoExamsYet, MsgTotalCandidates
       )
     )
 
@@ -52,7 +52,7 @@ import Database.Esqueleto.Experimental
     ( SqlExpr, Value (Value, unValue), select, from, table, orderBy
     , (^.), (==.), (:&) ((:&)), (>=.)
     , asc, where_, in_, valList, innerJoin, on, groupBy, sum_
-    , coalesceDefault, val, desc, selectOne, countRows, having, selectQuery
+    , coalesceDefault, val, desc, selectOne, countRows, having, selectQuery, countDistinct
     )
 
 import Model
@@ -175,16 +175,13 @@ getTopExamR tid = do
         where_ $ x ^. TestId ==. val tid
         return x
 
-    attempts <- maybe 0 unValue <$> runDB ( selectOne $ do
-        _ :& e <- from $ table @Exam
-            `innerJoin` table @Test
-            `on` (\(r :& e) -> r ^. ExamTest ==. e ^. TestId)
-        where_ $ e ^. TestId ==. val tid
-        return (countRows :: SqlExpr (Value Double)) )
+    examinees <- maybe 0 unValue <$> runDB ( selectOne $ do
+        e <- from $ table @Exam
+        where_ $ e ^. ExamTest ==. val tid
+        return (countDistinct (e ^. ExamCandidate) :: SqlExpr (Value Double)) )
 
-    total <- maybe 1 unValue <$> runDB ( selectOne $ do
-        _ <- from $ table @Exam
-        return (countRows :: SqlExpr (Value Double)) )
+    candidates <- maybe 1 unValue <$> runDB ( selectOne $ do
+        from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)) )
 
     defaultLayout $ do
         setTitleI MsgExam
@@ -204,17 +201,16 @@ getTopExamsR = do
           Nothing -> return Nothing
           
     tests <- zip [1::Int .. ] <$> runDB ( select $ do
-        _ :& e <- from $ table @Exam
+        e :& t <- from $ table @Exam
             `innerJoin` table @Test
-            `on` (\(r :& e) -> r ^. ExamTest ==. e ^. TestId)
-        groupBy (e ^. TestId, e ^. TestName)
-        let cr = countRows :: SqlExpr (Value Double)
+            `on` (\(r :& t) -> r ^. ExamTest ==. t ^. TestId)
+        groupBy (t ^. TestId, t ^. TestName)
+        let cr = countDistinct (e ^. ExamCandidate) :: SqlExpr (Value Double)
         orderBy [desc cr]
-        return ((e ^. TestId, e ^. TestName), cr) )
+        return ((t ^. TestId, t ^. TestName), cr) )
 
     total <- maybe 1 unValue <$> runDB ( selectOne $ do
-        _ <- from $ table @Exam
-        return (countRows :: SqlExpr (Value Double)) )
+        from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)) )
         
     meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
     setUltDestCurrent
