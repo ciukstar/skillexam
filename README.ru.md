@@ -1,8 +1,10 @@
+
 [In english](https://github.com/ciukstar/skillexam/blob/master/README.md)  
-<!--
+
 [En français](https://github.com/ciukstar/skillexam/blob/master/README.fr.md)  
+
 [În română](https://github.com/ciukstar/skillexam/blob/master/README.ro.md)  
--->
+
 # SkillExam
 
 Приложение [«SkillExam»](https://skillexamru-jvkm574lia-de.a.run.app) предоставляет простой способ оценить навыки кандидата с помощью тестов с несколькими вариантами ответов.

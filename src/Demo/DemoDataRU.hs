@@ -3500,5 +3500,640 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
                                          , answerTime = now
                                          }
 
+    s501 <- insert $ Skill
+        { skillCode = "Базовая химическая инженерия"
+        , skillName = "Базовая химическая инженерия"
+        , skillDescr = Just "Навыки базовой химической инженерии"
+        }
 
-    -- return ()
+    t501 <- insert $ Test
+        { testCode = "Э502"
+        , testName = "Химическая инженерия"
+        , testDuration = 20
+        , testPass = 8
+        , testDescr = Just $ Textarea "Проверяет базовые навыки химической инженерии"
+        , testState = TestStatePublished
+        }
+
+    q501 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 1
+               , stemText = Textarea "Что является единицей измерения удельного веса?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    k501 <- insert $ Option
+        { optionStem = q501
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Безразмерный"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    d501_1 <- insert $ Option
+        { optionStem = q501
+        , optionOrdinal = "б)"
+        , optionText = Textarea "м/с<sup>3</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d501_2 <- insert $ Option
+        { optionStem = q501
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Н/м<sup>3</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    d501_3 <- insert $ Option
+        { optionStem = q501
+        , optionOrdinal = "г)"
+        , optionText = Textarea "кг/м<sup>3</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q502 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 2
+               , stemText = Textarea "Что из следующего имеет то же количество молей, что и 398 граммов CuSO<sub>4</sub>?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d502_1 <- insert $ Option
+        { optionStem = q502
+        , optionOrdinal = "а)"
+        , optionText = Textarea "35 грамм азота"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d502_2 <- insert $ Option
+        { optionStem = q502
+        , optionOrdinal = "б)"
+        , optionText = Textarea "58,5 г хлорида натрия"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d502_3 <- insert $ Option
+        { optionStem = q502
+        , optionOrdinal = "в)"
+        , optionText = Textarea "2 грамма водорода"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    k502 <- insert $ Option
+        { optionStem = q502
+        , optionOrdinal = "г)"
+        , optionText = Textarea "40 грамм кислорода"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    q503 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 3
+               , stemText = Textarea "Каков удельный вес 5 кг воды в 10 м<sup>3</sup> по отношению к 500 г/м<sup>3</sup>?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d503_1 <- insert $ Option
+        { optionStem = q503
+        , optionOrdinal = "а)"
+        , optionText = Textarea "2"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d503_2 <- insert $ Option
+        { optionStem = q503
+        , optionOrdinal = "б)"
+        , optionText = Textarea "5"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d503_3 <- insert $ Option
+        { optionStem = q503
+        , optionOrdinal = "в)"
+        , optionText = Textarea "0,5"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    k503 <- insert $ Option
+        { optionStem = q503
+        , optionOrdinal = "г)"
+        , optionText = Textarea "1"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    q504 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 4
+               , stemText = Textarea "Что является единицей мольной доли?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d504_1 <- insert $ Option
+        { optionStem = q504
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Н/м<sup>3</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d504_2 <- insert $ Option
+        { optionStem = q504
+        , optionOrdinal = "б)"
+        , optionText = Textarea "м<sup>-2</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d504_3 <- insert $ Option
+        { optionStem = q504
+        , optionOrdinal = "в)"
+        , optionText = Textarea "кг/м<sup>3</sup>"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    k504 <- insert $ Option
+        { optionStem = q504
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из упомянутых"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    q505 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 5
+               , stemText = Textarea "Какова масса 10 моль смеси состава 15% O<sub>2</sub>, 25% SO<sub>2</sub>, 30% COCl<sub>2</sub>, 25% SO<sub>3</sub> и 5% N<sub>2</sub>?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d505_1 <- insert $ Option
+        { optionStem = q505
+        , optionOrdinal = "а)"
+        , optionText = Textarea "564"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d505_2 <- insert $ Option
+        { optionStem = q505
+        , optionOrdinal = "б)"
+        , optionText = Textarea "475"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d505_3 <- insert $ Option
+        { optionStem = q505
+        , optionOrdinal = "в)"
+        , optionText = Textarea "867"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    k505 <- insert $ Option
+        { optionStem = q505
+        , optionOrdinal = "г)"
+        , optionText = Textarea "719"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    q506 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 6
+               , stemText = Textarea "Что такое 100<sup>o</sup>C в градусах Фаренгейта?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d506_1 <- insert $ Option
+        { optionStem = q506
+        , optionOrdinal = "а)"
+        , optionText = Textarea "100<sup>o</sup>F"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    k506 <- insert $ Option
+        { optionStem = q506
+        , optionOrdinal = "б)"
+        , optionText = Textarea "212<sup>o</sup>F"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    d506_2 <- insert $ Option
+        { optionStem = q506
+        , optionOrdinal = "в)"
+        , optionText = Textarea "460<sup>o</sup>F"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    d506_3 <- insert $ Option
+        { optionStem = q506
+        , optionOrdinal = "г)"
+        , optionText = Textarea "0<sup>o</sup>F"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q507 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 7
+               , stemText = Textarea "Каково давление 1900 Торр в баре?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d507_1 <- insert $ Option
+        { optionStem = q507
+        , optionOrdinal = "а)"
+        , optionText = Textarea "2,46"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d507_2 <- insert $ Option
+        { optionStem = q507
+        , optionOrdinal = "б)"
+        , optionText = Textarea "2,87"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    k507 <- insert $ Option
+        { optionStem = q507
+        , optionOrdinal = "в)"
+        , optionText = Textarea "2,40"
+        , optionKey = True
+        , optionPoints = 1
+        }
+        
+    d507_3 <- insert $ Option
+        { optionStem = q507
+        , optionOrdinal = "г)"
+        , optionText = Textarea "2,68"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q508 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 8
+               , stemText = Textarea "Что из перечисленного не является прибором для измерения давления?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    k508 <- insert $ Option
+        { optionStem = q508
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Гальванометр"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    d508_1 <- insert $ Option
+        { optionStem = q508
+        , optionOrdinal = "б)"
+        , optionText = Textarea "Манометр"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d508_2 <- insert $ Option
+        { optionStem = q508
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Барометр"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    d508_3 <- insert $ Option
+        { optionStem = q508
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из упомянутых"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q509 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 9
+               , stemText = Textarea "Что из следующего используется для измерения давления только жидкости?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d509_1 <- insert $ Option
+        { optionStem = q509
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Дифференциальный манометр"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d509_2 <- insert $ Option
+        { optionStem = q509
+        , optionOrdinal = "б)"
+        , optionText = Textarea "Манометр"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    k509 <- insert $ Option
+        { optionStem = q509
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Пьезометр"
+        , optionKey = True
+        , optionPoints = 1
+        }
+        
+    d509_3 <- insert $ Option
+        { optionStem = q509
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из упомянутых"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q510 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 10
+               , stemText = Textarea "Что из нижеперечисленного является функцией состояния?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    k510 <- insert $ Option
+        { optionStem = q510
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Энтропия"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    d510_1 <- insert $ Option
+        { optionStem = q510
+        , optionOrdinal = "б)"
+        , optionText = Textarea "Тепло"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d510_2 <- insert $ Option
+        { optionStem = q510
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Работа"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    d510_3 <- insert $ Option
+        { optionStem = q510
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из упомянутых"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    q511 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 11
+               , stemText = Textarea "Кипение воды в сосуде является примером чего из нижеперечисленного?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d511_1 <- insert $ Option
+        { optionStem = q511
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Semi-batch"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d511_2 <- insert $ Option
+        { optionStem = q511
+        , optionOrdinal = "б)"
+        , optionText = Textarea "Batch"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d511_3 <- insert $ Option
+        { optionStem = q511
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Batch и Semi-batch"
+        , optionKey = False
+        , optionPoints = 0
+        }
+        
+    k511 <- insert $ Option
+        { optionStem = q511
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из вышеперечисленных"
+        , optionKey = True
+        , optionPoints = 1
+        }
+
+    q512 <- insert $ Stem
+               { stemTest = t501
+               , stemSkill = s501
+               , stemOrdinal = 12
+               , stemText = Textarea "Что из следующего верно относительно лимитирующих реагентов?"
+               , stemType = SingleRespose
+               , stemInstruc = Textarea "Выберите один"
+               }
+
+    d512_1 <- insert $ Option
+        { optionStem = q512
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Потребляет частично"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    d512_2 <- insert $ Option
+        { optionStem = q512
+        , optionOrdinal = "б)"
+        , optionText = Textarea "Не вступает в реакцию"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    k512 <- insert $ Option
+        { optionStem = q512
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Полностью потребляет"
+        , optionKey = True
+        , optionPoints = 1
+        }
+        
+    d512_3 <- insert $ Option
+        { optionStem = q512
+        , optionOrdinal = "г)"
+        , optionText = Textarea "Ни один из упомянутых"
+        , optionKey = False
+        , optionPoints = 0
+        }
+
+    e502 <- insert $ Exam
+        { examTest = t501
+        , examCandidate = c002
+        , examAttempt = 1
+        , examStart = addUTCTime (-4015) now
+        , examEnd = pure $ addUTCTime (-4005) now
+        }
+
+    forM_ [ (q501,d501_1)
+          , (q502,d501_2)
+          , (q503,d503_3)
+          , (q504,k504)
+          , (q505,d505_3)
+          , (q506,k506)
+          , (q507,k507)
+          , (q508,k508)
+          , (q509,k509)
+          , (q510,d510_1)
+          , (q511,k511)
+          , (q512,k512)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e502
+                                         , answerStem = s
+                                         , answerOption = o
+                                         , answerTime = now
+                                         }
+
+    e503 <- insert $ Exam
+        { examTest = t501
+        , examCandidate = c004
+        , examAttempt = 1
+        , examStart = addUTCTime (-2015) now
+        , examEnd = pure $ addUTCTime (-2005) now
+        }
+
+    forM_ [ (q501,d501_1)
+          , (q502,d501_2)
+          , (q503,k503)
+          , (q504,k504)
+          , (q505,d505_3)
+          , (q506,k506)
+          , (q507,k507)
+          , (q508,d508_1)
+          , (q509,k509)
+          , (q510,k510)
+          , (q511,k511)
+          , (q512,k512)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e503
+                                         , answerStem = s
+                                         , answerOption = o
+                                         , answerTime = now
+                                         }
+
+    e504 <- insert $ Exam
+        { examTest = t501
+        , examCandidate = c006
+        , examAttempt = 1
+        , examStart = addUTCTime (-1013) now
+        , examEnd = pure $ addUTCTime (-1003) now
+        }
+
+    forM_ [ (q501,k501)
+          , (q502,k502)
+          , (q503,k503)
+          , (q504,k504)
+          , (q505,d505_3)
+          , (q506,k506)
+          , (q507,d507_3)
+          , (q508,k508)
+          , (q509,k509)
+          , (q510,k510)
+          , (q511,k511)
+          , (q512,k512)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e504
+                                         , answerStem = s
+                                         , answerOption = o
+                                         , answerTime = now
+                                         }
+
+    e505 <- insert $ Exam
+        { examTest = t501
+        , examCandidate = c008
+        , examAttempt = 1
+        , examStart = addUTCTime (-1020) now
+        , examEnd = pure $ addUTCTime (-1003) now
+        }
+
+    forM_ [ (q501,k501)
+          , (q502,k502)
+          , (q503,d503_2)
+          , (q504,k504)
+          , (q505,d505_3)
+          , (q506,k506)
+          , (q507,d507_3)
+          , (q508,k508)
+          , (q509,k509)
+          , (q510,d510_3)
+          , (q511,k511)
+          , (q512,d512_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e505
+                                         , answerStem = s
+                                         , answerOption = o
+                                         , answerTime = now
+                                         }
+
+    e506 <- insert $ Exam
+        { examTest = t501
+        , examCandidate = c010
+        , examAttempt = 1
+        , examStart = addUTCTime (-2021) now
+        , examEnd = pure $ addUTCTime (-2002) now
+        }
+
+    forM_ [ (q501,k501)
+          , (q502,k502)
+          , (q503,k503)
+          , (q504,k504)
+          , (q505,d505_3)
+          , (q506,k506)
+          , (q507,k507)
+          , (q508,k508)
+          , (q509,k509)
+          , (q510,d510_3)
+          , (q511,k511)
+          , (q512,d512_1)
+          ] $ \(s,o) -> insert_ $ Answer { answerExam = e506
+                                         , answerStem = s
+                                         , answerOption = o
+                                         , answerTime = now
+                                         }
+
