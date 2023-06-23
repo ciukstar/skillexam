@@ -46,7 +46,7 @@ import Database.Esqueleto.Experimental
     ( SqlExpr, selectOne, from, table, where_, val, like
     , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
     , select, orderBy, desc, on, innerJoin, distinct
-    , upper_, countRows, Value (Value), selectQuery, crossJoin
+    , upper_, countRows, Value (Value), selectQuery, crossJoin, countDistinct
     )
 
 import Model
@@ -55,7 +55,7 @@ import Model
     , EntityField
       ( CandidateId
       , TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
-      , ExamTest, AnswerOption, OptionId, AnswerExam, ExamId, OptionKey
+      , ExamTest, AnswerOption, OptionId, AnswerExam, ExamId, OptionKey, ExamCandidate
       )
     , userSessKey
     , Stem, Skill (Skill), TestState (TestStatePublished), Exam
@@ -100,10 +100,9 @@ getExamInfoR tid = do
         (n :& t) <- from $ selectQuery ( do
                         x <- from $ table @Exam
                         where_ $ x ^. ExamTest ==. val tid
-                        return (countRows :: SqlExpr (Value Double)) )
-               `crossJoin` selectQuery ( do
-                        _ <- from $ table @Exam
-                        return (countRows :: SqlExpr (Value Double)) )
+                        return (countDistinct (x ^. ExamCandidate) :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery
+                    (from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)))
         return (n,t) )
 
     (_,_,dRatio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do

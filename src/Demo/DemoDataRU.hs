@@ -3507,7 +3507,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         }
 
     t501 <- insert $ Test
-        { testCode = "E502"
+        { testCode = "Э502"
         , testName = "Химическая инженерия"
         , testDuration = 20
         , testPass = 8
@@ -3526,7 +3526,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k501 <- insert $ Option
         { optionStem = q501
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Безразмерный"
         , optionKey = True
         , optionPoints = 1
@@ -3534,24 +3534,24 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d501_1 <- insert $ Option
         { optionStem = q501
-        , optionOrdinal = "b)"
-        , optionText = Textarea "m/s<sup>3</sup>"
+        , optionOrdinal = "б)"
+        , optionText = Textarea "м/с<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
     d501_2 <- insert $ Option
         { optionStem = q501
-        , optionOrdinal = "c)"
-        , optionText = Textarea "N/m<sup>3</sup>"
+        , optionOrdinal = "в)"
+        , optionText = Textarea "Н/м<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
         
     d501_3 <- insert $ Option
         { optionStem = q501
-        , optionOrdinal = "d)"
-        , optionText = Textarea "Kg/m<sup>3</sup>"
+        , optionOrdinal = "г)"
+        , optionText = Textarea "кг/м<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
@@ -3567,7 +3567,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d502_1 <- insert $ Option
         { optionStem = q502
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "35 грамм азота"
         , optionKey = False
         , optionPoints = 0
@@ -3575,7 +3575,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d502_2 <- insert $ Option
         { optionStem = q502
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "58,5 г хлорида натрия"
         , optionKey = False
         , optionPoints = 0
@@ -3583,7 +3583,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d502_3 <- insert $ Option
         { optionStem = q502
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "2 грамма водорода"
         , optionKey = False
         , optionPoints = 0
@@ -3591,7 +3591,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     k502 <- insert $ Option
         { optionStem = q502
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "40 грамм кислорода"
         , optionKey = True
         , optionPoints = 1
@@ -3608,7 +3608,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d503_1 <- insert $ Option
         { optionStem = q503
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "2"
         , optionKey = False
         , optionPoints = 0
@@ -3616,7 +3616,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d503_2 <- insert $ Option
         { optionStem = q503
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "5"
         , optionKey = False
         , optionPoints = 0
@@ -3624,7 +3624,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d503_3 <- insert $ Option
         { optionStem = q503
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "0,5"
         , optionKey = False
         , optionPoints = 0
@@ -3632,7 +3632,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     k503 <- insert $ Option
         { optionStem = q503
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "1"
         , optionKey = True
         , optionPoints = 1
@@ -3649,31 +3649,31 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d504_1 <- insert $ Option
         { optionStem = q504
-        , optionOrdinal = "a)"
-        , optionText = Textarea "N/m<sup>3</sup>"
+        , optionOrdinal = "а)"
+        , optionText = Textarea "Н/м<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
     d504_2 <- insert $ Option
         { optionStem = q504
-        , optionOrdinal = "b)"
-        , optionText = Textarea "m<sup>-2</sup>"
+        , optionOrdinal = "б)"
+        , optionText = Textarea "м<sup>-2</sup>"
         , optionKey = False
         , optionPoints = 0
         }
 
     d504_3 <- insert $ Option
         { optionStem = q504
-        , optionOrdinal = "c)"
-        , optionText = Textarea "Kg/m<sup>3</sup>"
+        , optionOrdinal = "в)"
+        , optionText = Textarea "кг/м<sup>3</sup>"
         , optionKey = False
         , optionPoints = 0
         }
         
     k504 <- insert $ Option
         { optionStem = q504
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из упомянутых"
         , optionKey = True
         , optionPoints = 1
@@ -3690,7 +3690,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d505_1 <- insert $ Option
         { optionStem = q505
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "564"
         , optionKey = False
         , optionPoints = 0
@@ -3698,7 +3698,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d505_2 <- insert $ Option
         { optionStem = q505
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "475"
         , optionKey = False
         , optionPoints = 0
@@ -3706,7 +3706,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d505_3 <- insert $ Option
         { optionStem = q505
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "867"
         , optionKey = False
         , optionPoints = 0
@@ -3714,7 +3714,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     k505 <- insert $ Option
         { optionStem = q505
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "719"
         , optionKey = True
         , optionPoints = 1
@@ -3731,7 +3731,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d506_1 <- insert $ Option
         { optionStem = q506
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "100<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
@@ -3739,7 +3739,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k506 <- insert $ Option
         { optionStem = q506
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "212<sup>o</sup>F"
         , optionKey = True
         , optionPoints = 1
@@ -3747,7 +3747,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d506_2 <- insert $ Option
         { optionStem = q506
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "460<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
@@ -3755,7 +3755,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     d506_3 <- insert $ Option
         { optionStem = q506
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "0<sup>o</sup>F"
         , optionKey = False
         , optionPoints = 0
@@ -3772,7 +3772,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d507_1 <- insert $ Option
         { optionStem = q507
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "2,46"
         , optionKey = False
         , optionPoints = 0
@@ -3780,7 +3780,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d507_2 <- insert $ Option
         { optionStem = q507
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "2,87"
         , optionKey = False
         , optionPoints = 0
@@ -3788,15 +3788,15 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k507 <- insert $ Option
         { optionStem = q507
-        , optionOrdinal = "c)"
-        , optionText = Textarea "2.40"
+        , optionOrdinal = "в)"
+        , optionText = Textarea "2,40"
         , optionKey = True
         , optionPoints = 1
         }
         
     d507_3 <- insert $ Option
         { optionStem = q507
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "2,68"
         , optionKey = False
         , optionPoints = 0
@@ -3813,7 +3813,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k508 <- insert $ Option
         { optionStem = q508
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Гальванометр"
         , optionKey = True
         , optionPoints = 1
@@ -3821,7 +3821,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d508_1 <- insert $ Option
         { optionStem = q508
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "Манометр"
         , optionKey = False
         , optionPoints = 0
@@ -3829,7 +3829,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d508_2 <- insert $ Option
         { optionStem = q508
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "Барометр"
         , optionKey = False
         , optionPoints = 0
@@ -3837,7 +3837,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     d508_3 <- insert $ Option
         { optionStem = q508
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из упомянутых"
         , optionKey = False
         , optionPoints = 0
@@ -3854,7 +3854,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d509_1 <- insert $ Option
         { optionStem = q509
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Дифференциальный манометр"
         , optionKey = False
         , optionPoints = 0
@@ -3862,7 +3862,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d509_2 <- insert $ Option
         { optionStem = q509
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "Манометр"
         , optionKey = False
         , optionPoints = 0
@@ -3870,7 +3870,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k509 <- insert $ Option
         { optionStem = q509
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "Пьезометр"
         , optionKey = True
         , optionPoints = 1
@@ -3878,7 +3878,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     d509_3 <- insert $ Option
         { optionStem = q509
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из упомянутых"
         , optionKey = False
         , optionPoints = 0
@@ -3895,7 +3895,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k510 <- insert $ Option
         { optionStem = q510
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Энтропия"
         , optionKey = True
         , optionPoints = 1
@@ -3903,7 +3903,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d510_1 <- insert $ Option
         { optionStem = q510
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "Тепло"
         , optionKey = False
         , optionPoints = 0
@@ -3911,7 +3911,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d510_2 <- insert $ Option
         { optionStem = q510
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "Работа"
         , optionKey = False
         , optionPoints = 0
@@ -3919,7 +3919,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     d510_3 <- insert $ Option
         { optionStem = q510
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из упомянутых"
         , optionKey = False
         , optionPoints = 0
@@ -3936,7 +3936,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d511_1 <- insert $ Option
         { optionStem = q511
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Semi-batch"
         , optionKey = False
         , optionPoints = 0
@@ -3944,7 +3944,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d511_2 <- insert $ Option
         { optionStem = q511
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "Batch"
         , optionKey = False
         , optionPoints = 0
@@ -3952,7 +3952,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d511_3 <- insert $ Option
         { optionStem = q511
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "Batch и Semi-batch"
         , optionKey = False
         , optionPoints = 0
@@ -3960,7 +3960,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     k511 <- insert $ Option
         { optionStem = q511
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из вышеперечисленных"
         , optionKey = True
         , optionPoints = 1
@@ -3977,7 +3977,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d512_1 <- insert $ Option
         { optionStem = q512
-        , optionOrdinal = "a)"
+        , optionOrdinal = "а)"
         , optionText = Textarea "Потребляет частично"
         , optionKey = False
         , optionPoints = 0
@@ -3985,7 +3985,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     d512_2 <- insert $ Option
         { optionStem = q512
-        , optionOrdinal = "b)"
+        , optionOrdinal = "б)"
         , optionText = Textarea "Не вступает в реакцию"
         , optionKey = False
         , optionPoints = 0
@@ -3993,7 +3993,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
 
     k512 <- insert $ Option
         { optionStem = q512
-        , optionOrdinal = "c)"
+        , optionOrdinal = "в)"
         , optionText = Textarea "Полностью потребляет"
         , optionKey = True
         , optionPoints = 1
@@ -4001,7 +4001,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         
     d512_3 <- insert $ Option
         { optionStem = q512
-        , optionOrdinal = "d)"
+        , optionOrdinal = "г)"
         , optionText = Textarea "Ни один из упомянутых"
         , optionKey = False
         , optionPoints = 0
