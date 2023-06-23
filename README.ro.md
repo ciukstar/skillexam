@@ -7,32 +7,32 @@
 
 # SkillExam
 
-Aplicația [„SkillExam”]() oferă o modalitate simplă de a evalua abilitățile candidatului prin intermediul întrebărilor cu răspunsuri multiple.
+Aplicația [„SkillExam”](https://skillexamro-jvkm574lia-de.a.run.app) oferă o modalitate simplă de a evalua abilitățile candidatului prin intermediul întrebărilor cu răspunsuri multiple.
 
 ## Prezentare generală
 
-Abilitățile de evaluat trebuie definite în secțiunea [„Abilități”]() din grupul „Date”, accesibilă din meniul principal. Abilitățile pot fi considerate ca elemente pentru gruparea întrebărilor unui examen.
+Abilitățile de evaluat trebuie definite în secțiunea [„Abilități”](https://skillexamro-jvkm574lia-de.a.run.app/admin/skills) din grupul „Date”, accesibilă din meniul principal. Abilitățile pot fi considerate ca elemente pentru gruparea întrebărilor unui examen.
 
-Testele de evaluare abilităților unui candidat sunt definite în secțiunea [„Teste”]() din grupul „Date” din meniul principal. Un Test constă din întrebări.
+Testele de evaluare abilităților unui candidat sunt definite în secțiunea [„Teste”](https://skillexamro-jvkm574lia-de.a.run.app/admin/tests) din grupul „Date” din meniul principal. Un Test constă din întrebări.
 
-Candidații la examen sunt înregistrați în secțiunea [„Candidați”]() din grupul „Date” din meniul principal.
+Candidații la examen sunt înregistrați în secțiunea [„Candidați”](https://skillexamro-jvkm574lia-de.a.run.app/admin/candidates) din grupul „Date” din meniul principal.
 
-Un candidat poate alege un examen din lista [„Examene”](), se poate înscrie la examen și poate începe examenul.
+Un candidat poate alege un examen din lista [„Examene”](https://skillexamro-jvkm574lia-de.a.run.app), se poate înscrie la examen și poate începe examenul.
 
-La finalizarea examenului, este oferit un rezumat, iar candidatul poate vedea rezultatele examenului în secțiunea [„Examenele mele”]().
+La finalizarea examenului, este oferit un rezumat, iar candidatul poate vedea rezultatele examenului în secțiunea [„Examenele mele”](https://skillexamro-jvkm574lia-de.a.run.app/my-exams).
 
 ## Entităţile de bază
 
 ### Abilitate
 
-O Abilitate este înregistrată în secţiunea [„Abilități”]() cu un cod unic, un nume şi o descriere.
+O Abilitate este înregistrată în secţiunea [„Abilități”](https://skillexamro-jvkm574lia-de.a.run.app/admin/skills) cu un cod unic, un nume şi o descriere.
 Candidat
 
-Un Candidat este înregistrat în secțiunea [„Candidați”]() furnizând numele complet și, opțional, o fotografie și ziua de naștere.
+Un Candidat este înregistrat în secțiunea [„Candidați”](https://skillexamro-jvkm574lia-de.a.run.app/admin/candidates) furnizând numele complet și, opțional, o fotografie și ziua de naștere.
 
 ### Test
 
-Un Test este definit în secțiunea [„Teste”]() prin furnizarea unui cod unic, a unui nume, opțional o descriere, durata acestuia în minute, nota de trecere.
+Un Test este definit în secțiunea [„Teste”](https://skillexamro-jvkm574lia-de.a.run.app/admin/tests) prin furnizarea unui cod unic, a unui nume, opțional o descriere, durata acestuia în minute, nota de trecere.
 
 Se recomandă ca Testul să rămână în starea „Nepublicat” până când este gata de publicare prin definirea și configurarea tuturor subcomponentelor sale: Întrebări și Opțiuni de răspuns.
 
@@ -62,7 +62,7 @@ Dacă este necesar, textul opțiunii de răspuns poate fi formatat cu ```HTML/CS
 
 După ce toate Opțiunile de răspuns au fost furnizate pentru toate întrebările unui examen, examenul poate fi publicat.
 
-Un Candidat se poate înscrie acum la un examen alegând un test din lista [„Examene”]().
+Un Candidat se poate înscrie acum la un examen alegând un test din lista [„Examene”](https://skillexamro-jvkm574lia-de.a.run.app).
 
 ### Examen
 
@@ -82,4 +82,4 @@ Un răspuns reprezintă opțiunea pentru o anumită întrebare pe care un candid
 
 ## Demo
 
-[Click aici pentru a vedea demo]()
+[Click aici pentru a vedea demo](https://skillexamro-jvkm574lia-de.a.run.app)

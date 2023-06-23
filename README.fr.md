@@ -7,33 +7,33 @@
 
 # SkillExam
 
-L'application [«SkillExam»]() offre un moyen simple d'évaluer les compétences d'un candidat au moyen de questions à choix multiples.
+L'application [«SkillExam»](https://skillexamfr-jvkm574lia-de.a.run.app) offre un moyen simple d'évaluer les compétences d'un candidat au moyen de questions à choix multiples.
 
 ## Aperçu
 
-Les compétences à évaluer doivent être définies dans la rubrique [«Compétences»]() du groupe «Données», accessible depuis le menu principal. Les compétences peuvent être considérées comme des éléments permettant de regrouper les questions d'un test.
+Les compétences à évaluer doivent être définies dans la rubrique [«Compétences»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/skills) du groupe «Données», accessible depuis le menu principal. Les compétences peuvent être considérées comme des éléments permettant de regrouper les questions d'un test.
 
-Les tests permettant d'évaluer les compétences d'un candidat sont définis dans la section [«Tests»]() du groupe «Données» du menu principal. Un test est composé de questions.
+Les tests permettant d'évaluer les compétences d'un candidat sont définis dans la section [«Tests»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/tests) du groupe «Données» du menu principal. Un test est composé de questions.
 
-Les candidats à l'examen sont enregistrés dans la section [«Candidats»]() du groupe «Données» du menu principal.
+Les candidats à l'examen sont enregistrés dans la section [«Candidats»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/candidates) du groupe «Données» du menu principal.
 
-Un candidat peut choisir un examen dans la liste [«Examens»](), s'inscrire à l'examen et commencer l'examen.
+Un candidat peut choisir un examen dans la liste [«Examens»](https://skillexamfr-jvkm574lia-de.a.run.app), s'inscrire à l'examen et commencer l'examen.
 
-À la fin de l'examen, un résumé est fourni et le candidat peut voir les résultats de l'examen dans la section [«Mes examens»]().
+À la fin de l'examen, un résumé est fourni et le candidat peut voir les résultats de l'examen dans la section [«Mes examens»](https://skillexamfr-jvkm574lia-de.a.run.app/my-exams).
 
 ## Entités de base
 
 ### Compétence
 
-Une Compétence est enregistrée dans la section [«Compétences»]() avec un code unique, un nom et une description.
+Une Compétence est enregistrée dans la section [«Compétences»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/skills) avec un code unique, un nom et une description.
 
 ### Candidat
 
-Un Candidat est enregistré dans la rubrique [«Candidats»]() en fournissant son nom complet et éventuellement une photo et sa date de naissance.
+Un Candidat est enregistré dans la rubrique [«Candidats»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/candidates) en fournissant son nom complet et éventuellement une photo et sa date de naissance.
 
 ### Tests
 
-Un Test est défini dans la rubrique [«Tests»]() en fournissant un code unique, un nom, éventuellement une description, sa durée en minutes, sa note de passage.
+Un Test est défini dans la rubrique [«Tests»](https://skillexamfr-jvkm574lia-de.a.run.app/admin/tests) en fournissant un code unique, un nom, éventuellement une description, sa durée en minutes, sa note de passage.
 
 Il est recommandé qu'un test reste à l'état «Non publié» jusqu'à ce qu'il soit prêt à être publié en définissant et en configurant tous ses sous-composants: questions et options de réponse.
 
@@ -63,7 +63,7 @@ Si nécessaire, le texte de l'option de réponse peut être formaté avec ```HTM
 
 Une fois que toutes les options de réponse ont été fournies pour toutes les questions d'un test, le test peut être publié.
 
-Un candidat peut désormais s'inscrire à un examen en choisissant un examen dans la liste ["Examens"]().
+Un candidat peut désormais s'inscrire à un examen en choisissant un examen dans la liste ["Examens"](https://skillexamfr-jvkm574lia-de.a.run.app).
 
 ### Examen
 
@@ -83,4 +83,4 @@ Une réponse représente l'option pour une question donnée qu'un candidat consi
 
 ## Démo
 
-[Cliquez ici pour voir la démo]()
+[Cliquez ici pour voir la démo](https://skillexamfr-jvkm574lia-de.a.run.app)
