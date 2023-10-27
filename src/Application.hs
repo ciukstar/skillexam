@@ -21,12 +21,18 @@ module Application
     , db
     ) where
 
+import Import
+
 import System.Environment.Blank (getEnv)
 import Network.Wai.Middleware.Gzip (gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress))
 import Control.Monad.Logger                 (liftLoc, runLoggingT)
-import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
+import Database.Persist.Sql
+    ( ConnectionPoolConfig
+      ( ConnectionPoolConfig, connectionPoolConfigStripes
+      , connectionPoolConfigIdleTimeout, connectionPoolConfigSize)
+    )
+import Database.Persist.Sqlite              (createSqlitePoolWithConfig, runSqlPool,
                                              sqlDatabase, sqlPoolSize)
-import Import
 import Language.Haskell.TH.Syntax           (qLocation)
 import Network.HTTP.Client.TLS              (getGlobalManager)
 import Network.Wai (Middleware)
@@ -153,9 +159,12 @@ makeFoundation appSettings = do
         logFunc = messageLoggerSource tempFoundation appLogger
 
     -- Create the database connection pool
-    pool <- flip runLoggingT logFunc $ createSqlitePool
+    pool <- flip runLoggingT logFunc $ createSqlitePoolWithConfig
         (sqlDatabase $ appDatabaseConf appSettings)
-        (sqlPoolSize $ appDatabaseConf appSettings)
+        ConnectionPoolConfig { connectionPoolConfigStripes = 1
+                             , connectionPoolConfigIdleTimeout = 1200
+                             , connectionPoolConfigSize = sqlPoolSize $ appDatabaseConf appSettings
+                             }
 
     -- Perform database migration using our application's logging settings.
     flip runLoggingT logFunc $ flip runSqlPool pool $ do
