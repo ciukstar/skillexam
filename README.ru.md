@@ -81,6 +81,3 @@
 
 ![Диаграмма Сущность-связь](static/img/SkillExam-ERD.svg)
 
-## Демо
-
-[Нажмите здесь, чтобы увидеть демо](https://skillexamru-jvkm574lia-de.a.run.app)

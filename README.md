@@ -77,6 +77,3 @@ An Answer represents the answer Option for a given Question that a Candidate con
 
 ![Entity Relationship Diagram](static/img/SkillExam-ERD.svg)
 
-## Demo
-
-[Click here to see demo](https://skillexam-jvkm574lia-de.a.run.app)

@@ -81,6 +81,3 @@ Une réponse représente l'option pour une question donnée qu'un candidat consi
 
 ![Diagramme entité-relation](static/img/SkillExam-ERD.svg)
 
-## Démo
-
-[Cliquez ici pour voir la démo](https://skillexamfr-jvkm574lia-de.a.run.app)

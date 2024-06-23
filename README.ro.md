@@ -80,6 +80,3 @@ Un răspuns reprezintă opțiunea pentru o anumită întrebare pe care un candid
 
 ![Diagrama entitate-relatie](static/img/SkillExam-ERD.svg)
 
-## Demo
-
-[Click aici pentru a vedea demo](https://skillexamro-jvkm574lia-de.a.run.app)
