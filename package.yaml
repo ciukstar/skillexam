@@ -1,5 +1,12 @@
 name:    skillexam
 version: "0.1.0.0"
+synopsis:   Assess a candidate's skills
+category:   Application
+author:     Sergiu Starciuc <ciukstar@gmail.com>
+maintainer: Sergiu Starciuc <ciukstar@gmail.com>
+license:    MIT
+github:     ciukstar/skillexam
+homepage:   https://skillexam-i4rimw5qwq-de.a.run.app
 
 dependencies:
 

@@ -7,6 +7,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Foundation where
 

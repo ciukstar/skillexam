@@ -24,4 +24,8 @@ skillexam.cabal
 node_modules/
 package-lock.json
 package.json
+deploy-demo-en.sh
+deploy-demo-fr.sh
+deploy-demo-ro.sh
+deploy-demo-ru.sh
 skillexam

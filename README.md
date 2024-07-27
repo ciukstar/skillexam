@@ -7,30 +7,30 @@
 
 # SkillExam
 
-The application ["SkillExam"](https://skillexam-jvkm574lia-de.a.run.app) provides an easy way to assess a candidate's skills with Multiple-Choice Questions tests.
+The application ["SkillExam"](https://skillexam-i4rimw5qwq-de.a.run.app) provides an easy way to assess a candidate's skills with Multiple-Choice Questions tests.
 
 ## Overview
 
-The skills to be assessed must be defined in the ["Skills"](https://skillexam-jvkm574lia-de.a.run.app/admin/skills) section in the "Data" group, accessible from the main menu. Skills can be thought of as elements for grouping questions for an exam.
+The skills to be assessed must be defined in the ["Skills"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/skills) section in the "Data" group, accessible from the main menu. Skills can be thought of as elements for grouping questions for an exam.
 
-Tests to assess a candidate's skills are defined in the ["Tests"](https://skillexam-jvkm574lia-de.a.run.app/admin/tests) section in the group "Data" of the main menu. A Test consists of questions.
+Tests to assess a candidate's skills are defined in the ["Tests"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/tests) section in the group "Data" of the main menu. A Test consists of questions.
 
-Candidates for the exam are recorded in the ["Candidates"](https://skillexam-jvkm574lia-de.a.run.app/admin/candidates) section in the "Data" group of the main menu.
+Candidates for the exam are recorded in the ["Candidates"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/candidates) section in the "Data" group of the main menu.
 
-A candidate can choose an exam from the ["Exams"](https://skillexam-jvkm574lia-de.a.run.app) list, register for the exam and start the exam.
+A candidate can choose an exam from the ["Exams"](https://skillexam-i4rimw5qwq-de.a.run.app) list, register for the exam and start the exam.
 
-Upon completion of the exam, a summary is provided and the candidate can see the results of the exam in the ["My exams"](https://skillexam-jvkm574lia-de.a.run.app/my-exams) section.
+Upon completion of the exam, a summary is provided and the candidate can see the results of the exam in the ["My exams"](https://skillexam-i4rimw5qwq-de.a.run.app/my-exams) section.
 
 ## Basic Entities
 
 ### Skill
-A Skill is recorded in the ["Skills"](https://skillexam-jvkm574lia-de.a.run.app/admin/skills) section with a unique code, name and description.
+A Skill is recorded in the ["Skills"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/skills) section with a unique code, name and description.
 
 ### Candidate
-A Candidate is registered in the ["Candidates"](https://skillexam-jvkm574lia-de.a.run.app/admin/candidates) section by providing its full name and, optionally, a photo and birthday.
+A Candidate is registered in the ["Candidates"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/candidates) section by providing its full name and, optionally, a photo and birthday.
 
 ### Test
-A Test is defined in the ["Tests"](https://skillexam-jvkm574lia-de.a.run.app/admin/tests) section by providing a unique code, a name, optionally a description, its duration in minutes, and a passing score.
+A Test is defined in the ["Tests"](https://skillexam-i4rimw5qwq-de.a.run.app/admin/tests) section by providing a unique code, a name, optionally a description, its duration in minutes, and a passing score.
 
 It is recommended that a Test remain in the "Unpublished" state until it is ready for publication by defining and configuring all of its subcomponents: Questions and Answer Options.
 
@@ -59,7 +59,7 @@ If necessary, the text of the response Option can be formatted with ```HTML/CSS`
 
 After all Options have been provided for all Questions of a Test, the Test can be published.
 
-A Candidate can now enroll for an exam by choosing a test from the list ["Exams"](https://skillexam-jvkm574lia-de.a.run.app).
+A Candidate can now enroll for an exam by choosing a test from the list ["Exams"](https://skillexam-i4rimw5qwq-de.a.run.app).
 
 ### Exam
 
@@ -76,4 +76,7 @@ An Answer represents the answer Option for a given Question that a Candidate con
 ## Entity Relationship Diagram
 
 ![Entity Relationship Diagram](static/img/SkillExam-ERD.svg)
+ 
+## Demo
 
+[Click here to see demo](https://skillexam-i4rimw5qwq-de.a.run.app)
