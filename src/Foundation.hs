@@ -8,123 +8,58 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Foundation where
 
-import Import.NoFoundation
-  ( ($)
-  , Eq((==))
-  , Monad(return)
-  , Bool(True)
-  , IO
-  , Either
-  , widgetFile
-  , AppSettings
-    ( appShouldLogAll
-    , appAuthDummyLogin
-    , appRoot
-    , appAnalytics
-    , appStaticDir
-    )
-  , Text
-  , Route(StaticRoute, LoginR)
-  , Static
-  , User(User, userPassword, userIdent)
-  , UserId
-  , Unique(UniqueUser)
-  , SqlBackend
-  , (<$>)
-  , flip
-  , (||)
-  , (.)
-  , (++)
-  , defaultClientSessionBackend
-  , defaultYesodMiddleware
-  , getApprootText
-  , guessApproot
-  , widgetToPageContent
-  , mkYesodData
-  , addScript
-  , addStylesheet
-  , parseRoutesFile
-  , defaultFormMessage
-  , defaultGetDBRunner
-  , base64md5
-  , LByteString
-  , Html
-  , HasHttpManager(..)
-  , Manager
-  , LogLevel(LevelError, LevelWarn)
-  , Entity(Entity)
-  , PersistStoreWrite(insert)
-  , PersistUniqueRead(getBy)
-  , SqlPersistT
-  , Lang
-  , RenderMessage(..)
-  , MonadHandler (liftHandler, HandlerSite)
-  , Yesod (approot, makeLogger, shouldLogIO, addStaticContent, isAuthorized
-          , authRoute, defaultLayout, yesodMiddleware, makeSessionBackend
-          )
-  , ToTypedContent
-  , Approot(ApprootRequest)
-  , AuthResult(Authorized, Unauthorized)
-  , PageContent(pageBody, pageTitle, pageHead)
-  , SessionBackend
-  , RenderRoute(Route, renderRoute)
-  , FormMessage
-  , DBRunner
-  , YesodPersist(..)
-  , YesodPersistRunner(..)
-  , getAuth
-  , AuthPlugin
-  , AuthenticationResult(Authenticated)
-  , Creds(credsIdent)
-  , YesodAuth
-    ( authPlugins
-    , authenticate
-    , redirectToReferer
-    , logoutDest
-    , loginDest
-    , AuthId, maybeAuthId
-    )
-  , YesodAuthPersist
-  , Auth
-  , getCurrentRoute
-  )
-
-import Settings.StaticFiles
-    ( material_components_web_min_css
-    , material_components_web_min_js
-    , js_cookie_3_0_5_min_js
-    , css_outlined_css
-    )
-
-import Data.Maybe (Maybe (..), fromMaybe)
-import Database.Persist.Sql (ConnectionPool, runSqlPool)
-import Text.Hamlet          (hamletFile)
-import Text.Jasmine         (minifym)
+import Control.Monad ((>>))
 import Control.Monad.Logger (LogSource)
 
+import Data.Bool (Bool (False))
+import qualified Data.CaseInsensitive as CI
+import Data.List (length, zip)
+import qualified Data.List.Safe as LS (head)
+import Data.Maybe (Maybe (..), fromMaybe, maybe)
+import Data.Monoid ((<>))
+import Data.Kind (Type)
+import Data.Ord ((<))
+import qualified Data.Text.Encoding as TE
+
+import Database.Esqueleto.Experimental
+    ( selectOne, from, table, where_, val, select, not_, unionAll_
+    , (^.), (==.)
+    )
+import Database.Persist.Sql (ConnectionPool, runSqlPool)
+
+import Import.NoFoundation
+
+import Text.Email.Validate (emailAddress, localPart)
+import Text.Hamlet          (hamletFile)
+import Text.Jasmine         (minifym)
+import Text.Shakespeare.I18N (mkMessage)
+
+import Yesod.Auth (AuthHandler)
+import Yesod.Auth.Message (AuthMessage(InvalidLogin, LoginTitle))
+import Yesod.Auth.HashDB (authHashDBWithForm)
 import Yesod.Core.Handler
     ( getYesod, defaultCsrfCookieName, defaultCsrfHeaderName
-    , withUrlRenderer, languages
+    , withUrlRenderer, languages, HandlerFor, newIdent, getMessages
+    , setUltDestCurrent, selectRep, provideRep, getMessageRender, getRouteToParent, getUrlRender, lookupSession
     )
--- Used only when in "auth-dummy-login" setting is enabled.
-import Yesod.Auth.Dummy ( authDummy )
-
-import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
-import Yesod.Default.Util   (addStaticContentExternal)
-import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
-import qualified Data.CaseInsensitive as CI
-import qualified Data.Text.Encoding as TE
+import Yesod.Core
+    ( MonadUnliftIO, unauthorizedI, object, (.=)
+    , ErrorResponse (NotFound, PermissionDenied, InvalidArgs)
+    , TypedContent, Yesod (errorHandler), defaultErrorHandler, setTitleI, WidgetFor
+    )
+import Yesod.Core.Types     (Logger)
+import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
-import Text.Shakespeare.I18N (mkMessage)
-import qualified Data.List.Safe as LS (head)
-
-import Model (Skills, ExamId, CandidateId, OptionId, SkillId, TestId, StemId)
+import Yesod.Form.Types (MForm, FormResult)
+import qualified Data.Text as T
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -155,6 +90,22 @@ mkMessage "App" "messages" "en"
 -- type Widget = WidgetFor App ()
 mkYesodData "App" $(parseRoutesFile "config/routes.yesodroutes")
 
+-- | A convenient synonym for creating forms.
+type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
+
+-- | A convenient synonym for database access functions.
+type DB a = forall (m :: Type -> Type).
+    (MonadUnliftIO m) => ReaderT SqlBackend m a
+
+widgetSnackbar :: [(Text,Html)] -> Widget
+widgetSnackbar msgs = $(widgetFile "widgets/snackbar")
+
+
+widgetMainMenu :: Text -> Text -> Widget
+widgetMainMenu idOverlay idDialogMainMenu = do
+    curr <- getCurrentRoute
+    idButtonMainMenuClose <- newIdent
+    $(widgetFile "widgets/menu")
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
@@ -274,9 +225,15 @@ instance Yesod App where
     isAuthorized (StatsR ExamSuccessRatesR) _ = return Authorized
     isAuthorized (StatsR (TestSuccessRateR _)) _ = return Authorized
     isAuthorized (RemainingTimeR _) _ = return Authorized
+
+    isAuthorized (AdminR (UserResetPasswordR _)) _ = isAdmin
+    isAuthorized (AdminR (UserDeleR _)) _ = isAdmin
+    isAuthorized (AdminR (UserEditR _)) _ = isAdmin
+    isAuthorized (AdminR UserNewR) _ = isAdmin
+    isAuthorized (AdminR (UserR _)) _ = isAdmin
+    isAuthorized (AdminR UsersR) _ = setUltDestCurrent >> isAdmin
+    isAuthorized (AdminR (UserPhotoR _)) _ = return Authorized
     
-
-
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
     -- expiration dates to be set far in the future without worry of
@@ -313,6 +270,47 @@ instance Yesod App where
     makeLogger :: App -> IO Logger
     makeLogger = return . appLogger
 
+    errorHandler :: ErrorResponse -> HandlerFor App TypedContent
+    errorHandler NotFound = selectRep $ do
+        provideRep $ defaultLayout $ do
+            setTitleI MsgPageNotFound
+            idHeader <- newIdent
+            idHeaderStart <- newIdent
+            $(widgetFile "error/not-found")
+        provideRep $ return $ object ["message" .= ("Page not found." :: Text)]
+        provideRep $ return ("Page not found." :: Text)
+
+    errorHandler (PermissionDenied msg) = selectRep $ do
+        provideRep $ defaultLayout $ do
+            setTitleI MsgPermissionDenied
+            $(widgetFile "error/permission-denied")
+        provideRep $ do
+            msgr <- getMessageRender
+            return $ object ["message" .= (msgr MsgPermissionDenied <> "Permission Denied. " <> msg)]
+        provideRep $ return $ "Permission Denied. " <> msg
+
+    errorHandler (InvalidArgs msgs) = selectRep $ do
+        provideRep $ defaultLayout $ do
+            setTitleI MsgInvalidArguments
+            idHeader <- newIdent
+            $(widgetFile "error/invalid-args")
+        provideRep $ return $ object ["message" .= msgs]
+        provideRep $ return $ T.intercalate ", " msgs
+
+    errorHandler x = defaultErrorHandler x
+
+
+
+isAdmin :: Handler AuthResult
+isAdmin = do
+    user <- maybeAuth
+    case user of
+        Just (Entity _ (User _ _ _ True _ _ _ _)) -> return Authorized
+        Just (Entity _ (User _ _ _ _ True _ _ _)) -> return Authorized
+        Just (Entity _ (User _ _ _ _ False _ _ _)) -> unauthorizedI MsgAccessDeniedAdminsOnly
+        Nothing -> unauthorizedI MsgSignInToAccessPlease
+        
+
 -- How to run database actions.
 instance YesodPersist App where
     type YesodPersistBackend App = SqlBackend
@@ -321,9 +319,11 @@ instance YesodPersist App where
         master <- getYesod
         runSqlPool action $ appConnPool master
 
+
 instance YesodPersistRunner App where
     getDBRunner :: Handler (DBRunner App, Handler ())
     getDBRunner = defaultGetDBRunner appConnPool
+
 
 instance YesodAuth App where
     type AuthId App = UserId
@@ -336,24 +336,63 @@ instance YesodAuth App where
     logoutDest _ = HomeR
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer :: App -> Bool
-    redirectToReferer _ = True
+    redirectToReferer _ = True 
 
-    authenticate :: (MonadHandler m, HandlerSite m ~ App)
-                 => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Authenticated uid
-            Nothing -> Authenticated <$> insert User
-                { userIdent = credsIdent creds
-                , userPassword = Nothing
-                }
+    authLayout :: (MonadHandler m, HandlerSite m ~ App) => WidgetFor App () -> m Html
+    authLayout w = liftHandler $ do
+        defaultLayout $ do
+            setTitleI MsgSignIn
+            $(widgetFile "auth/layout")
+
+    loginHandler :: AuthHandler App Html
+    loginHandler = do
+        app <- getYesod
+        tp <- getRouteToParent
+        rndr <- getUrlRender
+        backlink <- fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
+        let indexes = [1..]
+        authLayout $ do
+            setTitleI LoginTitle
+            idButtonBack <- newIdent
+            $(widgetFile "auth/login")
+
+    authenticate :: (MonadHandler m, HandlerSite m ~ App) => Creds App -> m (AuthenticationResult App)
+    authenticate (Creds _ ident _) = liftHandler $ do
+        user <- runDB $ selectOne $ do
+            x <- from $ table @User
+            where_ $ x ^. UserEmail ==. val ident
+            return x
+        case user of
+          Just (Entity uid _) -> return $ Authenticated uid
+          Nothing -> return $ UserError InvalidLogin
 
     -- You can add other plugins like Google Email, email or OAuth here
     authPlugins :: App -> [AuthPlugin App]
-    authPlugins app = [authOpenId Claimed []] ++ extraAuthPlugins
-        -- Enable authDummy login if enabled.
-        where extraAuthPlugins = [authDummy | appAuthDummyLogin $ appSettings app]
+    authPlugins _ = [ authHashDBWithForm formLogin (Just . UniqueUser)
+                    ]
+
+
+formLogin :: Route App -> Widget
+formLogin route = do
+
+    users <- liftHandler $ runDB $ select $ from $
+        ( do
+              x <- from $ table @User
+              where_ $ not_ $ x ^. UserSuper
+              return x
+        )
+        `unionAll_`
+        ( do
+              x <- from $ table @User
+              where_ $ x ^. UserSuper
+              return x
+        )
+
+    msgs <- getMessages
+    idInputUsername <- newIdent
+    idInputPassword <- newIdent
+    $(widgetFile "auth/form") 
+                      
 
 -- | Access function to determine if a user is logged in.
 isAuthenticated :: Handler AuthResult

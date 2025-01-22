@@ -1,3 +1,37 @@
+
+InvalidUrlOrRemoved: Неверный URL-адрес или ресурс удален
+Or: или
+BackToHomepage: Вернуться на домашнюю страницу
+InvalidArguments: Неверные аргументы
+PermissionDenied: Доступ запрещен
+PageNotFound: Страница не найдена
+ConfirmPlease: Пожалуйста подтвердите
+UploadPhoto: Загрузить фото
+PasswordChanged: Пароль изменен
+PasswordDoesNotMatch: Пароль не совпадает
+RepeatPassword: Повторите пароль
+SuperuserCannotBeDeleted: Суперпользователь не может быть удален
+PasswordChange: Смена пароля
+ChangePassword: Изменить пароль
+RecordAdded: Запись добавлена
+AlreadyExists: Уже существует
+Attribution: Атрибуция
+No: Нет
+Yes: Да
+Dele: Удалить
+Email: Электронная почта
+Users: Пользователи
+TakePhoto: Сфотографироваться
+DemoUserAccounts: Демо-аккаунты
+User: Пользователь
+Superuser: Суперпользователь
+Administrator: Администратор
+Username: Логин
+Password: Пароль
+AccessDeniedAdminsOnly: Доступ к этой странице имеют только администраторы. Пожалуйста, войдите под учетной записью администратора
+SignInToAccessPlease: Пожалуйста, войдите в систему, чтобы получить доступ к этой странице
+Home: Главная
+Logo: Логотип
 TotalCandidates: Всего кандидатов
 NoTestsYet: Тестов пока нет
 NoCandidatesYet: Кандидатов пока нет

@@ -1,0 +1,20 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AuthR LoginR} aria-label=_{MsgBack} rel=prev>
+      <i>arrow_back
+    
+    <h6.title.max>
+      _{MsgPasswordRecovery}
+      
+      
+<main.responsive.padding>
+
+  <p>_{PasswordResetPrompt}
+  
+  <form method=post action=@{parent forgotPasswordR} enctype=#{et} ##{idFormForgotPassword}>
+    ^{fw}
+    <button.responsive type=submit>
+      _{SendPasswordResetEmail}
+
+^{widgetSnackbar msgs}

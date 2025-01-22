@@ -1,0 +1,39 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{HomeR}>
+      <i>arrow_back
+      
+    <h1.title.max>
+      _{MsgUsers}
+
+<main.responsive.no-padding>
+  $forall Entity uid (User email _ uname super admin _ _ _) <- users
+    <a.row.padding.wave href=@{AdminR $ UserR uid}>
+
+      <img.circle src=@{AdminR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
+        
+      <div.content.max>
+        <h6.headline.large-text>
+          $maybe name <- uname
+            #{name}
+          $nothing
+            #{email}
+   
+        <div.supporting-text.small-text>
+          $if super
+            <span.upper>_{MsgSuperuser}
+          $elseif admin
+            <span.upper>_{MsgAdministrator}
+          $else
+            <span.lower>_{MsgUser}
+        
+      <i>arrow_forward_ios
+
+    <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR UserNewR}
+    style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+
+  ^{widgetSnackbar msgs}

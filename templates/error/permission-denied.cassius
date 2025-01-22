@@ -1,0 +1,17 @@
+
+header
+    height: var(--top-app-bar-height,64px)
+    display: flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0 0.5rem
+
+main
+    margin: 1rem 2rem
+    display: flex
+    flex-direction: column
+    align-items: center
+    gap: 1rem
+  
+    h2
+        text-align: center

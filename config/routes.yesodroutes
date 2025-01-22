@@ -3,24 +3,43 @@
 /my-exam/#ExamId  MyExamR        GET
 /my-exams         MyExamsR       GET
 
-/remaining-time/#ExamId		  RemainingTimeR GET
-/summary/#TestId/#ExamId          SummaryR   	 GET
-/complete/#TestId/#ExamId/#StemId CompleteR  	 POST
-/terminate/#TestId/#ExamId        TerminateR 	 POST
-/steps/#TestId/#ExamId/#StemId    StepR      	 GET POST
+/remaining-time/#ExamId           RemainingTimeR GET
+/summary/#TestId/#ExamId          SummaryR       GET
+/complete/#TestId/#ExamId/#StemId CompleteR      POST
+/terminate/#TestId/#ExamId        TerminateR     POST
+/steps/#TestId/#ExamId/#StemId    StepR          GET POST
 
 /form/exam                                  ExamFormR GET POST
 /exam/candidates/#CandidateId/tests/#TestId ExamTestR GET
-/exam      	  			    ExamR     POST
+/exam                                       ExamR     POST
+
+
+/docs/SkillExam-ERD.svg DocsErdR GET
+/docs DocsR GET
+
+/exams/#TestId/skills    ExamSkillsR    GET
+/exams/#TestId           ExamInfoR      GET 
+/search                  SearchExamR    GET
+/                        HomeR          GET
+
+/sign-out SignOutR POST
+/sign-in  SignInR  GET POST
+
+/static StaticR Static appStatic
+/auth   AuthR   Auth   getAuth
+
+/photo-placeholder.svg PhotoPlaceholderR GET
+/favicon.ico FaviconR GET
+/robots.txt RobotsR GET
 
 
 /stats StatsR:
-  /success-rates/#TestId	    TestSuccessRateR  GET
-  /success-rates		    ExamSuccessRatesR GET
+  /success-rates/#TestId            TestSuccessRateR  GET
+  /success-rates                    ExamSuccessRatesR GET
   /top-exams/#TestId                TopExamR          GET
   /top-exams                        TopExamsR         GET
   /top-skilled/#CandidateId/+Skills SkilledR          GET
-  /top-skilled 			    TopSkilledR       GET
+  /top-skilled                      TopSkilledR       GET
 
 
 /admin AdminR:
@@ -30,7 +49,7 @@
     /delete/candidates                   CandidatesDeleteR    POST
     /candidates/#CandidateId/exams       CandidateExamsR      GET
     /candidates/#CandidateId/photo       CandidatePhotoR      GET
-    /photo/candidates			 CandidatePhotosR     GET
+    /photo/candidates                    CandidatePhotosR     GET
     /candidates/#CandidateId/skills      CandidateSkillsR     GET
     /candidates/#CandidateId             CandidateR           GET POST
     /candidates                          CandidatesR          GET POST
@@ -63,20 +82,12 @@
     /delete/skills        SkillsDeleteR    POST
     /skills               SkillsR          GET POST
 
-/docs/SkillExam-ERD.svg DocsErdR GET
-/docs DocsR GET
 
-/exams/#TestId/skills    ExamSkillsR    GET
-/exams/#TestId           ExamInfoR      GET 
-/search                  SearchExamR    GET
-/                        HomeR          GET
+    /users/#UserId/pwd  UserResetPasswordR GET POST
+    /users/#UserId/dele UserDeleR          POST
+    /users/#UserId/edit UserEditR          GET
+    /users/new/form     UserNewR           GET
+    /users/#UserId      UserR              GET POST
+    /users              UsersR             GET POST
 
-/sign-out SignOutR POST
-/sign-in  SignInR  GET POST
-
-/static StaticR Static appStatic
-/auth   AuthR   Auth   getAuth
-
-/photo-placeholder.svg PhotoPlaceholderR GET
-/favicon.ico FaviconR GET
-/robots.txt RobotsR GET
+    /users/#UserId/photo UserPhotoR GET

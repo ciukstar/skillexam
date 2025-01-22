@@ -109,7 +109,7 @@ import Model
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
       , SkillName, OptionPoints, TestPass, StemTest
       )
-    , CandidateId, Photo (Photo), ultDestKey
+    , CandidateId, Photo (Photo), keyUtlDest
     , Exam (Exam)
     , Test (Test), Stem, userSessKey, Answer, Option, Skill (Skill)
     )
@@ -154,7 +154,7 @@ postCandidatesDeleteR = do
 
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> do
         l <- lookupPostParam "location"
-        ult <- lookupSession ultDestKey
+        ult <- lookupSession keyUtlDest
         return $ l <|> ult
     addMessageI "--mdc-theme-info" MsgRecordDeleted
     redirect location
@@ -167,7 +167,7 @@ postCandidateR cid = do
         where_ $ x ^. CandidateId ==. val cid
         return x
     ((fr,widget),enctype) <- runFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
     case fr of
       FormSuccess (c,photo) -> do
           runDB $ replace cid c
@@ -193,7 +193,7 @@ getCandidateEditFormR cid = do
         where_ $ x ^. CandidateId ==. val cid
         return x
     (widget,enctype) <- generateFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgCandidate
@@ -341,7 +341,7 @@ postCandidatesR = do
           addMessageI "--mdc-theme-info" MsgNewRecordAdded
           redirectUltDest $ AdminR CandidatesR
       _ -> defaultLayout $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession ultDestKey
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
           setTitleI MsgCandidate
           $(widgetFile "candidates/create")
 
@@ -376,7 +376,7 @@ getCandidatesR = do
 getCandidateCreateFormR :: HandlerFor App Html
 getCandidateCreateFormR = do
     (widget,enctype) <- generateFormPost $ formCandidate Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgCandidate
         $(widgetFile "candidates/create")

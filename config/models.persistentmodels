@@ -62,8 +62,21 @@ Skill
   UniqueSkillCode code
 
 
+UserPhoto
+    user UserId OnDeleteCascade
+    mime Text
+    photo ByteString
+    attribution Html Maybe
+    UniqueUserPhoto user
+
 User
-  ident Text
-  password Text Maybe
-  UniqueUser ident
-  deriving Typeable
+    email Text
+    password Text Maybe
+    name Text Maybe
+    super Bool
+    admin Bool
+    authType AuthenticationType
+    verkey Text Maybe
+    verified Bool
+    UniqueUser email
+    deriving Typeable

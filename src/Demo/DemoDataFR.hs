@@ -3,18 +3,23 @@
 
 module Demo.DemoDataFR (populateFR) where
 
-import qualified Data.ByteString.Base64 as B64 (decode)
-import Text.Shakespeare.Text (st)
+import ClassyPrelude.Yesod (ReaderT, forM_, Textarea (Textarea))
 import Control.Monad.IO.Class (MonadIO (liftIO))
+
+import qualified Data.ByteString as BS (readFile)
+
 import Data.Time.Calendar (addGregorianYearsClip)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay), addUTCTime)
-import Database.Persist.Sql (SqlBackend)
+
 import Database.Persist ( PersistStoreWrite(insert, insert_) )
-import ClassyPrelude.Yesod (ReaderT, forM_, Textarea (Textarea))
+import Database.Persist.Sql (SqlBackend)
 
 import Model
     ( Skill(Skill, skillCode, skillName, skillDescr)
-    , Candidate (Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName, candidateBday)
+    , Candidate
+      ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
+      , candidateBday
+      )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , Test (Test, testCode, testName, testDuration, testPass, testDescr, testState)
     , TestState (TestStatePublished)
@@ -23,16 +28,102 @@ import Model
     , Option (Option, optionStem, optionOrdinal, optionText, optionKey, optionPoints)
     , Answer (Answer, answerExam, answerStem, answerOption, answerTime)
     , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd)
+    , User
+      ( User, userEmail, userPassword, userName, userAdmin, userAuthType, userVerkey
+      , userVerified, userSuper
+      )
+    , UserPhoto
+      ( UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution)
+    , AuthenticationType (UserAuthTypePassword)
     )
+    
+import Text.Hamlet (shamlet)
+import Text.Shakespeare.Text (st)
 
-import Demo.DemoPhotos
-    ( man01, man02, man03, man04, man05, man06
-    , woman01, woman02, woman03, woman04, woman05
-    )
+import Yesod.Auth.Email (saltPass)
+
 
 populateFR :: MonadIO m => ReaderT SqlBackend m ()
 populateFR = do
     (now,today) <- liftIO $ getCurrentTime >>= \x -> return (x,utctDay x)
+
+    let freepik = [shamlet|
+                          Designed by #
+                          <a href="https://www.freepik.com/" target=_blank>
+                            Freepik
+                          |]
+
+    pass1 <- liftIO $ saltPass "bernardj"
+    uid1 <- insert $ User { userEmail = "bernardj@xmailx.fr"
+                          , userPassword = Just pass1
+                          , userName = Just "Bernard Jade"
+                          , userSuper = False
+                          , userAdmin = False
+                          , userAuthType = UserAuthTypePassword
+                          , userVerkey = Nothing
+                          , userVerified = False
+                          }
+
+    liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
+      insert_ UserPhoto { userPhotoUser = uid1
+                        , userPhotoMime = "image/avif"
+                        , userPhotoPhoto = bs
+                        , userPhotoAttribution = Just freepik
+                        }
+
+    pass2 <- liftIO $ saltPass "thomasgr"
+    uid2 <- insert $ User { userEmail = "thomasgr@xmailx.fr"
+                          , userPassword = Just pass2
+                          , userName = Just "Thomas Gabriel Raphaël"
+                          , userSuper = False
+                          , userAdmin = False
+                          , userAuthType = UserAuthTypePassword
+                          , userVerkey = Nothing
+                          , userVerified = False
+                          }
+
+    liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
+      insert_ UserPhoto { userPhotoUser = uid2
+                        , userPhotoMime = "image/avif"
+                        , userPhotoPhoto = bs
+                        , userPhotoAttribution = Just freepik
+                        }
+
+    pass3 <- liftIO $ saltPass "richardal"
+    uid3 <- insert $ User { userEmail = "richardal@xmailx.fr"
+                          , userPassword = Just pass3
+                          , userName = Just "Richard Arthur Louis"
+                          , userSuper = False
+                          , userAdmin = False
+                          , userAuthType = UserAuthTypePassword
+                          , userVerkey = Nothing
+                          , userVerified = False
+                          }
+
+    liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
+      insert_ UserPhoto { userPhotoUser = uid3
+                        , userPhotoMime = "image/avif"
+                        , userPhotoPhoto = bs
+                        , userPhotoAttribution = Just freepik
+                        }
+
+    pass4 <- liftIO $ saltPass "duboisaa"
+    uid4 <- insert $ User { userEmail = "duboisaa@xmailx.fr"
+                          , userPassword = Just pass4
+                          , userName = Just "Dubois Alice Ambre"
+                          , userSuper = False
+                          , userAdmin = False
+                          , userAuthType = UserAuthTypePassword
+                          , userVerkey = Nothing
+                          , userVerified = False
+                          }
+
+    liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
+      insert_ UserPhoto { userPhotoUser = uid4
+                        , userPhotoMime = "image/avif"
+                        , userPhotoPhoto = bs
+                        , userPhotoAttribution = Just freepik
+                        }
 
     c001 <- insert $ Candidate
                { candidateFamilyName = "Martin"
@@ -40,27 +131,23 @@ populateFR = do
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-28) today
                }
-
-    case B64.decode man01 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c001
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c001
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c002 <- insert $ Candidate
                { candidateFamilyName = "Bernard"
                , candidateGivenName = "Jade"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-26) today
-               }
-
-    case B64.decode woman01 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c002
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+               }        
+    liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c002
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c003 <- insert $ Candidate
                { candidateFamilyName = "Thomas"
@@ -68,13 +155,11 @@ populateFR = do
                , candidateAdditionalName = Just "Raphaël"
                , candidateBday = Just $ addGregorianYearsClip (-21) today
                }
-
-    case B64.decode man02 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c003
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c003
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c004 <- insert $ Candidate
                { candidateFamilyName = "Robert"
@@ -82,13 +167,11 @@ populateFR = do
                , candidateAdditionalName = Just "Emma"
                , candidateBday = Just $ addGregorianYearsClip (-30) today
                }
-
-    case B64.decode woman02 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c004
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c004
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c005 <- insert $ Candidate
                { candidateFamilyName = "Richard"
@@ -96,13 +179,11 @@ populateFR = do
                , candidateAdditionalName = Just "Louis"
                , candidateBday = Just $ addGregorianYearsClip (-32) today
                }
-
-    case B64.decode man03 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c005
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_6.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c005
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c006 <- insert $ Candidate
                { candidateFamilyName = "Durand"
@@ -110,13 +191,11 @@ populateFR = do
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-39) today
                }
-
-    case B64.decode man04 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c006
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_7.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c006
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c007 <- insert $ Candidate
                { candidateFamilyName = "Dubois"
@@ -124,13 +203,11 @@ populateFR = do
                , candidateAdditionalName = Just "Ambre"
                , candidateBday = Just $ addGregorianYearsClip (-35) today
                }
-
-    case B64.decode woman03 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c007
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_5.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c007
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c008 <- insert $ Candidate
                { candidateFamilyName = "Moreau"
@@ -138,13 +215,11 @@ populateFR = do
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-42) today
                }
-
-    case B64.decode woman04 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c008
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_8.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c008
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c009 <- insert $ Candidate
                { candidateFamilyName = "Laurent"
@@ -152,13 +227,11 @@ populateFR = do
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-46) today
                }
-
-    case B64.decode man05 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c009
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_9.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c009
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c010 <- insert $ Candidate
                { candidateFamilyName = "Simon"
@@ -166,13 +239,11 @@ populateFR = do
                , candidateAdditionalName = Just "Lucas"
                , candidateBday = Just $ addGregorianYearsClip (-39) today
                }
-
-    case B64.decode man06 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c010
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_10.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c010
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
 
     c011 <- insert $ Candidate
                { candidateFamilyName = "Michel"
@@ -180,13 +251,11 @@ populateFR = do
                , candidateAdditionalName = Just "Chloé"
                , candidateBday = Just $ addGregorianYearsClip (-31) today
                }
-
-    case B64.decode woman05 of
-      Left _ -> return ()
-      Right photo -> insert_ $ Photo { photoCandidate = c011
-                                     , photoPhoto = photo
-                                     , photoMime = "image/avif"
-                                     }
+    liftIO (BS.readFile "demo/user_11.avif") >>= \bs ->
+        insert_ Photo { photoCandidate = c011
+                      , photoPhoto = bs
+                      , photoMime = "image/avif"
+                      }
                      
     s001 <- insert $ Skill
         { skillCode = "Jakarta EE"

@@ -70,7 +70,7 @@ import Model
       , TestId, OptionStem, OptionPoints
       )
     , Test (Test), TestId
-    , Stem, userSessKey, ultDestKey, Option
+    , Stem, userSessKey, keyUtlDest, Option
     )
 
 
@@ -121,7 +121,7 @@ getExamTestR cid tid = do
 postExamR :: Handler Html
 postExamR = do
     ((fr,widget),enctype) <- runFormPost $ formExam Nothing Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
     case fr of
       FormSuccess (ExamData tid cid attempt) -> do
           let info = Just (tid,cid)
@@ -152,7 +152,7 @@ postExamFormR = do
     let info = case fr of
           FormSuccess (ExamData tid cid _) -> Just (tid,cid)
           _ -> Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgExam
         $(widgetFile "exams/enrollment")
@@ -173,7 +173,7 @@ getExamFormR = do
       _ -> return Nothing
     let info = meid >>= \eid -> mcid >>= \cid -> return (eid,cid)
     (widget,enctype) <- generateFormPost $ formExam candidate meid
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgExam
         $(widgetFile "exams/enrollment")

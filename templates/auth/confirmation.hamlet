@@ -1,0 +1,27 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{HomeR} aria-label=_{MsgBack}>
+      <i>arrow_back
+    
+    <h6.title.max>
+      _{MsgEmailVerification}
+      
+<main.responsive.padding>
+  
+  <p>
+    _{MsgVerifyEmailPlease}. #
+
+    _{MsgJustSentEmailTo} #
+    <code>
+      #{email}. #
+     
+    _{MsgClickToVerifyAccount}.
+
+  <p>
+    <span.small-text>
+      _{MsgDidNotGetEmail} #
+    <a.link href=@{parent registerR}>
+      _{MsgResendEmail}
+
+^{widgetSnackbar msgs}

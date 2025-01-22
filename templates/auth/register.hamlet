@@ -1,0 +1,20 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AuthR LoginR} aria-label=_{MsgBack}>
+      <i>arrow_back
+    
+    <h6.title.max>
+      _{MsgRegistration}
+      
+      
+<main.responsive.padding>
+
+  <p>_{EnterEmail}
+
+  <form method=post action=@{parent registerR} enctype=#{et}>
+    ^{fw}
+    <button.responsive type=submit>
+      _{Register}
+
+^{widgetSnackbar msgs}

@@ -117,7 +117,18 @@ import Handler.Home
     ( getHomeR, getSearchExamR, getExamInfoR
     , getExamSkillsR
     )
+
 import Handler.SignIn (getSignInR, postSignInR, postSignOutR)
+
+
+import Handler.Users
+    ( getUsersR, postUsersR
+    , getUserR, postUserR
+    , getUserNewR, getUserEditR, postUserDeleR
+    , getUserPhotoR
+    , getUserResetPasswordR, postUserResetPasswordR
+    )
+
 import Handler.Common ( getFaviconR, getRobotsR, getPhotoPlaceholderR )
 
 import Demo.DemoDataFR (populateFR)

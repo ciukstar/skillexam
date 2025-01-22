@@ -1,0 +1,66 @@
+
+<div.overlay ##{idOverlay} data-ui=##{idOverlay}>
+
+#{extra}
+
+<figure.center-align>
+  <label for=#{fvId photoV} ##{idLabelPhoto}>
+    $maybe Entity uid _ <- user
+      <img.circle.extra src=@{AdminR $ UserPhotoR uid} ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
+    $nothing
+      <img.circle.extra src=@{StaticR img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg}
+           ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
+
+    ^{fvInput photoV}
+
+  <figcaption.margin>
+
+    $maybe errs <- fvErrors photoV
+      <div.error>
+        #{errs}
+    <nav.center-align>
+      <button.border.round.transparent type=button ##{idButtonUploadPhoto}>
+        <i>upload_file
+        _{MsgUploadPhoto}
+
+      <button.circle.transparent.border title=_{MsgTakePhoto} type=button ##{idButtonTakePhoto} data-ui=##{idOverlay}>
+        <i>photo_camera
+
+<details.margin>
+  <summary>
+    #{fvLabel attribV}
+  <div.field.textarea.label.border.round :isJust (fvErrors attribV):.invalid>
+
+    ^{fvInput attribV}
+    <label for=#{fvId attribV}>
+      #{fvLabel attribV}
+      $if fvRequired attribV
+        <sup>*
+
+    $maybe err <- fvErrors attribV
+      <span.error>#{err}
+
+
+$forall v <- [emailV, nameV]
+  ^{md3widget v}
+
+
+$forall v <- [adminV]
+  ^{md3switchWidget v}
+      
+
+<dialog ##{idDialogSnapshot}>
+ 
+  <h6.row>
+    <div.max>
+      _{MsgTakePhoto}
+    <button.transparent.circle type=button title=_{MsgClose} ##{idButtonCloseDialogSnapshot} data-ui=##{idOverlay}>
+      <i>close
+
+  <figure.center-align>
+    <video ##{idVideo} playsinline autoplay width=128 height=128
+           poster=@{StaticR img_camera_24dp_0000F5_FILL0_wght400_GRAD0_opsz24_svg}>
+  
+  <nav.center-align>
+    <button.circle.extra.transparent.border type=button ##{idButtonCapture} data-ui=##{idOverlay}>
+      <i.extra>circle

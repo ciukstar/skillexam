@@ -16,23 +16,41 @@
 
 module Model where
 
-import Control.Monad (mapM)
-import Data.Maybe (Maybe)
-import Data.Text (pack, unpack)
-import Text.Show (show)
-import Text.Read (readMaybe)
-import Data.Time (Day, UTCTime)
-import Data.ByteString (ByteString)
 import ClassyPrelude.Yesod
     ( Typeable, Bool, Double, Int, Textarea, Text, mkMigrate
     , mkPersist, persistFileWith, share, sqlSettings, Show, Read, Eq
     , (<$>), (.)
     )
-import Yesod.Core.Dispatch (PathMultiPiece, toPathMultiPiece, fromPathMultiPiece)
+    
+import Control.Monad (mapM)
+
+import Data.Maybe (Maybe (Just))
+import Data.Ord (Ord)
+import Data.Text (pack, unpack)
+import Data.Time (Day, UTCTime)
+import Data.ByteString (ByteString)
+
+import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.Quasi ( lowerCaseSettings )
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.TH (derivePersistField)
+
+import Text.Hamlet (Html)
+import Text.Show (show)
+import Text.Read (readMaybe)
+
+import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
+import Yesod.Core.Dispatch
+    ( PathMultiPiece, toPathMultiPiece, fromPathMultiPiece
+    )
+
+
+data AuthenticationType = UserAuthTypePassword
+                        | UserAuthTypeEmail
+                        | UserAuthTypeGoogle
+    deriving (Show, Read, Eq, Ord)
+derivePersistField "AuthenticationType"
+
 
 data TestState = TestStatePublished | TestStateUnpublished
     deriving (Show, Read, Eq)
@@ -61,13 +79,28 @@ instance PathMultiPiece Skills where
 
     fromPathMultiPiece :: [Text] -> Maybe Skills
     fromPathMultiPiece xs = Skills <$> mapM ((toSqlKey <$>) . readMaybe . unpack) xs
-    
 
+
+instance HashDBUser User where
+    userPasswordHash :: User -> Maybe Text
+    userPasswordHash = userPassword
+
+    setPasswordHash :: Text -> User -> User
+    setPasswordHash h u = u { userPassword = Just h }
+    
 
 instance SqlString Textarea
 
-ultDestKey :: Text
-ultDestKey = "_ULT"
+
+keyUtlDest :: Text
+keyUtlDest = "_ULT"
 
 userSessKey :: Text
 userSessKey = "candidate"
+
+
+msgSuccess :: Text
+msgSuccess = "success"
+
+msgError :: Text
+msgError = "error"

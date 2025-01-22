@@ -10,10 +10,18 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="theme-color" content="#6200ee">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.css" rel="stylesheet">
+    
     ^{pageHead pc}
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <script type="module" 
+            src="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.js">
+            
+    <script type="module" 
+            src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js">
+            
     <script type="text/javascript" src=@{StaticR js_cookie_3_0_5_min_js}>
 
     <script>
@@ -36,6 +44,7 @@ $doctype 5
 
     <script>
       document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
+      
   <body.mdc-typography>
     ^{pageBody pc}
 

@@ -1,3 +1,37 @@
+
+InvalidUrlOrRemoved: Invalid URL or resource removed
+Or: or
+BackToHomepage: Go back to homepage
+InvalidArguments: Invalid arguments
+PermissionDenied: Permission denied
+PageNotFound: Page not found
+ConfirmPlease: Please confirm
+UploadPhoto: Upload photo
+PasswordChanged: Password changed
+PasswordDoesNotMatch: The password does not match
+RepeatPassword: Repeat password
+SuperuserCannotBeDeleted: Superuser cannot be deleted
+PasswordChange: Password change
+ChangePassword: Change password
+RecordAdded: Record added
+AlreadyExists: Already exists
+Attribution: Attribution
+No: No
+Yes: Yes
+Dele: Delete
+Email: Email
+Users: Users
+TakePhoto: Take a photo
+DemoUserAccounts: Demo user accounts
+User: User
+Superuser: Superuser
+Administrator: Administrator
+Username: Username
+Password: Password
+AccessDeniedAdminsOnly: Only administrators have access to this page. Please log in with an administrator account
+SignInToAccessPlease: Please sign in to access this page
+Home: Home
+Logo: Logo
 TotalCandidates: Total candidates
 NoTestsYet: There are no tests yet
 NoCandidatesYet: There are no candidates yet

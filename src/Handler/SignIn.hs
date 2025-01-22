@@ -47,9 +47,11 @@ import Database.Esqueleto.Experimental
     )
     
 import Model
-    ( userSessKey, ultDestKey
+    ( userSessKey, keyUtlDest
     , Candidate(Candidate), CandidateId
-    , EntityField (CandidateFamilyName, CandidateGivenName, CandidateAdditionalName)
+    , EntityField
+      ( CandidateFamilyName, CandidateGivenName, CandidateAdditionalName
+      )
     )
 
 
@@ -74,7 +76,7 @@ postSignInR = do
           setSession userSessKey (pack . show . fromSqlKey $ r)
           redirectUltDest HomeR
       _ -> defaultLayout $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
           setTitleI MsgSignIn
           $(widgetFile "sign-in/sign-in")
 
@@ -89,7 +91,7 @@ getSignInR = do
                 ]
         return x
     (widget,enctype) <- generateFormPost $ formSignIn candidates
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgLogin
         $(widgetFile "sign-in/sign-in")

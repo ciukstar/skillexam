@@ -11,24 +11,25 @@ module Handler.Home
   , getExamSkillsR
   ) where
 
-import Data.Text (unpack)
+import Data.Text (unpack, pack)
 import Data.Maybe (fromMaybe)
-import qualified Text.Printf as Printf (printf)
-import Settings ( widgetFile )
-import Yesod.Core (Html, Yesod (defaultLayout), setTitleI)
-import Yesod.Form.Fields (Textarea (Textarea), textField)
-import Yesod.Core.Handler
-    ( HandlerFor, lookupSession, setUltDestCurrent, lookupGetParam
-    , getCurrentRoute, getUrlRender
+
+import Database.Esqueleto.Experimental
+    ( SqlExpr, selectOne, from, table, where_, val, like
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
+    , select, orderBy, desc, on, innerJoin, distinct
+    , upper_, countRows, Value (Value), selectQuery, crossJoin, countDistinct
     )
+import Database.Persist (Entity (Entity))
+import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Foundation
-  ( App
+  ( App, widgetMainMenu
   , Route
-    ( AdminR, HomeR, SearchExamR, PhotoPlaceholderR, SignInR
-    , SignOutR, ExamInfoR, ExamSkillsR, ExamFormR
+    ( AuthR, AdminR, HomeR, SearchExamR, PhotoPlaceholderR, ExamInfoR
+    , ExamSkillsR, ExamFormR
     )
-  , AdminR (CandidatePhotoR)
+  , AdminR (UserPhotoR)
   , AppMessage
     ( MsgExams, MsgMyExams, MsgDescr, MsgPassMark
     , MsgLogin, MsgPhoto, MsgLogout, MsgSearch, MsgExam, MsgDuration
@@ -38,30 +39,35 @@ import Foundation
     , MsgDifficultyMedium
     )
   )
-import Database.Persist (Entity (Entity))
-import Database.Persist.Sql (toSqlKey, fromSqlKey)
-import Yesod.Persist.Core (YesodPersist(runDB))
-
-import Database.Esqueleto.Experimental
-    ( SqlExpr, selectOne, from, table, where_, val, like
-    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
-    , select, orderBy, desc, on, innerJoin, distinct
-    , upper_, countRows, Value (Value), selectQuery, crossJoin, countDistinct
-    )
 
 import Model
-    ( Candidate(Candidate)
+    ( userSessKey
+    , Candidate
+    , Stem, Skill (Skill), TestState (TestStatePublished), Exam
+    , Answer, Option
     , Test (Test), TestId
+    , User (User)
     , EntityField
       ( CandidateId
       , TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
-      , ExamTest, AnswerOption, OptionId, AnswerExam, ExamId, OptionKey, ExamCandidate
+      , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
+      , ExamId
       )
-    , userSessKey
-    , Stem, Skill (Skill), TestState (TestStatePublished), Exam
-    , Answer, Option
     )
+
+import qualified Text.Printf as Printf (printf)
+
+import Settings ( widgetFile )
+
+import Yesod.Auth (Route(LogoutR, LoginR), maybeAuth)
+import Yesod.Core (Html, Yesod (defaultLayout), setTitleI, newIdent)
+import Yesod.Core.Handler
+    ( HandlerFor, lookupSession, setUltDestCurrent, lookupGetParam
+    , getCurrentRoute, getUrlRender
+    )
+import Yesod.Form.Fields (Textarea (Textarea), textField)
 import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Persist.Core (YesodPersist(runDB))
 
 
 printf :: String -> Double -> String
@@ -95,7 +101,7 @@ getExamInfoR tid = do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
         return x
-
+    
     (nbr,total,ratio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
         (n :& t) <- from $ selectQuery ( do
                         x <- from $ table @Exam
@@ -158,7 +164,7 @@ getHomeR = do
           x <- from $ table @Candidate
           where_ $ x ^. CandidateId ==. val cid
           return x
-      _ -> return Nothing
+      Nothing -> return Nothing
 
     tests <- runDB $ select $ do
         x <- from $ table @Test
@@ -166,8 +172,12 @@ getHomeR = do
         orderBy [desc (x ^. TestId)]
         return x
 
+    user <- maybeAuth
+
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgMyExams
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
         $(widgetFile "home/home")
         $(widgetFile "home/exams")

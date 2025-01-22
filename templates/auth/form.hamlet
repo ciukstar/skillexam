@@ -1,0 +1,39 @@
+
+<button.border.transparent data-ui=#demoAccountsMenu #idButtonAccountsMenu>
+  <i.no-round>demography
+  <span>_{MsgDemoUserAccounts}
+  <i>arrow_drop_down
+  <menu #demoAccountsMenu>
+    $forall Entity uid (User email _ uname super admin _ _ _) <- users
+      $with pass <- maybe "" (TE.decodeUtf8 . localPart) (emailAddress $ TE.encodeUtf8 email)
+        <a.row href=# onclick="document.getElementById('#{idInputUsername}').value = '#{email}';document.getElementById('#{idInputPassword}').value = '#{pass}';document.getElementById('idButtonAccountsMenu').click()">
+          <img.circle.small src=@{AdminR $ UserPhotoR uid} loading=lazy alt=_{MsgPhoto}>
+          <div.max>
+            $maybe name <- uname
+              <h6.small>#{name}
+            $nothing
+              <h6.small>#{email}
+            <div.small-text>
+              $if super
+                <p.upper>_{MsgSuperuser}
+              $elseif admin
+                <p.upper>_{MsgAdministrator}
+              $else
+                <p.lower>_{MsgUser}
+
+$forall (_,msg) <- msgs
+  <p.error-text>
+    #{msg}
+
+<form.responsive method=post action=@{route}>
+
+  <div.field.fill.label.round.border>
+    <input type=text name=username required ##{idInputUsername} autocomplete=email>
+    <label for=#{idInputUsername}>_{MsgUsername}
+
+  <div.field.fill.label.round.border>
+    <input type=password name=password required ##{idInputPassword}>
+    <label for=#{idInputPassword}>_{MsgPassword}
+
+  <button.responsive type=submit>
+    _{MsgSignIn}

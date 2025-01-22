@@ -1,3 +1,37 @@
+
+InvalidUrlOrRemoved: URL non valide ou ressource supprimée
+Or: ou
+BackToHomepage: Retour à la page d'accueil
+InvalidArguments: Arguments invalides
+PermissionDenied: Permission refusée
+PageNotFound: Page non trouvée
+ConfirmPlease: Veuillez confirmer
+UploadPhoto: Télécharger une photo
+PasswordChanged: Mot de passe changé
+PasswordDoesNotMatch: Le mot de passe ne correspond pas
+RepeatPassword: Répéter le mot de passe
+SuperuserCannotBeDeleted: Le superutilisateur ne peut pas être supprimé
+PasswordChange: Changement de mot de passe
+ChangePassword: Changer le mot de passe
+RecordAdded: Enregistrement ajouté
+AlreadyExists: Existe déjà
+Attribution: Attribution
+No: Non
+Yes: Oui
+Dele: Supprimer
+Email: E-mail
+Users: Utilisateurs
+TakePhoto: Prendre une photo
+DemoUserAccounts: Comptes d'utilisateurs démo
+User: Utilisateur
+Superuser: Superutilisateur
+Administrator: Administrateur
+Username: Nom d'utilisateur
+Password: Mot de passe
+AccessDeniedAdminsOnly: Seuls les administrateurs ont accès à cette page. Veuillez vous connecter avec un compte administrateur
+SignInToAccessPlease: Veuillez vous connecter pour accéder à cette page
+Home: Accueil
+Logo: Logo
 TotalCandidates: Candidats totaux
 NoTestsYet: Il n'y a pas encore de tests
 NoCandidatesYet: Il n'y a pas encore de candidats

@@ -1,0 +1,12 @@
+
+<main.responsive>
+
+  <form.margin method=post action=@{AdminR UsersR} enctype=#{et} novalidate>
+    ^{fw}
+    <nav.right-align>
+      <a.button.transparent href=@{AdminR UsersR}>
+        _{MsgCancel}
+      <button.primary type=submit>
+        _{MsgSave}
+
+  ^{widgetSnackbar msgs}

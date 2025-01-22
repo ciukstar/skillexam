@@ -7,10 +7,11 @@ RUN mkdir -p /opt/skillexam \
 
 ARG YESOD_DEMO_LANG=EN
 
-WORKDIR /opt/skillexam
+WORKDIR        /opt/skillexam
 COPY skillexam /opt/skillexam
-COPY static /opt/skillexam/static
-COPY config /opt/skillexam/config
+COPY static    /opt/skillexam/static
+COPY config    /opt/skillexam/config
+COPY demo      /opt/skillexam/demo
 
 ENV YESOD_PORT=8080
 ENV DEMO_LANG=${YESOD_DEMO_LANG}

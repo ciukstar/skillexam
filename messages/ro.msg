@@ -1,3 +1,36 @@
+InvalidUrlOrRemoved: Adresă URL nevalidă sau resursă eliminată
+Or: sau
+BackToHomepage: Reveniți la pagina de pornire
+InvalidArguments: Argumente nevalide
+PermissionDenied: Acces refuzat
+PageNotFound: Pagina nu a fost găsită
+ConfirmPlease: Vă rugăm să confirmați
+UploadPhoto: Încărcați o fotografie
+PasswordChanged: Parola schimbată
+PasswordDoesNotMatch: Parola nu se potrivește
+RepeatPassword: Repetați parola
+SuperuserCannotBeDeleted: Superutilizatorul nu poate fi șters
+PasswordChange: Schimbarea parolei
+ChangePassword: Schimbaţi parola
+RecordAdded: Înregistrare adăugată
+AlreadyExists: Deja există
+Attribution: Atribuire
+No: Nu
+Yes: Da
+Dele: Şterge
+Email: E-mail
+Users: Utilizatori
+TakePhoto: Faceți o poză
+DemoUserAccounts: Conturi de utilizator Demo
+User: Utilizator
+Superuser: Superutilizator
+Administrator: Administrator
+Username: Nume de utilizator
+Password: Parolă
+AccessDeniedAdminsOnly: Doar administratorii au acces la această pagină. Vă rugăm să vă conectați cu un cont de administrator
+SignInToAccessPlease: Vă rugăm să vă conectați pentru a accesa această pagină
+Home: Acasă
+Logo: Logo
 TotalCandidates: Total candidați
 NoTestsYet: Nu există încă teste
 NoCandidatesYet: Nu există încă candidați

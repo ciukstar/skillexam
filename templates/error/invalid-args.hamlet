@@ -1,0 +1,15 @@
+
+<header ##{idHeader}>
+  <md-icon-button href=@{HomeR} aria-label=_{MsgBack}>
+    <md-icon>arrow_back
+
+  <span.md-typescale-title-large>
+    _{MsgInvalidArguments}
+
+<main>
+  <p.md-typescale-headline-large>400
+  <p.md-typescale-headline-medium>_{MsgInvalidArguments}
+  <p.md-typescale-body-medium>#{T.intercalate ", " msgs}.
+  <md-filled-button type=button href=@{HomeR} has-icon=true>
+    <md-icon slot=icon>home
+    _{MsgBackToHomepage}

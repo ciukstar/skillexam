@@ -1,0 +1,69 @@
+
+<div.overlay ##{idOverlay}>
+
+<dialog.left.no-padding.primary ##{idDialogMainMenu}>
+
+  <header.fixed.max>
+    <nav.margin>
+      <img.large src=@{StaticR img_logo_svg} loading=lazy alt=_{MsgLogo}>
+      <div.max>
+        <h6>_{MsgAppName}
+      <button.transparent.circle.large ##{idButtonMainMenuClose} data-ui=##{idDialogMainMenu}>
+        <i>close
+        
+  <nav.drawer>
+
+    <a href=@{HomeR} :curr == Just HomeR:.active>
+      <i>search
+      <span>_{MsgExams}
+      
+    <a href=@{MyExamsR} :curr == Just MyExamsR:.active>
+      <i>school
+      <span>_{MsgMyExams}
+
+    <hr>
+    <label>_{MsgAnalytics}
+      
+    <a href=@{StatsR TopSkilledR} :curr == Just (StatsR TopSkilledR):.active>
+      <i>award_star
+      <span>_{MsgTopSkilled}
+      
+    <a href=@{StatsR TopExamsR} :curr == Just (StatsR TopExamsR):.active>
+      <i>trending_up
+      <span>_{MsgTopExams}
+      
+    <a href=@{StatsR ExamSuccessRatesR} :curr == Just (StatsR ExamSuccessRatesR):.active>
+      <i>multiline_chart
+      <span>_{MsgSuccessRate}
+      
+    <hr>
+    <label>_{MsgData}
+      
+    <a href=@{AdminR CandidatesR} :curr == Just (AdminR CandidatesR):.active>
+      <i>group
+      <span>_{MsgCandidates}
+      
+    <a href=@{AdminR TestsR} :curr == Just (AdminR TestsR):.active>
+      <i>playlist_add_check
+      <span>_{MsgTests}
+      
+    <a href=@{AdminR SkillsR} :curr == Just (AdminR SkillsR):.active>
+      <i>engineering
+      <span>_{MsgSkills}
+      
+    <a href=@{AdminR UsersR} :curr == Just (AdminR UsersR):.active>
+      <i>settings_account_box
+      <span>_{MsgUsers}
+      
+    <hr>
+    <label>_{MsgResources}
+
+    <a href=@{DocsR} :curr == Just (DocsR):.active>
+      <i>quick_reference
+      <span>_{MsgDocs}
+
+    <a href="https://github.com/ciukstar/skillexam" target=_blank>
+      <i>
+        <img src=@{StaticR img_github_mark_white_svg}>
+      <span>_{MsgSourceCode}
+    

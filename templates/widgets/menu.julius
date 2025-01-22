@@ -1,0 +1,11 @@
+
+document.getElementById(#{idOverlay}).addEventListener('click', function (e) {
+  Array.from(document.body.querySelectorAll('dialog')).forEach(x => { x.close(); });
+  document.getElementById(#{idOverlay}).classList.remove('active');
+});
+
+
+document.getElementById(#{idButtonMainMenuClose}).addEventListener('click', function (e) {
+  document.getElementById(#{idDialogMainMenu}).close();
+  document.getElementById(#{idOverlay}).classList.remove('active');
+});

@@ -85,7 +85,7 @@ import Model
       )
     , TestId, Option (Option), OptionId, Answer (Answer), Test
     , Candidate (Candidate), Exam
-    , ultDestKey
+    , keyUtlDest
     , StemType (MultiResponse)
     )
 
@@ -198,7 +198,7 @@ getSummaryR tid eid = do
 
 
         provideRep $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
           defaultLayout $ do
               setTitleI MsgFinish
               $(widgetFile "steps/summary")

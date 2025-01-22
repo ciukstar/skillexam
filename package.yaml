@@ -55,6 +55,10 @@ dependencies:
 - base64-bytestring
 - text-icu
 - HPDF
+- yesod-auth-hashdb
+- email-validate
+- mime-mail
+
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.

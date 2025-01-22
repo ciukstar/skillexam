@@ -1,0 +1,7 @@
+
+$forall (s,msg) <- msgs
+  <div.snackbar.active :s == msgError:.error>
+    <div.max>
+      #{msg}
+    <button.close.transparent.circle.small>
+      <i>close

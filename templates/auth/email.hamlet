@@ -1,0 +1,21 @@
+
+<div ##{idFormEmailLoginWarpper}>
+      
+  <form.responsive method=post action=@{parent loginR} enctype=#{et} ##{idFormEmailLogin}>
+    ^{fw}
+    <div.margin-bottom style="text-align:end">
+      <a.link href=@{parent forgotPasswordR}>
+        _{MsgForgotYourPassword}
+        
+    <button.responsive type=submit #btnLogin>
+      _{MsgSignIn}
+
+<div.responsive.center-align.margin>
+  <div.small-text>
+    _{MsgDoNotHaveAnAccount}
+    
+  <a.link href=@{parent registerR}>
+    _{MsgCreateAccount}
+
+
+^{widgetSnackbar msgs}

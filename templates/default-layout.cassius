@@ -4,8 +4,12 @@
   --color-fail: #FF9494
 
 body
-  margin: 0
-  padding: 0
+    margin: 0
+    padding: 0
+
+    header
+        h1.title
+            font-size: 1.5rem
 
 @media screen and (min-width: 768px)
   main
