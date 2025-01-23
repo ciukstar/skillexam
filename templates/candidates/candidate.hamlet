@@ -19,7 +19,7 @@
         <i.material-symbols-outlined>edit
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity cid (Candidate fname gname aname _), _) <- candidate
+  $maybe (Entity cid (Candidate fname gname aname _ _), _) <- candidate
     $with ident <- fromSqlKey cid
       <figure>
         <img.poto.profile src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=64 heigt=64

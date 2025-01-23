@@ -7,11 +7,16 @@
     <h1.title.max>
       _{MsgUser}
       
-    <div>
-      <button>
-      <button>
+    <div.row>
+      <button.circle.transparent type=button title=_{MsgDele} data-ui=##{idOverlay}
+        onclick="document.getElementById('#{idDialogDelete}').show()">
 
-<main.responsive.no-padding>
+        <i>delete
+        
+      <a.button.circle.transparent href=@{AdminR $ UserEditR uid} title=_{MsgEdit}>
+        <i>edit
+
+<main.responsive>
     
   $maybe Entity _ (User email _ uname super admin _ _ _) <- user
     <dl.margin>

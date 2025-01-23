@@ -18,7 +18,7 @@ import Model
     ( Skill(Skill, skillCode, skillName, skillDescr)
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
-      , candidateBday
+      , candidateBday, candidateUser
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , Test (Test, testCode, testName, testDuration, testDescr, testPass, testState)
@@ -130,6 +130,7 @@ populateRU = do
                , candidateGivenName = "Игорь"
                , candidateAdditionalName = Just "Васильевич"
                , candidateBday = Just $ addGregorianYearsClip (-28) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c001
@@ -142,6 +143,7 @@ populateRU = do
                , candidateGivenName = "Любовь"
                , candidateAdditionalName = Just "Михайловна"
                , candidateBday = Just $ addGregorianYearsClip (-26) today
+               , candidateUser = Nothing
                } 
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c002
@@ -154,6 +156,7 @@ populateRU = do
                , candidateGivenName = "Иван"
                , candidateAdditionalName = Just "Александрович"
                , candidateBday = Just $ addGregorianYearsClip (-21) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c003
@@ -166,6 +169,7 @@ populateRU = do
                , candidateGivenName = "Марина"
                , candidateAdditionalName = Just "Викторовна"
                , candidateBday = Just $ addGregorianYearsClip (-30) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c004
@@ -178,6 +182,7 @@ populateRU = do
                , candidateGivenName = "Андрей"
                , candidateAdditionalName = Just "Васильевич"
                , candidateBday = Just $ addGregorianYearsClip (-32) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_6.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c005
@@ -190,6 +195,7 @@ populateRU = do
                , candidateGivenName = "Алексей"
                , candidateAdditionalName = Just "Васильевич"
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_7.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c006
@@ -202,6 +208,7 @@ populateRU = do
                , candidateGivenName = "Александра"
                , candidateAdditionalName = Just "Владимировна"
                , candidateBday = Just $ addGregorianYearsClip (-35) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_5.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c007
@@ -214,6 +221,7 @@ populateRU = do
                , candidateGivenName = "Татьяна"
                , candidateAdditionalName = Just "Николаевна"
                , candidateBday = Just $ addGregorianYearsClip (-42) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_8.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c008
@@ -226,6 +234,7 @@ populateRU = do
                , candidateGivenName = "Артем"
                , candidateAdditionalName = Just "Сергеевич"
                , candidateBday = Just $ addGregorianYearsClip (-46) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_9.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c009
@@ -238,6 +247,7 @@ populateRU = do
                , candidateGivenName = "Дмитрий"
                , candidateAdditionalName = Just "Александрович"
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_10.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c010
@@ -250,6 +260,7 @@ populateRU = do
                , candidateGivenName = "Алиса"
                , candidateAdditionalName = Just "Григорьевна"
                , candidateBday = Just $ addGregorianYearsClip (-31) today
+               , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_11.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c011

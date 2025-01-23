@@ -207,7 +207,7 @@ getSummaryR tid eid = do
 pdf :: App -> [Lang] -> (UTCTime -> Text) -> Candidate
     -> (Text,Text,Int,UTCTime,Maybe UTCTime,Double,Double)
     -> PDFRect -> AnyFont -> AnyFont -> PDF ()
-pdf app langs tfmt (Candidate fname gname aname _) (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
+pdf app langs tfmt (Candidate fname gname aname _ _) (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
 
     let hfont = PDFFont fontb 18
     let rfont = PDFFont fontr 16

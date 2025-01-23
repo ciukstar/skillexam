@@ -3,6 +3,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE InstanceSigs #-}
+
 -- | Settings are centralized, as much as possible, into this file. This
 -- includes database connection settings, static file locations, etc.
 -- In addition, you can configure a number of different aspects of Yesod
@@ -12,16 +14,33 @@ module Settings where
 
 import ClassyPrelude.Yesod
 import qualified Control.Exception as Exception
-import Data.Aeson                  (Result (..), fromJSON, withObject, (.!=),
-                                    (.:?))
-import Data.FileEmbed              (embedFile)
-import Data.Yaml                   (decodeEither')
-import Database.Persist.Sqlite     (SqliteConf)
-import Language.Haskell.TH.Syntax  (Exp, Name, Q)
-import Network.Wai.Handler.Warp    (HostPreference)
-import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
-import Yesod.Default.Util          (WidgetFileSettings, widgetFileNoReload,
-                                    widgetFileReload)
+import Data.Aeson
+    ( Result (..), fromJSON, withObject, (.!=), (.:?)
+    )
+import Data.Aeson.Types (Parser)
+import Data.FileEmbed (embedFile)
+import Data.Time.LocalTime (TimeZone, utc)
+import Data.Yaml (decodeEither')
+
+import Database.Persist.Sqlite
+    ( SqliteConf, ConnectionPoolConfig (ConnectionPoolConfig, connectionPoolConfigStripes, connectionPoolConfigIdleTimeout, connectionPoolConfigSize)
+    )
+
+import Language.Haskell.TH.Syntax (Exp, Name, Q)
+
+import Network.Wai.Handler.Warp (HostPreference)
+
+import Yesod.Default.Config2 (applyEnvValue, configSettingsYml)
+import Yesod.Default.Util
+    ( WidgetFileSettings, widgetFileNoReload, widgetFileReload
+    )
+import Text.Read (readMaybe)
+
+
+data Superuser = Superuser { superuserUsername :: Text
+                           , superuserPassword :: Text
+                           }
+
 
 -- | Runtime settings to configure this application. These settings can be
 -- loaded from various sources: defaults, environment variables, config files,
@@ -31,6 +50,7 @@ data AppSettings = AppSettings
     -- ^ Directory from which to serve static files.
     , appDatabaseConf           :: SqliteConf
     -- ^ Configuration settings for accessing the database.
+    , appConnectionPoolConfig   :: ConnectionPoolConfig
     , appRoot                   :: Maybe Text
     -- ^ Base for all generated URLs. If @Nothing@, determined
     -- from the request headers.
@@ -53,6 +73,9 @@ data AppSettings = AppSettings
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
 
+    , appTimeZone  :: TimeZone
+    , appSuperuser :: Superuser
+    
     -- Example app-specific configuration values.
     , appCopyright              :: Text
     -- ^ Copyright text to appear in the footer of the page
@@ -63,6 +86,24 @@ data AppSettings = AppSettings
     -- ^ Indicate if auth dummy login should be enabled.
     }
 
+    
+instance FromJSON Superuser where
+    parseJSON :: Value -> Parser Superuser
+    parseJSON = withObject "Superuser" $ \o -> do
+        superuserUsername <- o .: "username"
+        superuserPassword <- o .: "password"
+        return Superuser {..}
+
+
+instance FromJSON ConnectionPoolConfig where
+    parseJSON :: Value -> Parser ConnectionPoolConfig
+    parseJSON = withObject "ConnectionPoolConfig" $ \o -> do
+        connectionPoolConfigStripes     <- o .: "stripes"
+        connectionPoolConfigIdleTimeout <- o .: "idle-timeout"
+        connectionPoolConfigSize        <- o .: "size"
+        return ConnectionPoolConfig {..}
+
+        
 instance FromJSON AppSettings where
     parseJSON = withObject "AppSettings" $ \o -> do
         let defaultDev =
@@ -73,6 +114,7 @@ instance FromJSON AppSettings where
 #endif
         appStaticDir              <- o .: "static-dir"
         appDatabaseConf           <- o .: "database"
+        appConnectionPoolConfig   <- o .: "connection-pool"
         appRoot                   <- o .:? "approot"
         appHost                   <- fromString <$> o .: "host"
         appPort                   <- o .: "port"
@@ -85,6 +127,9 @@ instance FromJSON AppSettings where
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appMutableStatic          <- o .:? "mutable-static"   .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
+
+        appTimeZone  <- fromMaybe utc . readMaybe <$> o .: "time-zone"
+        appSuperuser <- o .:  "superuser"
 
         appCopyright              <- o .:  "copyright"
         appAnalytics              <- o .:? "analytics"

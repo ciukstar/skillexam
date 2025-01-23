@@ -17,8 +17,11 @@
 /docs/SkillExam-ERD.svg DocsErdR GET
 /docs DocsR GET
 
+/search/exams/#TestId/skills    SearchExamSkillsR    GET
+/search/exams/#TestId           SearchExamInfoR      GET
+
 /exams/#TestId/skills    ExamSkillsR    GET
-/exams/#TestId           ExamInfoR      GET 
+/exams/#TestId           ExamInfoR      GET
 /search                  SearchExamR    GET
 /                        HomeR          GET
 
@@ -34,12 +37,12 @@
 
 
 /stats StatsR:
-  /success-rates/#TestId            TestSuccessRateR  GET
-  /success-rates                    ExamSuccessRatesR GET
-  /top-exams/#TestId                TopExamR          GET
-  /top-exams                        TopExamsR         GET
-  /top-skilled/#CandidateId/+Skills SkilledR          GET
-  /top-skilled                      TopSkilledR       GET
+    /success-rates/#TestId            TestSuccessRateR  GET
+    /success-rates                    ExamSuccessRatesR GET
+    /top-exams/#TestId                TopExamR          GET
+    /top-exams                        TopExamsR         GET
+    /top-skilled/#CandidateId/+Skills SkilledR          GET
+    /top-skilled                      TopSkilledR       GET
 
 
 /admin AdminR:

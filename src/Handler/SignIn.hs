@@ -125,7 +125,7 @@ formSignIn candidates extra = do
     
   <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
     <ul.mdc-deprecated-list.mdc-deprecated-list--avatar-list role=listbox>
-      $forall Entity cid (Candidate fname gname aname _) <- candidates
+      $forall Entity cid (Candidate fname gname aname _ _) <- candidates
         <li.mdc-deprecated-list-item data-value=#{fromSqlKey cid}>
           <span.mdc-deprecated-list-item__ripple>
           <span.mdc-deprecated-list-item__graphic>

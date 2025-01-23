@@ -36,5 +36,16 @@ database:
   database: "_env:YESOD_SQLITE_DATABASE:':memory:'"
   poolsize: "_env:YESOD_SQLITE_POOLSIZE:1"
 
+connection-pool:
+  stripes:      "_env:YESOD_CONNECTION_POOL_STRIPES:1"
+  idle-timeout: "_env:YESOD_CONNECTION_POOL_IDLETIMEOUT:1200"
+  size:         "_env:YESOD_CONNECTION_POOL_POOLSIZE:1"
+
+time-zone: "_env:YESOD_TIME_ZONE:'+00:00'"
+
+superuser:
+  username: "_env:YESOD_SUPERUSER_USERNAME:???@???.???"
+  password: "_env:YESOD_SUPERUSER_PASSWORD:???"
+
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

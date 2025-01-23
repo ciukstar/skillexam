@@ -421,7 +421,7 @@ formCandidate candidate extra = do
         , fsAttrs = [("style","display:none"),("onchange","displayPhoto(this)")]
         } Nothing
 
-    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR) <*> photoR
+    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> pure Nothing) <*> photoR
     let w = [whamlet|
 #{extra}
 ^{fvInput photoV}

@@ -34,8 +34,8 @@ import Database.Persist
 import qualified Database.Persist as P ((=.), delete)
 
 import Foundation
-    ( Handler, Form, widgetSnackbar
-    , Route (AdminR, StaticR, HomeR)
+    ( Handler, Form, widgetMainMenu, widgetAccount, widgetSnackbar
+    , Route (AdminR, StaticR)
     , AdminR
       ( UserPhotoR, UsersR, UserR, UserNewR, UserEditR, UserDeleR
       , UserResetPasswordR
@@ -45,9 +45,9 @@ import Foundation
       , MsgDeleteAreYouSure, MsgDele, MsgConfirmPlease, MsgCancel, MsgYes
       , MsgNo, MsgAttribution, MsgPassword, MsgSave, MsgAlreadyExists
       , MsgRecordAdded, MsgInvalidFormData, MsgRecordDeleted
-      , MsgChangePassword, MsgRecordEdited
+      , MsgChangePassword, MsgRecordEdited, MsgEdit, MsgClose
       , MsgSuperuser, MsgPasswordChange, MsgSuperuserCannotBeDeleted
-      , MsgRepeatPassword, MsgPasswordDoesNotMatch, MsgPasswordChanged, MsgClose
+      , MsgRepeatPassword, MsgPasswordDoesNotMatch, MsgPasswordChanged
       , MsgUploadPhoto, MsgTakePhoto
       )
     )
@@ -80,8 +80,8 @@ import Text.Hamlet (Html)
 
 import Yesod.Auth.Email (saltPass)
 import Yesod.Core
-    ( Yesod(defaultLayout), setTitleI, newIdent, getMessageRender, getMessages
-    , TypedContent (TypedContent), ToContent (toContent), redirect, whamlet
+    ( Yesod(defaultLayout), setTitleI, newIdent, getMessages, whamlet
+    , TypedContent (TypedContent), ToContent (toContent), redirect
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), addMessageI, fileSourceByteString
     )
@@ -116,7 +116,6 @@ postUserResetPasswordR uid = do
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgUser
-              -- idOverlay <- newIdent
               $(widgetFile "users/pwd")
 
 
@@ -126,7 +125,6 @@ getUserResetPasswordR uid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        idOverlay <- newIdent
         $(widgetFile "users/pwd")
     
 
@@ -193,7 +191,6 @@ getUserEditR uid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        idOverlay <- newIdent
         $(widgetFile "users/edit")
 
 
@@ -205,7 +202,6 @@ getUserNewR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        idOverlay <- newIdent
         $(widgetFile "users/new")
 
 
@@ -259,7 +255,6 @@ postUserR uid = do
           addMessageI msgError MsgInvalidFormData
           msgs <- getMessages
           defaultLayout $ do
-              idOverlay <- newIdent
               $(widgetFile "users/edit")
 
 
@@ -314,7 +309,6 @@ postUsersR = do
           addMessageI msgError MsgInvalidFormData
           msgs <- getMessages
           defaultLayout $ do
-              idOverlay <- newIdent
               $(widgetFile "users/new")
 
 
@@ -330,6 +324,7 @@ getUsersR = do
     defaultLayout $ do
         setTitleI MsgUsers
         idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
         $(widgetFile "users/users")
 
 

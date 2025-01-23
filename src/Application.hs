@@ -21,31 +21,41 @@ module Application
     , db
     ) where
 
+import Control.Monad (void)
+
+import Data.Bool (Bool (False))
+import Data.Maybe (Maybe (Nothing))
+
 import Import
 
-import System.Environment.Blank (getEnv)
-import Network.Wai.Middleware.Gzip (gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress))
-import Control.Monad.Logger                 (liftLoc, runLoggingT)
-import Database.Persist.Sql
-    ( ConnectionPoolConfig
-      ( ConnectionPoolConfig, connectionPoolConfigStripes
-      , connectionPoolConfigIdleTimeout, connectionPoolConfigSize)
+
+import Network.Wai.Middleware.Gzip
+    ( gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress)
     )
-import Database.Persist.Sqlite              (createSqlitePoolWithConfig, runSqlPool,
-                                             sqlDatabase, sqlPoolSize)
-import Language.Haskell.TH.Syntax           (qLocation)
-import Network.HTTP.Client.TLS              (getGlobalManager)
+import Control.Monad.Logger (liftLoc, runLoggingT)
+
+import Database.Persist (insert_)
+import Database.Persist.Sql ( runMigrationSilent )
+import Database.Persist.Sqlite
+    ( createSqlitePoolWithConfig, runSqlPool, sqlDatabase
+    )
+import Language.Haskell.TH.Syntax (qLocation)
+
+import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.Wai (Middleware)
-import Network.Wai.Handler.Warp             (Settings, defaultSettings,
-                                             defaultShouldDisplayException,
-                                             runSettings, setHost,
-                                             setOnException, setPort, getPort)
-import Network.Wai.Middleware.RequestLogger (Destination (Logger),
-                                             IPAddrSource (..),
-                                             OutputFormat (..), destination,
-                                             mkRequestLogger, outputFormat)
-import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
-                                             toLogStr)
+import Network.Wai.Handler.Warp
+    ( Settings, defaultSettings, defaultShouldDisplayException,
+      runSettings, setHost, setOnException, setPort, getPort
+    )
+import Network.Wai.Middleware.RequestLogger
+    ( Destination (Logger), IPAddrSource (..), OutputFormat (..)
+    , destination, mkRequestLogger, outputFormat
+    )
+       
+import System.Environment.Blank (getEnv)
+import System.Log.FastLogger
+    ( defaultBufSize, newStdoutLoggerSet, toLogStr
+    )
 
 
 import Handler.Stats
@@ -116,6 +126,8 @@ import Handler.Docs (getDocsR, getDocsErdR)
 import Handler.Home
     ( getHomeR, getSearchExamR, getExamInfoR
     , getExamSkillsR
+    , getSearchExamInfoR
+    , getSearchExamSkillsR
     )
 
 import Handler.SignIn (getSignInR, postSignInR, postSignOutR)
@@ -135,6 +147,8 @@ import Demo.DemoDataFR (populateFR)
 import Demo.DemoDataRO (populateRO)
 import Demo.DemoDataRU (populateRU)
 import Demo.DemoDataEN (populateEN)
+
+import Yesod.Auth.Email (saltPass)
 
 
 -- This line actually creates our YesodDispatch instance. It is the second half
@@ -172,20 +186,30 @@ makeFoundation appSettings = do
     -- Create the database connection pool
     pool <- flip runLoggingT logFunc $ createSqlitePoolWithConfig
         (sqlDatabase $ appDatabaseConf appSettings)
-        ConnectionPoolConfig { connectionPoolConfigStripes = 1
-                             , connectionPoolConfigIdleTimeout = 1200
-                             , connectionPoolConfigSize = sqlPoolSize $ appDatabaseConf appSettings
-                             }
+        (appConnectionPoolConfig appSettings)
 
     -- Perform database migration using our application's logging settings.
     flip runLoggingT logFunc $ flip runSqlPool pool $ do
-      runMigration migrateAll
-      demo <- liftIO $ getEnv "DEMO_LANG"
-      case demo of
-        Just "FR" -> populateFR
-        Just "RO" -> populateRO
-        Just "RU" -> populateRU
-        _         -> populateEN
+        void $ runMigrationSilent migrateAll
+    
+        superpass <- liftIO $ saltPass (superuserPassword . appSuperuser $ appSettings)
+        insert_ User { userEmail = superuserUsername . appSuperuser $ appSettings
+                     , userPassword = Just superpass
+                     , userName = Just "Super User"
+                     , userSuper = True
+                     , userAdmin = True
+                     , userAuthType = UserAuthTypePassword
+                     , userVerkey = Nothing
+                     , userVerified = False
+                     }
+                     
+        demo <- liftIO $ getEnv "DEMO_LANG"
+        case demo of
+          Just "FR" -> populateFR
+          Just "RO" -> populateRO
+          Just "RU" -> populateRU
+          Just _    -> populateEN
+          Nothing   -> populateEN
 
     -- Return the foundation
     return $ mkFoundation pool

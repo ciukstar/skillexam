@@ -1,4 +1,12 @@
 
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AdminR $ UserR uid}>
+      <i>arrow_back
+      
+    <h1.title.max>
+      _{MsgPasswordChange}
+      
 <main.responsive>
 
   <form.margin method=post action=@{AdminR $ UserResetPasswordR uid} enctype=#{et} novalidate>

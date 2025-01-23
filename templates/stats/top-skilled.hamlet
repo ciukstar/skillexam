@@ -7,7 +7,7 @@
       <span.mdc-top-app-bar__title>_{MsgTopSkilled}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      $maybe Entity cid (Candidate fname name aname _) <- user
+      $maybe Entity cid (Candidate fname name aname _ _) <- user
         <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
           <img #profilePhoto src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
             onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">

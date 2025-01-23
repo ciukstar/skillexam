@@ -9,6 +9,8 @@ module Handler.Home
   , getSearchExamR
   , getExamInfoR
   , getExamSkillsR
+  , getSearchExamInfoR
+  , getSearchExamSkillsR
   ) where
 
 import Data.Text (unpack, pack)
@@ -24,7 +26,7 @@ import Database.Persist (Entity (Entity))
 import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Foundation
-  ( App, widgetMainMenu
+  ( App, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
     ( AuthR, AdminR, HomeR, SearchExamR, PhotoPlaceholderR, ExamInfoR
     , ExamSkillsR, ExamFormR
@@ -60,9 +62,12 @@ import qualified Text.Printf as Printf (printf)
 import Settings ( widgetFile )
 
 import Yesod.Auth (Route(LogoutR, LoginR), maybeAuth)
-import Yesod.Core (Html, Yesod (defaultLayout), setTitleI, newIdent)
+import Yesod.Core
+    ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
+    , YesodRequest (reqGetParams), getRequest
+    )
 import Yesod.Core.Handler
-    ( HandlerFor, lookupSession, setUltDestCurrent, lookupGetParam
+    ( HandlerFor, lookupSession, lookupGetParam
     , getCurrentRoute, getUrlRender
     )
 import Yesod.Form.Fields (Textarea (Textarea), textField)
@@ -72,6 +77,64 @@ import Yesod.Persist.Core (YesodPersist(runDB))
 
 printf :: String -> Double -> String
 printf = Printf.printf
+
+
+getSearchExamSkillsR :: TestId -> HandlerFor App Html
+getSearchExamSkillsR eid = do
+    curr <- getCurrentRoute
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val eid
+        return x
+    skills <- runDB $ select $ distinct $ do
+        x :& q <- from $ table @Skill
+            `innerJoin` table @Stem `on` (\(x :& q) -> q ^. StemSkill ==. x ^. SkillId)
+        where_ $ q ^. StemTest ==. val eid
+        return x
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/skills")
+        $(widgetFile "home/search/exam/exam")
+
+
+getSearchExamInfoR :: TestId -> HandlerFor App Html
+getSearchExamInfoR tid = do
+    curr <- getCurrentRoute
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val tid
+        return x
+    
+    (nbr,total,ratio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        x <- from $ table @Exam
+                        where_ $ x ^. ExamTest ==. val tid
+                        return (countDistinct (x ^. ExamCandidate) :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery
+                    (from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)))
+        return (n,t) )
+
+    (_,_,dRatio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        _ :& o :& e <- from $ table @Answer
+                            `innerJoin` table @Option `on` (\(a :& o) -> a ^. AnswerOption ==. o ^. OptionId)
+                            `innerJoin` table @Exam `on` (\(a :& _ :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        where_ $ o ^. OptionKey
+                        return (countRows :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery ( do
+                        _ :& e <- from $ table @Answer
+                            `innerJoin` table @Exam `on` (\(a :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        return (countRows :: SqlExpr (Value Double)) )
+        return (n,t) )
+
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/details")
+        $(widgetFile "home/search/exam/exam")
 
 
 getExamSkillsR :: TestId -> HandlerFor App Html
@@ -134,6 +197,7 @@ getExamInfoR tid = do
 
 getSearchExamR :: HandlerFor App Html
 getSearchExamR = do
+    stati <- reqGetParams <$> getRequest 
     curr <- getCurrentRoute
     mq <- runInputGet $ iopt textField "q"
     scrollY <- fromMaybe "0" <$> lookupGetParam "scrollY"
@@ -143,12 +207,14 @@ getSearchExamR = do
         case mq of
           Just q -> where_ $ (upper_ (x ^. TestName) `like` (%) ++. upper_ (val q) ++. (%))
             ||. (upper_ (x ^. TestCode) `like` (%) ++. upper_ (val q) ++. (%))
-          _ -> return ()
+          Nothing -> return ()
         orderBy [desc (x ^. TestId)]
         return x
+
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSearch
-        $(widgetFile "home/search")
+        $(widgetFile "home/search/search")
         $(widgetFile "home/exams")
 
 
@@ -172,9 +238,7 @@ getHomeR = do
         orderBy [desc (x ^. TestId)]
         return x
 
-    user <- maybeAuth
-
-    setUltDestCurrent
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgMyExams
         idOverlay <- newIdent

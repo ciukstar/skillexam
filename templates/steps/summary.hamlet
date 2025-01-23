@@ -28,7 +28,7 @@
               <th.mdc-data-table__cell scope=row>_{MsgPassMark}
               <td.mdc-data-table__cell>#{printf "%.0f" pass}
 
-  $maybe Entity _ (Candidate fname gname aname _) <- candidate
+  $maybe Entity _ (Candidate fname gname aname _ _) <- candidate
     $maybe (code,name,attempt,start,end,_,_) <- res
       
       <h6.mdc-typography--headline6>_{MsgExamInfo}

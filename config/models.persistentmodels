@@ -25,6 +25,7 @@ Candidate
   givenName Text
   additionalName Text Maybe
   bday Day Maybe
+  user UserId Maybe
 
 
 Option

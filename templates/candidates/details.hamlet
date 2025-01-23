@@ -1,5 +1,5 @@
 
-$maybe (Entity _ (Candidate fname gname aname bday), age) <- candidate
+$maybe (Entity _ (Candidate fname gname aname bday _), age) <- candidate
   <div.mdc-data-table>
     <div.mdc-data-table__table-container>
       <table.mdc-data-table__table aria-label=_{MsgCandidate}>

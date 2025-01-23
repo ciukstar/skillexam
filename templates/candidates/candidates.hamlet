@@ -8,7 +8,7 @@
         _{MsgNoCandidatesYet}.
   $else
     <ul.mdc-list>
-      $forall (Entity cid (Candidate fname gname aname _), Value nexams) <- candidates
+      $forall (Entity cid (Candidate fname gname aname _ _), Value nexams) <- candidates
         <a.mdc-list-item.mdc-list-item--with-two-lines
           .mdc-list-item--with-leading-avatar.mdc-list-item--with-trailing-icon
           :Just cid == activated:.mdc-list-item--activated

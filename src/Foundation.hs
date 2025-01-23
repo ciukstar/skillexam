@@ -24,6 +24,7 @@ import Data.Maybe (Maybe (..), fromMaybe, maybe)
 import Data.Monoid ((<>))
 import Data.Kind (Type)
 import Data.Ord ((<))
+import qualified Data.Text as T (intercalate)
 import qualified Data.Text.Encoding as TE
 
 import Database.Esqueleto.Experimental
@@ -39,13 +40,13 @@ import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Text.Shakespeare.I18N (mkMessage)
 
-import Yesod.Auth (AuthHandler)
 import Yesod.Auth.Message (AuthMessage(InvalidLogin, LoginTitle))
 import Yesod.Auth.HashDB (authHashDBWithForm)
 import Yesod.Core.Handler
     ( getYesod, defaultCsrfCookieName, defaultCsrfHeaderName
     , withUrlRenderer, languages, HandlerFor, newIdent, getMessages
-    , setUltDestCurrent, selectRep, provideRep, getMessageRender, getRouteToParent, getUrlRender, lookupSession
+    , setUltDestCurrent, selectRep, provideRep, getMessageRender
+    , getRouteToParent, getUrlRender, lookupSession
     )
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Core
@@ -59,7 +60,6 @@ import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import Yesod.Form.Types (MForm, FormResult)
-import qualified Data.Text as T
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -96,6 +96,13 @@ type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 -- | A convenient synonym for database access functions.
 type DB a = forall (m :: Type -> Type).
     (MonadUnliftIO m) => ReaderT SqlBackend m a
+
+
+widgetAccount :: Widget
+widgetAccount = do
+    user <- maybeAuth
+    $(widgetFile "widgets/account")
+    
 
 widgetSnackbar :: [(Text,Html)] -> Widget
 widgetSnackbar msgs = $(widgetFile "widgets/snackbar")
@@ -162,10 +169,13 @@ instance Yesod App where
         -> Handler AuthResult
     -- Routes not requiring authentication.
     isAuthorized (AuthR _) _ = return Authorized
-    isAuthorized HomeR _ = return Authorized
+    
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    
+    isAuthorized HomeR _ = setUltDestCurrent >> return Authorized
+
     isAuthorized (AdminR SkillsR) _ = return Authorized
     isAuthorized (AdminR TestsR) _ = return Authorized
     isAuthorized (AdminR CandidatesR) _ = return Authorized
@@ -210,6 +220,11 @@ instance Yesod App where
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
     isAuthorized (ExamSkillsR _) _ = return Authorized
+    
+    isAuthorized (SearchExamInfoR _) _ = return Authorized
+    isAuthorized (SearchExamSkillsR _) _ = return Authorized
+
+    
     isAuthorized TerminateR {} _ = return Authorized
     isAuthorized MyExamR {} _ = return Authorized
     isAuthorized MyExamsSearchR _ = return Authorized

@@ -1,0 +1,18 @@
+
+<form mthod=get action=@{SearchExamR} #formQ>    
+
+<header.fixed.no-padding>
+
+  <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
+    <a.start.transparent.round.circle.wave href=@?{(HomeR,stati)}>
+      <i>arrow_back    
+
+    $maybe q <- mq
+      <input autofocus placeholder=_{MsgSearch} type=search form=formQ name=q value=#{q}>
+    $nothing
+      <input autofocus placeholder=_{MsgSearch} type=search form=formQ name=q>
+    
+    <button.end.transparent.round.circle.wave type=submit form=formQ>
+      <i>search
+
+

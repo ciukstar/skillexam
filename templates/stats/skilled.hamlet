@@ -9,7 +9,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
  
-  $maybe Entity cid (Candidate fname gname aname _) <- candidate
+  $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
     <figure>
       <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=56 height=56
         onerror="this.src = '@{PhotoPlaceholderR}'">

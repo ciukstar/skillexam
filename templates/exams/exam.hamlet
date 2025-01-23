@@ -51,7 +51,7 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgCandidate}
               <td.mdc-data-table__cell>
-                $maybe Entity cid (Candidate fname gname aname _) <- candidate
+                $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
                   <div #candidateInfo>
                     <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} height=24 width=24
                       onerror="this.src = '@{PhotoPlaceholderR}'">

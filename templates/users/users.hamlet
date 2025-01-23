@@ -1,11 +1,15 @@
 
-<header.fixed>
+^{widgetMainMenu idOverlay idDialogMainMenu}
+
+<header.fixed.primary>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{HomeR}>
-      <i>arrow_back
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
       
     <h1.title.max>
       _{MsgUsers}
+      
+    ^{widgetAccount}
 
 <main.responsive.no-padding>
   $forall Entity uid (User email _ uname super admin _ _ _) <- users

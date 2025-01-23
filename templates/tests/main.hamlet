@@ -18,7 +18,7 @@
         <i.material-symbols-outlined>search
         
       $maybe cid <- mcid
-        $maybe Entity _ (Candidate fname name aname _) <- candidate
+        $maybe Entity _ (Candidate fname name aname _ _) <- candidate
           <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
             <img.photo.profile src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
               onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">
