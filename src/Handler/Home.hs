@@ -13,28 +13,28 @@ module Handler.Home
   , getSearchExamSkillsR
   ) where
 
-import Data.Text (unpack, pack)
+import Data.Text (pack)
 import Data.Maybe (fromMaybe)
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, selectOne, from, table, where_, val, like
     , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
     , select, orderBy, desc, on, innerJoin, distinct
-    , upper_, countRows, Value (Value), selectQuery, crossJoin, countDistinct
+    , upper_, countRows, Value (Value), selectQuery, crossJoin
+    , countDistinct
     )
 import Database.Persist (Entity (Entity))
-import Database.Persist.Sql (toSqlKey, fromSqlKey)
+import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
-  ( App, widgetMainMenu, widgetSnackbar, widgetAccount
+  ( Handler, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
-    ( AuthR, AdminR, HomeR, SearchExamR, PhotoPlaceholderR, ExamInfoR
-    , ExamSkillsR, ExamFormR
+    ( HomeR, SearchExamR, ExamInfoR, SearchExamInfoR
+    , ExamSkillsR, ExamFormR, SearchExamSkillsR
     )
-  , AdminR (UserPhotoR)
   , AppMessage
     ( MsgExams, MsgMyExams, MsgDescr, MsgPassMark
-    , MsgLogin, MsgPhoto, MsgLogout, MsgSearch, MsgExam, MsgDuration
+    , MsgSearch, MsgExam, MsgDuration
     , MsgCode, MsgName, MsgTakeThisExam, MsgPopularity, MsgPoints
     , MsgMinutes, MsgDifficulty, MsgDifficultyLow, MsgDetails
     , MsgSkills, MsgNoPublishedExamsYet, MsgDifficultyHigh
@@ -43,32 +43,29 @@ import Foundation
   )
 
 import Model
-    ( userSessKey
-    , Candidate
-    , Stem, Skill (Skill), TestState (TestStatePublished), Exam
-    , Answer, Option
+    ( Candidate
+    , Stem
+    , Skill (Skill)
+    , TestState (TestStatePublished)
+    , Exam, Answer, Option
     , Test (Test), TestId
-    , User (User)
     , EntityField
-      ( CandidateId
-      , TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
+      ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId
       )
     )
 
-import qualified Text.Printf as Printf (printf)
-
 import Settings ( widgetFile )
 
-import Yesod.Auth (Route(LogoutR, LoginR), maybeAuth)
+import qualified Text.Printf as Printf (printf)
+
 import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
     , YesodRequest (reqGetParams), getRequest
     )
 import Yesod.Core.Handler
-    ( HandlerFor, lookupSession, lookupGetParam
-    , getCurrentRoute, getUrlRender
+    ( lookupGetParam, getCurrentRoute, getUrlRender
     )
 import Yesod.Form.Fields (Textarea (Textarea), textField)
 import Yesod.Form.Input (runInputGet, iopt)
@@ -79,10 +76,9 @@ printf :: String -> Double -> String
 printf = Printf.printf
 
 
-getSearchExamSkillsR :: TestId -> HandlerFor App Html
+getSearchExamSkillsR :: TestId -> Handler Html
 getSearchExamSkillsR eid = do
     curr <- getCurrentRoute
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val eid
@@ -98,10 +94,9 @@ getSearchExamSkillsR eid = do
         $(widgetFile "home/search/exam/exam")
 
 
-getSearchExamInfoR :: TestId -> HandlerFor App Html
+getSearchExamInfoR :: TestId -> Handler Html
 getSearchExamInfoR tid = do
     curr <- getCurrentRoute
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
@@ -137,7 +132,7 @@ getSearchExamInfoR tid = do
         $(widgetFile "home/search/exam/exam")
 
 
-getExamSkillsR :: TestId -> HandlerFor App Html
+getExamSkillsR :: TestId -> Handler Html
 getExamSkillsR eid = do
     curr <- getCurrentRoute
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
@@ -156,7 +151,7 @@ getExamSkillsR eid = do
         $(widgetFile "home/exam")
 
 
-getExamInfoR :: TestId -> HandlerFor App Html
+getExamInfoR :: TestId -> Handler Html
 getExamInfoR tid = do
     curr <- getCurrentRoute
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
@@ -195,13 +190,10 @@ getExamInfoR tid = do
         $(widgetFile "home/exam")
 
 
-getSearchExamR :: HandlerFor App Html
+getSearchExamR :: Handler Html
 getSearchExamR = do
     stati <- reqGetParams <$> getRequest 
-    curr <- getCurrentRoute
     mq <- runInputGet $ iopt textField "q"
-    scrollY <- fromMaybe "0" <$> lookupGetParam "scrollY"
-    meid <- (toSqlKey . read . unpack <$>) <$> lookupGetParam "eid"
     tests <- runDB $ select $ do
         x <- from $ table @Test
         case mq of
@@ -215,22 +207,11 @@ getSearchExamR = do
     defaultLayout $ do
         setTitleI MsgSearch
         $(widgetFile "home/search/search")
-        $(widgetFile "home/exams")
 
 
-getHomeR :: HandlerFor App Html
+getHomeR :: Handler Html
 getHomeR = do
-    curr <- getCurrentRoute
     mq <- runInputGet $ iopt textField "q"
-    scrollY <- fromMaybe "0" <$> lookupGetParam "scrollY"
-    meid <- (toSqlKey . read . unpack <$>) <$> lookupGetParam "eid"
-    mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-    candidate <- case mcid of
-      Just cid -> runDB $ selectOne $ do
-          x <- from $ table @Candidate
-          where_ $ x ^. CandidateId ==. val cid
-          return x
-      Nothing -> return Nothing
 
     tests <- runDB $ select $ do
         x <- from $ table @Test
@@ -244,4 +225,3 @@ getHomeR = do
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
         $(widgetFile "home/home")
-        $(widgetFile "home/exams")

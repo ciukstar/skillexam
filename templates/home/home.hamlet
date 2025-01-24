@@ -10,17 +10,46 @@
       _{MsgExams}
 
     <div.row>
-      $maybe eid <- meid      
-        <a.button.circle.tansparent.no-elevate role=button
-          href="@{SearchExamR}?eid=#{fromSqlKey eid}"
-          onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
-          <i>search
-       
-      $nothing
-        <a.button.circle.tansparent.no-elevate role=button
-          href=@{SearchExamR}
-          onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
-          <i>search
+      <a.button.circle.tansparent.no-elevate href=@{SearchExamR} role=button>
+        <i>search
         
       ^{widgetAccount}
 
+
+<main.responsive.no-padding>
+
+  $if null tests
+    <div.no-data-banner>
+      <i>folder_open
+      <div>_{MsgNoPublishedExamsYet}.
+      
+  $else
+    $forall Entity eid (Test code name _ _ _ _) <- tests
+      $with ident <- pack $ show $ fromSqlKey eid
+        $maybe q <- mq
+          <a.row.padding.wave href=@?{(ExamInfoR eid,[("eid",ident),("q",q)])}>
+            <div.content.max>
+              <div.headline.large-text>
+                #{name}
+              <div.supporting-text.small-text>
+                #{code}
+
+            <i>arrow_forward_ios
+
+          <hr>
+
+        $nothing
+          <a.row.padding.wave href=@?{(ExamInfoR eid,[("eid",ident)])}>
+
+            <div.content.max>
+              <div.headline.large-text>
+                #{name}
+              <div.supporting-text.small-text>
+                #{code}
+
+            <i>arrow_forward_ios
+
+          <hr>
+
+
+^{widgetSnackbar msgs}

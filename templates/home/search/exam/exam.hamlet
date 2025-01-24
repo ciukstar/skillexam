@@ -1,56 +1,35 @@
+
 <header.fixed>
   <nav.responsive.max>
-    <a.button.transparent href=@{SearchExamR} role=button>
+    <a.button.circle.transparent href=@{SearchExamR} role=button>
       <i>arrow_back
 
-    <div.max>
+    <h1.title.max>
       _{MsgExam}
 
-<main.mdc-top-app-bar--fixed-adjust>
+<main.responsive.no-padding>
   $maybe Entity eid (Test code name _ _ _ _) <- test
 
-    <div.mdc-layout-grid.header>
-      <div.mdc-layout-grid__inner>
-        <div.mdc-layout-grid__cell.mdc-layout-grid__cell--span-1 style="text-align:center">
-          <i.material-symbols-outlined style="font-size:3rem">history_edu
-        <div.mdc-layout-grid__cell.mdc-layout-grid__cell--span-3>
-          <div.mdc-typography--headline6>#{name}
-          <div.mdc-typography--subtitle1>#{code}
+    <article.border.margin>
+      <div.row>
+        <i.large>history_edu
+        <div.max>
+          <h2.small>#{name}
+          <p>#{code}
 
-    <div.actions>
-      <form method=get action=@{ExamFormR}>
-        <button.mdc-fab.mdc-fab--mini.mdc-fab--extended type=submit name=eid value=#{fromSqlKey eid}>
-          <span.mdc-fab__ripple>
-          <span.mdc-fab__icon.material-symbols-outlined>add
-          <span.mdc-fab__label>_{MsgTakeThisExam}
+      <nav>
+        <form method=get action=@{ExamFormR}>
+          <button type=submit name=eid value=#{fromSqlKey eid}>
+            <i>add
+            <span>_{MsgTakeThisExam}
 
-    <form method=get #formTab>
-
-    <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
-      <div.mdc-tab-scroller>
-        <div.mdc-tab-scroller__scroll-area>
-          <div.mdc-tab-scroller__scroll-content>
-          
-            <button.mdc-tab role=tab aria-selected=true
-              :Just (ExamInfoR eid) == curr:.mdc-tab--active
-              type=submit form=formTab formaction=@{ExamInfoR eid} name=location value=#{location}>
-              <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgDetails}
-              <span.mdc-tab-indicator
-                :Just (ExamInfoR eid) == curr:.mdc-tab-indicator--active>
-                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
-              <span.mdc-tab__ripple>
-              <div.mdc-tab__focus-ring>
+    <div.tabs>
+      <a href=@{SearchExamInfoR eid} :Just (SearchExamInfoR eid) == curr:.active>
+        _{MsgDetails}
+        
+      <a href=@{SearchExamSkillsR eid} :Just (SearchExamSkillsR eid) == curr:.active>
+        _{MsgSkills}
+      
+    <div.page.no-padding.active>
               
-            <button.mdc-tab role=tab aria-selected=true
-              :Just (ExamSkillsR eid) == curr:.mdc-tab--active
-              type=submit form=formTab formaction=@{ExamSkillsR eid} name=location value=#{location}>
-              <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgSkills}
-              <span.mdc-tab-indicator
-                :Just (ExamSkillsR eid) == curr:.mdc-tab-indicator--active>
-                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
-              <span.mdc-tab__ripple>
-              <div.mdc-tab__focus-ring>
-              
-    ^{tab}
+      ^{tab}
