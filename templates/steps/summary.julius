@@ -5,4 +5,4 @@
   x => !!x
 ).forEach(
   x => { x.textContent = new Date(x.dataset.value).toLocaleString(navigator.language) }
-)
+);

@@ -1,0 +1,25 @@
+
+$maybe (Entity _ (Candidate fname gname aname bday _), age) <- candidate
+  <table aria-label=_{MsgCandidate}>
+    <tbody>
+      <tr.wave>
+        <th scope=row>_{MsgFamilyName}
+        <td>#{fname}
+      <tr.wave>
+        <th scope=row>_{MsgGivenName}
+        <td>#{gname}
+      <tr.wave>
+        <th scope=row>_{MsgAdditionalName}
+        <td>
+          $maybe aname <- aname
+            #{aname}
+      <tr.wave>
+        <th scope=row>_{MsgAge}
+        <td>
+          $maybe age <- age
+            #{age}
+      <tr.wave>
+        <th scope=row>_{MsgBirthday}
+        <td>
+          $maybe bday <- bday
+            #{formatCalendar fmtDay (setDay cal bday)}

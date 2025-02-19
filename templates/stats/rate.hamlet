@@ -1,18 +1,16 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button.mdc-theme--text-primary-on-light
-        href="@{StatsR ExamSuccessRatesR}?tid=#{fromSqlKey tid}" role=button>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPassRate}
 
-<main.mdc-top-app-bar--fixed-adjust>
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@?{(StatsR ExamSuccessRatesR,[("tid",pack $ show $ fromSqlKey tid)])} role=button>
+      <i>arrow_back
 
-  <div.mdc-card.mdc-card--outlined>
-    <div.mdc-card__content>
-      <div #pie>
+    <h1.title.max>
+      _{MsgPassRate}
 
-  <div.mdc-card.mdc-card--outlined>
-    <div.mdc-card__content>
-      <div #bar>
+<main.responsive>
+
+  <article>
+    <div ##{idPieChart}>
+
+  <article>
+    <div ##{idBarChart}>

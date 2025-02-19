@@ -1,4 +1,4 @@
-
+PleaseLogInToIdentifyYourselfAsExamCandidate: Veuillez vous connecter pour vous identifier en tant que candidat à l'examen
 InvalidUrlOrRemoved: URL non valide ou ressource supprimée
 Or: ou
 BackToHomepage: Retour à la page d'accueil

@@ -1,8 +1,8 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
-        href=@{AdminR $ TestR eid} role=button>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgQuestions}
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AdminR $ TestR eid} role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgQuestions}

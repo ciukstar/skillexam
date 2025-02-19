@@ -1,7 +1,15 @@
 
-
 Array.from(
-  document.querySelectorAll('tbody tr td.time')
+  document.querySelectorAll('time.full-datetime[datetime]')
 ).forEach(function (x) {
-  x.textContent = new Date(x.dataset.value).toLocaleString(navigator.language) 
-})
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'short',
+      weekday: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }
+  );
+});

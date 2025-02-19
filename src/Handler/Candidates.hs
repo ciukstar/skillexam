@@ -12,7 +12,7 @@ module Handler.Candidates
   , getCandidatePhotoR
   , getCandidateR
   , getCandidateEditFormR
-  , postCandidatesDeleteR
+  , postCandidateDeleR
   , getCandidatesSearchR
   , getCandidateExamsR
   , getCandidateSkillsR
@@ -20,87 +20,67 @@ module Handler.Candidates
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Monad (when)
-import Data.Maybe (isJust, fromMaybe)
+
+import Data.Maybe (fromMaybe)
 import qualified Data.List.Safe as LS (head)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Calendar (toGregorian)
-import Data.Text (unpack)
+import Data.Text (unpack, pack)
 import Data.Text.ICU.Calendar (setDay)
 import Data.Text.ICU
     ( LocaleName(Locale), calendar, CalendarType (TraditionalCalendarType)
     , standardDateFormatter, FormatStyle (NoFormatStyle, ShortFormatStyle)
     , formatCalendar
     )
-import Text.Hamlet (Html)
-import Text.Julius (rawJS)
 
-import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Types
-    (MForm, FormResult (FormSuccess)
-    , FieldView (fvInput, fvErrors, fvLabel, fvId)
-    , FieldSettings (fsLabel, FieldSettings, fsTooltip, fsId, fsName, fsAttrs)
+import Database.Esqueleto.Experimental
+    ( select, from, table, orderBy, desc, innerJoin, on
+    , (^.), (==.), (%), (++.), (||.), (:&) ((:&)), (<=.), (&&.)
+    , val, selectOne, where_, delete, in_
+    , upper_, like, just, Value (Value)
+    , distinct, selectQuery, groupBy, countRows, leftJoin, coalesceDefault
+    , SqlExpr, sum_, subSelectList
     )
-
-import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
-import Yesod.Form.Fields (textField, dayField, fileField, intField)
-
-import Yesod.Core.Handler
-    ( HandlerFor, redirect, FileInfo, fileSourceByteString, languages
-    , getMessages, addMessageI, lookupPostParams, setUltDestCurrent
-    , redirectUltDest, lookupSession, getUrlRender, lookupPostParam
-    , getCurrentRoute, deleteSession
-    )
-import Yesod.Core
-    ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
-    , TypedContent (TypedContent), ToContent (toContent), emptyContent
-    , liftIO
-    )
-import Yesod.Core.Widget (WidgetFor, whamlet)
-import Settings (widgetFile)
-
-import Foundation
-    ( App
-    , Route
-      ( PhotoPlaceholderR, MyExamR
-      , SignInR, SignOutR, AdminR
-      )
-    , AdminR
-      ( CandidatesR, CandidateR, CandidateSkillsR, CandidatePhotoR, CandidateExamsR
-      , CandidatesDeleteR, CandidatesSearchR, CandidateCreateFormR
-      , CandidateEditFormR
-      )
-    , AppMessage
-      ( MsgCandidates, MsgSearch, MsgAdd, MsgFamilyName, MsgGivenName, MsgAdditionalName
-      , MsgCandidate, MsgCancel, MsgSave, MsgBirthday, MsgPhoto, MsgSkills
-      , MsgDelete, MsgDetails, MsgBack, MsgAge, MsgExams
-      , MsgInvalidData, MsgClose, MsgPleaseConfirm, MsgAreYouSureDelete
-      , MsgLogin, MsgLogout, MsgNoCandidatesYet
-      , MsgNewRecordAdded, MsgRecordEdited, MsgRecordDeleted
-      , MsgPass, MsgFail, MsgNoSkillsYet, MsgNoExamsYet, MsgPassExamInvite
-      )
-    )
-
 import Database.Persist
     ( Entity (Entity, entityVal), (=.)
     , PersistStoreWrite (insert, replace), PersistUniqueWrite (upsert)
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Yesod.Persist (YesodPersist(runDB))
-import Database.Esqueleto.Experimental
-    ( select, from, table, orderBy, desc, innerJoin, on
-    , (^.), (==.), (%), (++.), (||.), (:&) ((:&)), (<=.), (&&.)
-    , val, selectOne, where_, delete, in_, valList
-    , upper_, like, just, Value (Value)
-    , distinct, selectQuery, groupBy, countRows, leftJoin, coalesceDefault
-    , SqlExpr, sum_, subSelectList
+
+import Foundation
+    ( Form, Handler, widgetAccount, widgetMainMenu, widgetSnackbar
+    , Route
+      ( StaticR, PhotoPlaceholderR, MyExamR
+      , AdminR
+      )
+    , AdminR
+      ( CandidatesR, CandidateR, CandidateSkillsR, CandidatePhotoR, CandidateExamsR
+      , CandidateDeleR, CandidatesSearchR, CandidateCreateFormR
+      , CandidateEditFormR
+      )
+    , AppMessage
+      ( MsgCandidates, MsgSearch, MsgAdd, MsgFamilyName, MsgGivenName
+      , MsgAdditionalName, MsgCandidate, MsgCancel, MsgSave
+      , MsgBirthday, MsgPhoto, MsgSkills , MsgDelete, MsgDetails
+      , MsgBack, MsgAge, MsgExams, MsgInvalidData, MsgClose
+      , MsgNoCandidatesYet, MsgNewRecordAdded, MsgRecordEdited
+      , MsgRecordDeleted, MsgPass, MsgFail, MsgNoSkillsYet
+      , MsgNoExamsYet, MsgPassExamInvite, MsgTakePhoto, MsgUploadPhoto
+      , MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
+      )
     )
 
+import Material3 (md3widget)
+
 import Model
-    ( Candidate
+    ( msgSuccess, msgError, keyUtlDest
+    , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName
       , candidateAdditionalName, candidateBday
       )
+    , CandidateId, Photo (Photo)
+    , Exam (Exam)
+    , Test (Test), Stem, Answer, Option, Skill (Skill)
     , EntityField
       ( CandidateId, PhotoCandidate, PhotoPhoto, CandidateFamilyName
       , CandidateGivenName, CandidateAdditionalName
@@ -109,13 +89,40 @@ import Model
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
       , SkillName, OptionPoints, TestPass, StemTest
       )
-    , CandidateId, Photo (Photo), keyUtlDest
-    , Exam (Exam)
-    , Test (Test), Stem, userSessKey, Answer, Option, Skill (Skill)
     )
 
+import Settings (widgetFile)
+import Settings.StaticFiles
+    ( img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg
+    , img_camera_24dp_0000F5_FILL0_wght400_GRAD0_opsz24_svg
+    )
+    
+import Text.Hamlet (Html)
 
-getCandidatesSearchR :: HandlerFor App Html
+import Yesod.Core
+    ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
+    , TypedContent (TypedContent), ToContent (toContent), emptyContent
+    , liftIO, getUrlRenderParams
+    )
+import Yesod.Core.Handler
+    ( redirect, FileInfo, fileSourceByteString, languages
+    , getMessages, addMessageI, setUltDestCurrent
+    , redirectUltDest, lookupSession, getUrlRender, lookupPostParam
+    , getCurrentRoute, newIdent
+    )
+import Yesod.Core.Widget (whamlet)
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (textField, dayField, fileField, intField)
+import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
+import Yesod.Form.Types
+    (FormResult (FormSuccess)
+    , FieldView (fvInput, fvErrors, fvId)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    )
+import Yesod.Persist (YesodPersist(runDB))
+
+
+getCandidatesSearchR :: Handler Html
 getCandidatesSearchR = do
     activated <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     mq <- runInputGet $ iopt textField "q"
@@ -138,29 +145,34 @@ getCandidatesSearchR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSearch
-        $(widgetFile "candidates/search")
-        $(widgetFile "candidates/candidates")
+        idFormQuery <- newIdent
+        $(widgetFile "data/candidates/search")
+        $(widgetFile "data/candidates/candidates")
 
 
-postCandidatesDeleteR :: HandlerFor App Html
-postCandidatesDeleteR = do
-    uid <-  (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-    cids <- (toSqlKey . read . unpack <$>) <$> lookupPostParams "id"
-    runDB $ delete $ do
-        x <- from $ table @Candidate
-        where_ $ x ^. CandidateId `in_` valList cids
-
-    when (uid `elem` (pure <$> cids)) $ deleteSession userSessKey
+postCandidateDeleR :: CandidateId -> Handler Html
+postCandidateDeleR cid = do
 
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> do
         l <- lookupPostParam "location"
         ult <- lookupSession keyUtlDest
         return $ l <|> ult
-    addMessageI "--mdc-theme-info" MsgRecordDeleted
-    redirect location
+        
+    ((fr,_),_) <- runFormPost formCandidateDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete $ do
+              x <- from $ table @Candidate
+              where_ $ x ^. CandidateId ==. val cid
+          addMessageI msgSuccess MsgRecordDeleted
+          redirect location
+
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect location
 
 
-postCandidateR :: CandidateId -> HandlerFor App Html
+postCandidateR :: CandidateId -> Handler Html
 postCandidateR cid = do
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
@@ -176,17 +188,20 @@ postCandidateR cid = do
                 bs <- fileSourceByteString fs
                 _ <- runDB $ upsert (Photo cid bs "image/avif") [PhotoPhoto =. bs]
                 return ()
-            _ -> return ()
-          addMessageI "--mdc-theme-info" MsgRecordEdited
+                
+            _otherwise -> return ()
+            
+          addMessageI msgSuccess MsgRecordEdited
           redirectUltDest $ AdminR CandidatesR
-      _ -> defaultLayout $ do
-          addMessageI "--mdc-theme-error" MsgInvalidData
+          
+      _otherwise -> defaultLayout $ do
+          addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgCandidate
-          $(widgetFile "candidates/edit")
+          $(widgetFile "data/candidates/edit")
 
 
-getCandidateEditFormR :: CandidateId -> HandlerFor App Html
+getCandidateEditFormR :: CandidateId -> Handler Html
 getCandidateEditFormR cid = do
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
@@ -197,10 +212,10 @@ getCandidateEditFormR cid = do
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgCandidate
-        $(widgetFile "candidates/edit")
+        $(widgetFile "data/candidates/edit")
 
 
-getCandidateSkillsR :: CandidateId -> HandlerFor App Html
+getCandidateSkillsR :: CandidateId -> Handler Html
 getCandidateSkillsR cid = do
     curr <- getCurrentRoute
     candidate <- ((,Nothing) <$>) <$> runDB ( selectOne $ do
@@ -238,15 +253,18 @@ getCandidateSkillsR cid = do
         where_ $ o ^. OptionKey
         orderBy [desc (s ^. SkillName)]
         return s
-    let tab = $(widgetFile "candidates/skills")
+    let tab = $(widgetFile "data/candidates/skills")
     msgs <- getMessages
     setUltDestCurrent
+    (fw0,et0) <- generateFormPost formCandidateDelete
     defaultLayout $ do
         setTitleI MsgCandidate
-        $(widgetFile "candidates/candidate")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        $(widgetFile "data/candidates/candidate")
 
 
-getCandidateExamsR :: CandidateId -> HandlerFor App Html
+getCandidateExamsR :: CandidateId -> Handler Html
 getCandidateExamsR cid = do
     curr <- getCurrentRoute
     candidate <- ((,Nothing) <$>) <$> runDB ( selectOne $ do
@@ -271,15 +289,19 @@ getCandidateExamsR cid = do
         orderBy [desc (x ^. ExamId)]
         return (x,e, coalesceDefault [score] (val 0))
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
-    let tab = $(widgetFile "candidates/exams")
     msgs <- getMessages
+    rndr <- getUrlRenderParams
     setUltDestCurrent
+    (fw0,et0) <- generateFormPost formCandidateDelete
     defaultLayout $ do
         setTitleI MsgCandidate
-        $(widgetFile "candidates/candidate")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        let tab = $(widgetFile "data/candidates/exams")
+        $(widgetFile "data/candidates/candidate")
 
 
-getCandidateR :: CandidateId -> HandlerFor App Html
+getCandidateR :: CandidateId -> Handler Html
 getCandidateR cid = do
     curr <- getCurrentRoute
     candidate <- do
@@ -293,15 +315,22 @@ getCandidateR cid = do
     loc <- Locale . unpack . fromMaybe "en" . LS.head <$> languages
     cal <- liftIO $ calendar "GMT+0300" loc TraditionalCalendarType
     fmtDay <- liftIO $ standardDateFormatter NoFormatStyle ShortFormatStyle loc "GMT+0300"
-    let tab = $(widgetFile "candidates/details")
+    let tab = $(widgetFile "data/candidates/details")
     msgs <- getMessages
+    (fw0,et0) <- generateFormPost formCandidateDelete
     defaultLayout $ do
         setUltDestCurrent
         setTitleI MsgCandidate
-        $(widgetFile "candidates/candidate")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        $(widgetFile "data/candidates/candidate")
 
 
-getCandidatePhotosR :: HandlerFor App TypedContent
+formCandidateDelete :: Form ()
+formCandidateDelete extra = return (pure (), [whamlet|^{extra}|]) 
+
+
+getCandidatePhotosR :: Handler TypedContent
 getCandidatePhotosR = do
     mcid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     photo <- case mcid of
@@ -315,7 +344,7 @@ getCandidatePhotosR = do
       Nothing -> TypedContent "image/avif" emptyContent
 
 
-getCandidatePhotoR :: CandidateId -> HandlerFor App TypedContent
+getCandidatePhotoR :: CandidateId -> Handler TypedContent
 getCandidatePhotoR cid = do
     photo <- runDB $ selectOne $ do
         x <- from $ table @Photo
@@ -326,7 +355,7 @@ getCandidatePhotoR cid = do
       Nothing -> TypedContent "image/avif" emptyContent
 
 
-postCandidatesR :: HandlerFor App Html
+postCandidatesR :: Handler Html
 postCandidatesR = do
     ((fr,widget),enctype) <- runFormPost $ formCandidate Nothing
     case fr of
@@ -338,24 +367,19 @@ postCandidatesR = do
                 _ <- runDB $ upsert (Photo cid bs "image/avif") [PhotoPhoto =. bs]
                 return ()
             Nothing -> return ()
-          addMessageI "--mdc-theme-info" MsgNewRecordAdded
+          addMessageI msgSuccess MsgNewRecordAdded
           redirectUltDest $ AdminR CandidatesR
-      _ -> defaultLayout $ do
+          
+      _otherwise -> defaultLayout $ do
           ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
           setTitleI MsgCandidate
-          $(widgetFile "candidates/create")
+          $(widgetFile "data/candidates/create")
 
 
-getCandidatesR :: HandlerFor App Html
+getCandidatesR :: Handler Html
 getCandidatesR = do
     activated <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
-    mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-    candidate <- case mcid of
-      Just cid -> runDB $ selectOne $ do
-          x <- from $ table @Candidate
-          where_ $ x ^. CandidateId ==. val cid
-          return x
-      _ -> return Nothing
+      
     candidates <- runDB $ select $ do
         x :& (_,nexams) <- from $ table @Candidate
             `leftJoin` from ( selectQuery $ do
@@ -369,82 +393,62 @@ getCandidatesR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgCandidates
-        $(widgetFile "candidates/main")
-        $(widgetFile "candidates/candidates")
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
+        $(widgetFile "data/candidates/main")
+        $(widgetFile "data/candidates/candidates")
 
 
-getCandidateCreateFormR :: HandlerFor App Html
+getCandidateCreateFormR :: Handler Html
 getCandidateCreateFormR = do
     (widget,enctype) <- generateFormPost $ formCandidate Nothing
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgCandidate
-        $(widgetFile "candidates/create")
+        $(widgetFile "data/candidates/create")
 
 
-formCandidate :: Maybe (Entity Candidate)
-              -> Html -> MForm (HandlerFor App) (FormResult (Candidate,Maybe FileInfo), WidgetFor App ())
+formCandidate :: Maybe (Entity Candidate) -> Form (Candidate,Maybe FileInfo)
 formCandidate candidate extra = do
     (fnameR,fnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgFamilyName
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateFamilyName . entityVal <$> candidate)
+        
     (gnameR,gnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgGivenName
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateGivenName . entityVal <$> candidate)
+        
     (anameR,anameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgAdditionalName
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateAdditionalName . entityVal <$> candidate)
+        
     (bdayR,bdayV) <- mopt dayField FieldSettings
         { fsLabel = SomeMessage MsgBirthday
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateBday . entityVal <$> candidate)
+        
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("style","display:none"),("onchange","displayPhoto(this)")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
     let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> pure Nothing) <*> photoR
-    let w = [whamlet|
-#{extra}
-^{fvInput photoV}
-<ul.mdc-image-list>
-  <li.mdc-image-list__item onclick="document.querySelector('##{fvId photoV}').click()">
-    <div.mdc-image-list__image-aspect-container>
-      $maybe Entity cid _ <- candidate
-        <img.mdc-image-list__image #photo src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
-          onerror="this.src='@{PhotoPlaceholderR}'">
-      $nothing
-        <img.mdc-image-list__image #photo src=@{PhotoPlaceholderR} alt=_{MsgPhoto}>
-    <div.mdc-image-list__supporting>
-      <span.mdc-image-list__label>_{MsgPhoto}
-$forall v <- [fnameV,gnameV,anameV,bdayV]
-  <label.mdc-text-field.mdc-text-field--filled.form-field data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors v):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel v}
-    ^{fvInput v}
-    <span.mdc-line-ripple>
-  $maybe errs <- fvErrors v
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-        #{errs}
-|]
-    return (r,w)
+    
+    idLabelPhoto <- newIdent
+    idImgPhoto <- newIdent
+    idButtonUploadPhoto <- newIdent
+    idButtonTakePhoto <- newIdent
+    idOverlay <- newIdent
+
+    idDialogSnapshot <- newIdent
+    idVideo <- newIdent
+    idButtonCloseDialogSnapshot <- newIdent
+    idButtonCapture <- newIdent
+    
+    return ( r
+           , $(widgetFile "data/candidates/form")
+           )

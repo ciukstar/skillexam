@@ -1,0 +1,16 @@
+
+<form method=get action=@{AdminR SkillsSearchR} ##{idFormQuery}>
+
+<header.fixed.no-padding>
+
+  <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
+    <a.start.transparent.round.circle.wave href=@{AdminR SkillsR}>
+      <i>arrow_back    
+
+    $maybe q <- mq
+      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q value=#{q}>
+    $nothing
+      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q>
+    
+    <button.end.transparent.round.circle.wave type=submit form=#{idFormQuery}>
+      <i>search

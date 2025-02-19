@@ -1,4 +1,4 @@
-
+PleaseLogInToIdentifyYourselfAsExamCandidate: Please log in to identify yourself as an exam candidate
 InvalidUrlOrRemoved: Invalid URL or resource removed
 Or: or
 BackToHomepage: Go back to homepage

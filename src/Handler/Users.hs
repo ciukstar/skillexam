@@ -27,8 +27,7 @@ import Database.Esqueleto.Experimental
     ( select, from, table, selectOne, where_, val, update, set
     , (^.), (==.), (=.)
     , Value (unValue), orderBy, asc, just
-    )
-    
+    )    
 import Database.Persist
     ( Entity (Entity), entityVal, insert, upsert)
 import qualified Database.Persist as P ((=.), delete)
@@ -116,7 +115,7 @@ postUserResetPasswordR uid = do
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgUser
-              $(widgetFile "users/pwd")
+              $(widgetFile "data/users/pwd")
 
 
 getUserResetPasswordR :: UserId -> Handler Html
@@ -125,7 +124,7 @@ getUserResetPasswordR uid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        $(widgetFile "users/pwd")
+        $(widgetFile "data/users/pwd")
     
 
 formPassword :: Form (Text,Text)
@@ -191,7 +190,7 @@ getUserEditR uid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        $(widgetFile "users/edit")
+        $(widgetFile "data/users/edit")
 
 
 getUserNewR :: Handler Html
@@ -202,7 +201,7 @@ getUserNewR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUser
-        $(widgetFile "users/new")
+        $(widgetFile "data/users/new")
 
 
 postUserR :: UserId -> Handler Html
@@ -255,7 +254,7 @@ postUserR uid = do
           addMessageI msgError MsgInvalidFormData
           msgs <- getMessages
           defaultLayout $ do
-              $(widgetFile "users/edit")
+              $(widgetFile "data/users/edit")
 
 
 getUserR :: UserId -> Handler Html
@@ -273,7 +272,7 @@ getUserR uid = do
         setTitleI MsgUser
         idOverlay <- newIdent
         idDialogDelete <- newIdent
-        $(widgetFile "users/user")
+        $(widgetFile "data/users/user")
 
 
 formUserDelete :: Form ()
@@ -309,7 +308,7 @@ postUsersR = do
           addMessageI msgError MsgInvalidFormData
           msgs <- getMessages
           defaultLayout $ do
-              $(widgetFile "users/new")
+              $(widgetFile "data/users/new")
 
 
 getUsersR :: Handler Html
@@ -325,7 +324,7 @@ getUsersR = do
         setTitleI MsgUsers
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
-        $(widgetFile "users/users")
+        $(widgetFile "data/users/users")
 
 
 formUser :: Maybe (Entity User) -> Form (User,(Maybe FileInfo,Maybe Html))
@@ -385,7 +384,7 @@ formUser user extra = do
     idVideo <- newIdent
     idButtonCapture <- newIdent
 
-    return (r, $(widgetFile "users/form"))
+    return (r, $(widgetFile "data/users/form"))
   where
       uniqueEmailField :: Field Handler Text
       uniqueEmailField = checkM uniqueEmail emailField

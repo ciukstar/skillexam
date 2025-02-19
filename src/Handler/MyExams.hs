@@ -13,7 +13,7 @@ module Handler.MyExams
 import qualified Text.Printf as Printf (printf)
 import Data.Time.Format.ISO8601 (iso8601Show)
 import Data.Maybe (fromMaybe, isJust, isNothing, fromJust)
-import Yesod.Core.Handler (HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, getCurrentRoute)
+import Yesod.Core.Handler (HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, getCurrentRoute, newIdent)
 import Yesod.Core (Html, Yesod (defaultLayout), setTitleI)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields (searchField, intField, textField, urlField)
@@ -31,11 +31,11 @@ import Foundation
     , MsgLogin, MsgPhoto, MsgLogout, MsgAttempt, MsgExam, MsgBack
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
     , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgNoExamsFoundFor
-    )
+    ), widgetAccount, widgetMainMenu
   )
 import Database.Persist (Entity (Entity))
 import Database.Persist.Sql (toSqlKey, fromSqlKey)
-import Data.Text (unpack, Text)
+import Data.Text (unpack, Text, pack)
 import Yesod.Persist.Core (YesodPersist(runDB))
 
 import Database.Esqueleto.Experimental
@@ -145,7 +145,9 @@ getMyExamsR = do
     let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgMyExams
-        $(widgetFile "my-exams/my-exams")
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
+        $(widgetFile "my-exams/my-exams") 
 
 
 queryScores :: CandidateId -> Maybe Text

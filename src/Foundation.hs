@@ -145,12 +145,11 @@ instance Yesod App where
     defaultLayout :: Widget -> Handler Html
     defaultLayout widget = do
       master <- getYesod
-      currRoute <- getCurrentRoute
       
       pc <- widgetToPageContent $ do
-          addStylesheet $ StaticR css_outlined_css
-          addStylesheet $ StaticR material_components_web_min_css
-          addScript $ StaticR material_components_web_min_js
+          -- addStylesheet $ StaticR css_outlined_css
+          -- addStylesheet $ StaticR material_components_web_min_css
+          -- addScript $ StaticR material_components_web_min_js
           $(widgetFile "default-layout")
       
       langs <- languages
@@ -181,13 +180,13 @@ instance Yesod App where
     isAuthorized (AdminR CandidatesR) _ = return Authorized
     isAuthorized (AdminR SkillCreateFormR) _ = return Authorized
     isAuthorized (AdminR SkillsSearchR) _ = return Authorized
-    isAuthorized (AdminR SkillsDeleteR) _ = return Authorized
+    isAuthorized (AdminR (SkillsDeleteR _)) _ = return Authorized
     isAuthorized (AdminR (SkillR _)) _ = return Authorized
     isAuthorized (AdminR (SkillEditFormR _)) _ = return Authorized
     isAuthorized (AdminR TestCreateFormR) _ = return Authorized
     isAuthorized (AdminR TestEditFormR {}) _ = return Authorized
     isAuthorized (AdminR TestR {}) _ = return Authorized
-    isAuthorized (AdminR TestsDeleteR) _ = return Authorized
+    isAuthorized (AdminR (TestDeleR _)) _ = return Authorized
     isAuthorized (AdminR TestSearchR) _ = return Authorized
     isAuthorized (AdminR StemsR {}) _ = return Authorized
     isAuthorized (AdminR StemCreateFormR {}) _ = return Authorized
@@ -204,12 +203,11 @@ instance Yesod App where
     isAuthorized (AdminR (CandidatePhotoR _)) _ = return Authorized
     isAuthorized (AdminR (CandidateR _)) _ = return Authorized
     isAuthorized (AdminR (CandidateEditFormR _)) _ = return Authorized
-    isAuthorized (AdminR CandidatesDeleteR) _ = return Authorized
+    isAuthorized (AdminR (CandidateDeleR _)) _ = return Authorized
     isAuthorized (AdminR CandidatesSearchR) _ = return Authorized
     isAuthorized (AdminR (CandidateExamsR _)) _ = return Authorized
     isAuthorized StepR {} _ = return Authorized
     isAuthorized DocsR _ = return Authorized
-    isAuthorized DocsErdR _ = return Authorized    
     isAuthorized ExamFormR _ = return Authorized
     isAuthorized ExamR _ = return Authorized
     isAuthorized SignInR _ = return Authorized

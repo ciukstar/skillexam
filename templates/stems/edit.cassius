@@ -1,16 +1,2 @@
 
-main
-  margin: 0 1rem
-  form
-    display: flex
-    flex-direction: column
-    label, div.mdc-select
-      margin-top: 1rem
-    div.actions
-      margin-top: 1rem
-      display: flex
-      flex-direction: row
-      justify-content: flex-end
-      align-items: center
-      gap: 0.5rem
       

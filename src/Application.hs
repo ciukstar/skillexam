@@ -91,7 +91,7 @@ import Handler.Candidates
     ( getCandidatesR, getCandidateCreateFormR
     , postCandidatesR, getCandidatePhotoR, getCandidateR
     , getCandidateEditFormR, postCandidateR
-    , postCandidatesDeleteR, getCandidatesSearchR
+    , postCandidateDeleR, getCandidatesSearchR
     , getCandidateExamsR
     , getCandidateSkillsR, getCandidatePhotosR
     )
@@ -112,7 +112,7 @@ import Handler.Stems
 import Handler.Tests
     ( getTestsR, getTestCreateFormR, postTestsR
     , getTestEditFormR, postTestR, getTestR
-    , postTestsDeleteR, getTestSearchR
+    , postTestDeleR, getTestSearchR
     , postTestPublishR, postTestUnpublishR
     )
     
@@ -122,7 +122,8 @@ import Handler.Skills
     , getSkillR, getSkillEditFormR, postSkillR
     )
 
-import Handler.Docs (getDocsR, getDocsErdR)
+import Handler.Docs (getDocsR)
+
 import Handler.Home
     ( getHomeR, getSearchExamR, getExamInfoR
     , getExamSkillsR

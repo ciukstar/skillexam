@@ -1,4 +1,4 @@
-
+PleaseLogInToIdentifyYourselfAsExamCandidate: Пожалуйста, войдите в систему, чтобы идентифицировать себя как кандидата на экзамен
 InvalidUrlOrRemoved: Неверный URL-адрес или ресурс удален
 Or: или
 BackToHomepage: Вернуться на домашнюю страницу

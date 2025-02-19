@@ -1,0 +1,16 @@
+
+$if null skills
+  <figure.center-align>
+    <i.extra>folder_open
+    <figcaption>
+      <div>
+        _{MsgNoSkillsYet}.
+        
+      <div.small-text.secondary-text>
+        _{MsgPassExamInvite}.
+      
+$else
+  <ul.list.border>
+    $forall Entity _ (Skill _ name _) <- skills
+      <li.wave>
+        #{name}

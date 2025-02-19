@@ -1,8 +1,6 @@
 
-window.mdc.autoInit();
-
-let timer = document.getElementById('timer');
-let timerProgress = document.getElementById('timerProgress');
+let timer = document.getElementById(#{idTimer});
+let timerProgress = document.getElementById(#{idProgressTimer});
 var left, total;
 let xhr = new XMLHttpRequest();
 xhr.onload = function (x) {
@@ -10,33 +8,15 @@ xhr.onload = function (x) {
   left = data.left;
   total = data.total;
   timer.textContent = new Date(left * 1000).toISOString().substring(11, 19);
-  timerProgress.MDCLinearProgress.progress = left / total;
+  timerProgress.value = left / total;
 };
 
 xhr.open("GET","@{RemainingTimeR eid}");
+xhr.setRequestHeader('Accept','application/json');
 xhr.send();
 
 setInterval(function () {
   left = left - 1;
   timer.textContent = new Date(left * 1000).toISOString().substring(11, 19);
-  timerProgress.MDCLinearProgress.progress = left / total;  
-},1000);
-
-
-Array.from(
-  document.querySelectorAll('button.terminate')
-).forEach(function (x) {
-  x.addEventListener('click', function (e) {
-    document.querySelector('div.mdc-dialog.terminate').MDCDialog.open()
-  })
-});
-
-Array.from(
-  document.querySelectorAll(
-    'div.mdc-dialog.terminate div.mdc-dialog__actions button.cancel'
-  )
-).forEach(function (x) {
-  x.addEventListener('click', function (e) {
-    document.querySelector('div.mdc-dialog.terminate').MDCDialog.close()
-  })
-});
+  timerProgress.value = left / total;  
+}, 1000);

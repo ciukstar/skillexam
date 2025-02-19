@@ -1,18 +1,23 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-icon-button.mdc-top-app-bar__navigation-icon #leftMainMenuOpen>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title>
-        _{MsgDocs}
 
-<main.mdc-top-app-bar--fixed-adjust>
+^{widgetMainMenu idOverlay idDialogMainMenu}
 
-  <div.mdc-typography--headline4>_{MsgAppName}
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgDocs}
+        
+    ^{widgetAccount}
+
+
+<main.responsive>
+
+  <h2>_{MsgAppName}
   <p>_{MsgDoc001}
 
-  <div.mdc-typography--headline4>_{MsgOverview}
+  <h2>_{MsgOverview}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ AdminR SkillsR))}
   <p>
@@ -24,24 +29,24 @@
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr MyExamsR))}
     
-  <div.mdc-typography--headline4>_{MsgBasicEntities}
+  <h2>_{MsgBasicEntities}
 
-  <div.mdc-typography--headline5>_{MsgSkill}
+  <h3>_{MsgSkill}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc007 (rndr $ AdminR SkillsR))}
 
-  <div.mdc-typography--headline5>_{MsgCandidate}
+  <h3>_{MsgCandidate}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc008 (rndr $ AdminR CandidatesR))}
 
-  <div.mdc-typography--headline5>_{MsgTest}
+  <h3>_{MsgTest}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc009 (rndr $ AdminR TestsR))}
   <p>_{MsgDoc010}
   <p>_{MsgDoc011}
   <p>_{MsgDoc012}
 
-  <div.mdc-typography--headline5>_{MsgQuestion}
+  <h3>_{MsgQuestion}
   <p>_{MsgDoc013}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs MsgDoc014}
@@ -50,7 +55,7 @@
   <p>_{MsgDoc017}
   <p>_{MsgDoc018}
 
-  <div.mdc-typography--headline5>_{MsgOption}
+  <h3>_{MsgOption}
   <p>_{MsgDoc019}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs MsgDoc020}
@@ -58,14 +63,14 @@
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc022 (rndr HomeR))}
 
-  <div.mdc-typography--headline5>_{MsgExam}
+  <h3>_{MsgExam}
   <p>_{MsgDoc023}
   <p>_{MsgDoc024}
   <p>_{MsgDoc025}
 
-  <div.mdc-typography--headline5>_{MsgAnswer}
+  <h3>_{MsgAnswer}
   <p>_{MsgDoc026}
 
-  <div.mdc-typography--headline4>_{MsgDiagramERD}
+  <h2>_{MsgDiagramERD}
   <p>
-    <img src=@{DocsErdR} alt=_{MsgDiagramERD}>
+    <img src=@{StaticR img_SkillExam_ERD_svg} alt=_{MsgDiagramERD}>

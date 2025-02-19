@@ -1,12 +1,4 @@
 
-window.mdc.autoInit();
-
-[document.getElementById('profilePhoto')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    document.getElementById('profileMenu').MDCMenuSurface.open()
-  })
-});
-
 Array.from(
   document.querySelectorAll('span.as-percentage')
 ).forEach(function (x) {

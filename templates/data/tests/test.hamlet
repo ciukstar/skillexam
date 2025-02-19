@@ -1,0 +1,95 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@?{(AdminR TestsR,[("eid",pack $ show $ fromSqlKey eid)])}
+      role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgTest}
+      
+    <div.row>
+      <button.circle.transparent type=button title=_{MsgDelete} data-ui=##{idDialogDelete}>
+        <i>delete
+        
+      <a.button.circle.transparent href=@{AdminR $ TestEditFormR eid} title=_{MsgEdit}>
+        <i>edit
+
+<main.responsive>
+
+  $maybe Entity eid (Test code name duration pass descr state) <- test
+    
+    <table>
+      <tbody>
+        <tr.wave>
+          <th>_{MsgCode}
+          <td>#{code}
+        <tr.wave>
+          <th>_{MsgName}
+          <td>#{name}
+        <tr.wave>
+          <th>_{MsgDuration}
+          <td>
+            <span>#{printf "%.0f" duration}
+            <span style="text-transform:lowercase">_{MsgMinutes}
+        <tr.wave>
+          <th>_{MsgPassMark}
+          <td>
+            <span>#{printf "%.0f" pass}
+            <span style="text-transform:lowercase">_{MsgPoints}
+        <tr.wave>
+          <th>_{MsgDescr}
+          <td>
+            $maybe description <- descr
+              #{description}
+        <tr.wave>
+          <th>_{MsgExamState}
+          <td>
+            $case state
+              $of TestStatePublished
+                _{MsgPublished}
+              $of TestStateUnpublished
+                _{MsgUnpublished}
+
+    <a.row.padding.wave href=@{AdminR $ StemsR eid}>
+      <i.large.secondary-text>quiz
+      <div.max>
+        <div.large-text>
+          _{MsgQuestions}
+        <div.secondary-text>
+          _{MsgExamQuestions}
+
+      <i.secondary-text>arrow_forward_ios
+
+    <div.actions>
+      $case state
+        $of TestStateUnpublished
+          <form method=post action=@{AdminR $ TestPublishR eid} enctype=#{enctype}>
+            ^{widget}
+            <nav>
+              <button.responsive.fill type=submit>
+                <i>publish
+                <span>_{MsgPublish}
+                
+        $of TestStatePublished
+          <form method=post action=@{AdminR $ TestUnpublishR eid} enctype=#{enctype}>
+            ^{widget}
+            <nav>
+              <button.responsive.fill>
+                <i>unpublished
+                <span>_{MsgUnpublish}
+
+^{widgetSnackbar msgs}
+
+<div.overlay ##{idOverlay} data-ui=##{idOverlay}>
+
+<dialog ##{idDialogDelete}>
+  <h5>_{MsgConfirmPlease}
+  <div>_{MsgDeleteAreYouSure}
+  <nav.right-align.no-space>
+    <button.transparent.link data-ui=##{idDialogDelete}>
+      _{MsgCancel}
+    <form method=post action=@{AdminR $ TestDeleR eid} enctype=#{et0}>
+      ^{fw0}
+      <button.primary type=submit>
+        _{MsgDelete}

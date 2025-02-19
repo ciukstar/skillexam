@@ -1,14 +1,16 @@
+
 main
-  margin: 0 1rem
-  display: flex
-  flex-direction: column
-  div#gauge
-    height: 20rem
-  dl
-    position: absolute
-    top: 17rem
-  dl dt:not(:first-child)
-    margin-top: 1rem
-  dl dd
-    margin-inline-start: 0
+    
+    ##{idGauge}
+        height: 20rem
+        
+    dl
+        position: absolute
+        top: 17rem
+        
+    dl dt:not(:first-child)
+        margin-top: 1rem
+        
+    dl dd
+        margin-inline-start: 0
     

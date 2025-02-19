@@ -1,0 +1,34 @@
+
+$if null tests
+  <figure.center-align>
+    <i.extra>folder_open
+    <figcaption>
+      <div>_{MsgNoExamsYet}.
+      <div.secondary>_{MsgPassExamInvite}.
+      
+$else
+
+  $forall (Entity rid (Exam {}), Entity _ (Test _ ename _ pass _ _), Value score) <- tests
+    
+    $with l <- rndr (AdminR $ CandidateExamsR cid) [("id",pack $ show $ fromSqlKey rid)]
+      
+      <a.row.padding.wave href=@?{(MyExamR rid,[("location",l)])} :pure rid == mrid:.active>
+
+        $if score >= pass
+          <i.large.circle.small-padding style="background-color:var(--color-pass)">
+            thumb_up
+        $else
+          <i.large.circle.small-padding style="background-color:var(--color-fail)">
+            thumb_down
+
+        <div.max>
+          <div.headline.large-text>#{ename}
+          <div.supporting-text.secondary-text>
+            $if score >= pass
+              _{MsgPass}
+            $else
+              _{MsgFail}
+
+        <i.secondary-text>arrow_forward_ios
+
+      <hr>

@@ -6,7 +6,7 @@
   <menu #demoAccountsMenu>
     $forall Entity uid (User email _ uname super admin _ _ _) <- users
       $with pass <- maybe "" (TE.decodeUtf8 . localPart) (emailAddress $ TE.encodeUtf8 email)
-        <a.row href=# onclick="document.getElementById('#{idInputUsername}').value = '#{email}';document.getElementById('#{idInputPassword}').value = '#{pass}';document.getElementById('idButtonAccountsMenu').click()">
+        <a.row.padding href=# onclick="document.getElementById('#{idInputUsername}').value = '#{email}';document.getElementById('#{idInputPassword}').value = '#{pass}';document.getElementById('idButtonAccountsMenu').click()">
           <img.circle.small src=@{AdminR $ UserPhotoR uid} loading=lazy alt=_{MsgPhoto}>
           <div.max>
             $maybe name <- uname

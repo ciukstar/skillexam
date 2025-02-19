@@ -1,0 +1,18 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AdminR CandidatesR} role=button>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgCandidate}
+
+<main.responsive>
+
+  <form method=post action=@{AdminR CandidatesR} enctype=#{enctype} novalidate>
+    ^{widget}
+    <nav.right-align>
+      <a.button.transparent href=#{ult} role=button>
+        _{MsgCancel}
+      <button type=submit>
+        _{MsgSave}

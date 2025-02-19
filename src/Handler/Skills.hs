@@ -14,72 +14,69 @@ module Handler.Skills
   , postSkillR
   ) where
 
-import Data.Text (Text, unpack, pack)
-import Data.Maybe (fromMaybe, isJust)
-import Text.Hamlet (Html)
-import Yesod.Core
-    ( Yesod(defaultLayout), setTitleI, WidgetFor, whamlet
-    , SomeMessage (SomeMessage), getMessages, addMessageI
-    , lookupPostParams, getUrlRender, lookupPostParam, getUrlRenderParams, getCurrentRoute
-    )
-import Settings (widgetFile)
+import Data.Maybe (fromMaybe)
+import Data.Text (Text, pack)
 
-import Yesod.Core.Handler
-    ( HandlerFor, redirect, lookupGetParam
-    , setUltDestCurrent, lookupSession
+import Database.Esqueleto.Experimental
+    ( select, selectOne, from, table, orderBy, desc, delete
+    , (^.), (%), (++.), (||.), (==.)
+    , where_, like, val, upper_, just
     )
+import Database.Persist
+    ( Entity (Entity, entityVal), PersistStoreWrite (insert, replace)
+    )
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( App
-    , Route
-      ( AdminR
-      , SignInR, SignOutR
-      , PhotoPlaceholderR
-      )
+    ( Form, Handler, widgetMainMenu, widgetAccount, widgetSnackbar
+    , Route (AdminR)
     , AdminR
-      ( SkillsR, SkillR, CandidatePhotoR, SkillEditFormR, SkillCreateFormR
+      ( SkillsR, SkillR, SkillEditFormR, SkillCreateFormR
       , SkillsSearchR, SkillsDeleteR
       )
     , AppMessage
       ( MsgSkills, MsgAdd, MsgSearch, MsgSkill, MsgSave
       , MsgCancel, MsgCode, MsgName, MsgDescr, MsgDelete
-      , MsgClose, MsgPleaseConfirm, MsgAreYouSureDelete
-      , MsgDuplicateValue, MsgInvalidData
-      , MsgLogin, MsgLogout, MsgPhoto, MsgNewRecordAdded
-      , MsgRecordDeleted, MsgRecordEdited, MsgNoSkillsYet
+      , MsgDuplicateValue, MsgInvalidData, MsgBack
+      , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited
+      , MsgNoSkillsYet, MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease
+      , MsgInvalidFormData
       )
     )
 
+import Material3 (md3widget, md3textareaWidget)
+
 import Model
-    ( SkillId, Skill (skillCode, skillName, Skill, skillDescr)
-    , EntityField (SkillId, SkillCode, SkillName, SkillDescr, CandidateId)
-    , Candidate (Candidate), userSessKey
+    ( msgError, msgSuccess
+    , SkillId, Skill (skillCode, skillName, Skill, skillDescr)
+    , EntityField (SkillId, SkillCode, SkillName, SkillDescr)
+    )
+    
+import Settings (widgetFile)
+
+import Text.Hamlet (Html)
+
+import Yesod.Core
+    ( Yesod(defaultLayout), setTitleI, whamlet
+    , SomeMessage (SomeMessage), getMessages, addMessageI
+    , getUrlRender, lookupPostParam, getUrlRenderParams
+    , newIdent
     )
 
+import Yesod.Core.Handler
+    ( redirect, lookupGetParam, setUltDestCurrent
+    )
 import Yesod.Form
-    ( MForm, FormResult (FormSuccess)
-    , FieldView (fvInput, fvId, fvLabel, fvErrors)
+    ( FormResult (FormSuccess)
     , generateFormPost, runFormPost, Textarea (Textarea, unTextarea)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsAttrs, fsName)
     , textField, textareaField, mreq, mopt, unTextarea
     , checkM, runInputGet, iopt, intField, urlField
     )
-
 import Yesod (YesodPersist(runDB))
 
-import Database.Persist
-    ( Entity (Entity, entityVal), PersistStoreWrite (insert, replace)
-    )
 
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Database.Esqueleto.Experimental
-    ( select, selectOne, from, table, orderBy, desc, delete
-    , (^.), (%), (++.), (||.), (==.)
-    , where_, like, val, upper_, in_, valList, just
-    )
-
-
-postSkillR :: SkillId -> HandlerFor App Html
+postSkillR :: SkillId -> Handler Html
 postSkillR sid = do
     skill <- runDB $ selectOne $ do
         x <- from $ table @Skill
@@ -89,16 +86,16 @@ postSkillR sid = do
     case r of
       FormSuccess x -> do
           runDB $ replace sid x
-          addMessageI "--mdc-theme-info" MsgRecordEdited
+          addMessageI msgSuccess MsgRecordEdited
           redirect $ AdminR $ SkillR sid
       _ -> defaultLayout $ do
-          addMessageI "--mdc-theme-error" MsgInvalidData
+          addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgSkill
-          $(widgetFile "skills/edit")
+          $(widgetFile "data/skills/edit")
 
 
-getSkillEditFormR :: SkillId -> HandlerFor App Html
+getSkillEditFormR :: SkillId -> Handler Html
 getSkillEditFormR sid = do
     skill <- runDB $ selectOne $ do
         x <- from $ table @Skill
@@ -108,39 +105,54 @@ getSkillEditFormR sid = do
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgSkill
-        $(widgetFile "skills/edit")
+        $(widgetFile "data/skills/edit")
 
 
-getSkillR :: SkillId -> HandlerFor App Html
+getSkillR :: SkillId -> Handler Html
 getSkillR sid = do
     location <- runInputGet $ iopt urlField "location"
     skill <- runDB $ selectOne $ do
         x <- from $ table @Skill
         where_ $ x ^. SkillId ==. val sid
         return x
+
+    (fw0,et0) <- generateFormPost formSkillDelete
+        
     let params = [("id", pack . show . fromSqlKey $ sid)]
     
     ult <- getUrlRenderParams >>= \rndr -> return $ fromMaybe (rndr (AdminR SkillsR) params) location
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSkill
-        $(widgetFile "skills/skill")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        $(widgetFile "data/skills/skill")
 
 
-postSkillsDeleteR :: HandlerFor App Html
-postSkillsDeleteR = do
-    ids <- (toSqlKey . read . unpack <$>) <$> lookupPostParams "id"
+formSkillDelete :: Form ()
+formSkillDelete extra = return (pure (), [whamlet|^{extra}|])
+
+
+postSkillsDeleteR :: SkillId -> Handler Html
+postSkillsDeleteR sid = do
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr (AdminR SkillsR))  <$> lookupPostParam "location"
-    runDB $ delete $ do
-        x <- from $ table @Skill
-        where_ $ x ^. SkillId `in_` valList ids
-    addMessageI "--mdc-theme-info" MsgRecordDeleted
-    redirect location
+          
+    ((fr,_),_) <- runFormPost formSkillDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete $ do
+              x <- from $ table @Skill
+              where_ $ x ^. SkillId ==. val sid
+          addMessageI msgSuccess MsgRecordDeleted
+          redirect location
+          
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect location
 
 
-getSkillsSearchR :: HandlerFor App Html
+getSkillsSearchR :: Handler Html
 getSkillsSearchR = do
-    curr <- fromMaybe (AdminR SkillsR) <$> getCurrentRoute
     activated <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     scrollY <- fromMaybe "0" <$> lookupGetParam "scrollY"
     mq <- lookupGetParam "q"
@@ -153,49 +165,45 @@ getSkillsSearchR = do
             ||. (upper_ (x ^. SkillDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%))
         orderBy [desc (x ^. SkillId)]
         return x
+        
+    rndr <- getUrlRenderParams
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
-        $(widgetFile "skills/search")
-        $(widgetFile "skills/skills")
+        idFormQuery <- newIdent
+        $(widgetFile "data/skills/search")
+        $(widgetFile "data/skills/skills")
 
 
-getSkillCreateFormR :: HandlerFor App Html
+getSkillCreateFormR :: Handler Html
 getSkillCreateFormR = do
     (widget,enctype) <- generateFormPost $ formSkill Nothing
     msgs <- getMessages
     defaultLayout $ do
       setTitleI MsgSkill
-      $(widgetFile "skills/create")
+      $(widgetFile "data/skills/create")
 
 
-postSkillsR :: HandlerFor App Html
+postSkillsR :: Handler Html
 postSkillsR = do
     ((r,widget),enctype) <- runFormPost $ formSkill Nothing
     case r of
       FormSuccess skill -> do
           sid <- runDB $ insert skill
-          addMessageI "--mdc-theme-info" MsgNewRecordAdded
+          addMessageI msgSuccess MsgNewRecordAdded
           redirect (AdminR SkillsR,[("id", pack . show . fromSqlKey $ sid)])
+          
       _ -> defaultLayout $ do
-          addMessageI "--mdc-theme-error" MsgInvalidData
+          addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgSkill
-          $(widgetFile "skills/create")
+          $(widgetFile "data/skills/create")
 
 
-getSkillsR :: HandlerFor App Html
+getSkillsR :: Handler Html
 getSkillsR = do
-    curr <- fromMaybe (AdminR SkillsR) <$> getCurrentRoute
     activated <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
-    mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-    candidate <- case mcid of
-      Just cid -> runDB $ selectOne $ do
-          x <- from $ table @Candidate
-          where_ $ x ^. CandidateId ==. val cid
-          return x
-      _ -> return Nothing
     mq <- lookupGetParam "q"
     skills <- runDB $ select $ do
         x <- from $ table @Skill
@@ -206,31 +214,31 @@ getSkillsR = do
             ||. (upper_ (x ^. SkillDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%))
         orderBy [desc (x ^. SkillId)]
         return x
+
+    rndr <- getUrlRenderParams
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgSkills
-        $(widgetFile "skills/main")
-        $(widgetFile "skills/skills")
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
+        $(widgetFile "data/skills/main")
+        $(widgetFile "data/skills/skills") 
 
 
-formSkill :: Maybe (Entity Skill)
-          -> Html -> MForm (HandlerFor App) (FormResult Skill, WidgetFor App ())
+formSkill :: Maybe (Entity Skill) -> Form Skill
 formSkill skill extra = do
+    
     (codeR,codeV) <- mreq uniqueCodeField FieldSettings
         { fsLabel = SomeMessage MsgCode
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (skillCode . entityVal <$> skill)
+        
     (nameR,nameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgName
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (skillName . entityVal <$> skill)
+        
     (descrR,descrV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgDescr
         , fsTooltip = Nothing
@@ -241,35 +249,17 @@ formSkill skill extra = do
 
     let r = Skill <$> codeR <*> nameR <*> descrR
     let w = [whamlet|
-#{extra}
-$forall v <- [codeV,nameV]
-  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors v):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label #floatingLabel#{fvId v}>#{fvLabel v}
-    ^{fvInput v}
-    <span.mdc-line-ripple>
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-      $maybe errs <- fvErrors v
-        #{errs}
+                    #{extra}
+                    $forall v <- [codeV,nameV]
+                      ^{md3widget v}
 
-<label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label #floatingLabel#{fvId descrV}>#{fvLabel descrV}
-  <span.mdc-text-field__resizer>
-    ^{fvInput descrV}
-  <span.mdc-line-ripple>
-<div.mdc-text-field-helper-line>
-  <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-    $maybe errs <- fvErrors descrV
-      #{errs}
-|]
+                    ^{md3textareaWidget descrV}
+                    |]
     return (r,w)
   where
       uniqueCodeField = checkM uniqueCode textField
 
-      uniqueCode :: Text -> HandlerFor App (Either AppMessage Text)
+      uniqueCode :: Text -> Handler (Either AppMessage Text)
       uniqueCode code = do
           mx <- runDB $ selectOne $ do
               x <- from $ table @Skill

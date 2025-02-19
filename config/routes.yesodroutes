@@ -14,7 +14,6 @@
 /exam                                       ExamR     POST
 
 
-/docs/SkillExam-ERD.svg DocsErdR GET
 /docs DocsR GET
 
 /search/exams/#TestId/skills    SearchExamSkillsR    GET
@@ -46,10 +45,11 @@
 
 
 /admin AdminR:
+
     /form/candidates/#CandidateId        CandidateEditFormR   GET
     /form/candidates                     CandidateCreateFormR GET
     /search/candidates                   CandidatesSearchR    GET
-    /delete/candidates                   CandidatesDeleteR    POST
+    /delete/candidates/#CandidateId      CandidateDeleR       POST
     /candidates/#CandidateId/exams       CandidateExamsR      GET
     /candidates/#CandidateId/photo       CandidatePhotoR      GET
     /photo/candidates                    CandidatePhotosR     GET
@@ -57,33 +57,33 @@
     /candidates/#CandidateId             CandidateR           GET POST
     /candidates                          CandidatesR          GET POST
 
-    /form/tests/#TestId/stems/#StemId/options/#OptionId OptionEditFormR   GET
-    /form/tests/#TestId/stems/#StemId/options           OptionCreateFormR GET
-    /delete/tests/#TestId/stems/#StemId/options         OptionsDeleteR    POST
-    /tests/#TestId/stems/#StemId/options/#OptionId      OptionR           GET POST
-    /tests/#TestId/stems/#StemId/options                OptionsR          GET POST
+    /form/tests/#TestId/stems/#StemId/options/#OptionId   OptionEditFormR   GET
+    /form/tests/#TestId/stems/#StemId/options             OptionCreateFormR GET
+    /delete/tests/#TestId/stems/#StemId/options/#OptionId OptionsDeleteR    POST
+    /tests/#TestId/stems/#StemId/options/#OptionId        OptionR           GET POST
+    /tests/#TestId/stems/#StemId/options                  OptionsR          GET POST
 
-    /form/tests/#TestId/stems/#StemId StemEditFormR   GET
-    /form/tests/#TestId/stems         StemCreateFormR GET
-    /delete/tests/#TestId/stems       StemsDeleteR    POST
-    /tests/#TestId/stems/#StemId      StemR           GET POST
-    /tests/#TestId/stems              StemsR          GET POST
+    /form/tests/#TestId/stems/#StemId   StemEditFormR   GET
+    /form/tests/#TestId/stems           StemCreateFormR GET
+    /delete/tests/#TestId/stems/#StemId StemsDeleteR    POST
+    /tests/#TestId/stems/#StemId        StemR           GET POST
+    /tests/#TestId/stems                StemsR          GET POST
 
     /form/tests/#TestId      TestEditFormR   GET
     /form/tests              TestCreateFormR GET
     /search/tests            TestSearchR     GET
-    /delete/tests            TestsDeleteR    POST
+    /delete/tests/#TestId    TestDeleR       POST
     /unpublish/tests/#TestId TestUnpublishR  POST
     /publish/tests/#TestId   TestPublishR    POST
     /tests/#TestId           TestR           GET POST
     /tests                   TestsR          GET POST
 
-    /form/skills/#SkillId SkillEditFormR   GET
-    /form/skills          SkillCreateFormR GET
-    /skills/#SkillId      SkillR           GET POST
-    /search/skills        SkillsSearchR    GET
-    /delete/skills        SkillsDeleteR    POST
-    /skills               SkillsR          GET POST
+    /form/skills/#SkillId   SkillEditFormR   GET
+    /form/skills            SkillCreateFormR GET
+    /skills/#SkillId        SkillR           GET POST
+    /search/skills          SkillsSearchR    GET
+    /delete/skills/#SkillId SkillsDeleteR    POST
+    /skills                 SkillsR          GET POST
 
 
     /users/#UserId/pwd  UserResetPasswordR GET POST

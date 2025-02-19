@@ -3,37 +3,32 @@
 
 <div.mdc-list role=list data-mdc-auto-init=MDCList>
   $forall (Entity rid (Exam _ _ attempt start _),Entity _ (Test _ name _ pass _ _),Value score) <- tests
-    <button.mdc-list-item.mdc-list-item--with-leading-thumbnail
-      .mdc-list-item--with-three-lines.mdc-list-ietm--with-trailing-icon
-      :pure rid == mrid:.mdc-list-item--activated role=listitem
-      type=submit form=formGetMyExam formaction=@{MyExamR rid} 
-      name=location
-      :isJust mq:value="@{curr}?id=#{fromSqlKey rid}&q=#{fromJust mq}"
-      :isNothing mq:value="@{curr}?id=#{fromSqlKey rid}"
+    <a.row.padding.wave href=@?{(MyExamR rid,[("id",pack $ show $ fromSqlKey rid)])}
+      :Just rid == mrid:.activated
       onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
+      
+      $if score >= pass
+        <i.extra.circle.small-padding style="background-color:var(--color-pass)">
+          thumb_up
+      $else
+        <i.extra.circle.small-padding style="background-color:var(--color-fail)">
+          thumb_down
 
-      <span.mdc-list-item__ripple>
-      <span.mdc-list-item__start>
-        $if score >= pass
-          <i.material-symbols-outlined.exam-status style="background-color:var(--color-pass)">
-            thumb_up
-        $else
-          <i.material-symbols-outlined.exam-status style="background-color:var(--color-fail)">
-            thumb_down
-      <span.mdc-list-item__content>
-        <div.mdc-list-item__primary-text>#{name}
-        <div.mdc-list-item__secondary-text>
+      <div.content.max>
+        <div.headline.large-text>
+          #{name}
+          
+        <div.supporting-text.small-text>
           _{MsgAttempt}: #{attempt}
-        <div.mdc-list-item__secondary-text.examDate data-value=#{iso8601Show start}>
-      <span.mdc-list-item__end>
-        <i.material-symbols-outlined>arrow_forward_ios
+        <div.supporting-text.small-text.examDate data-value=#{iso8601Show start}>
 
-    <li.mdc-list-divider role=separator>
+      <i>arrow_forward_ios
+
+    <hr>
 
 $maybe _ <- mcid
-  <a.mdc-fab.mdc-fab--extended.mdc-fab href=@{ExamFormR} role=button>
-    <span.mdc-fab__ripple>
-    <i.mdc-fab__icon.material-symbols-outlined>
+  <a.button.extended.large href=@{ExamFormR} role=button>
+    <i>
       add
-    <span.mdc-fab__label>
+    <span>
       _{MsgTakeNewExam}

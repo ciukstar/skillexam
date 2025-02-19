@@ -1,73 +1,72 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
-        href=#{ult} role=button>
-        <i.material-symbols-outlined>close
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgSummary}
 
-<main.mdc-top-app-bar--fixed-adjust>
+<header.fixed>
+  <nav.responsive.max>
+    <a.circle.transparent href=#{ult} role=button>
+      <i>close
+    
+    <h1.title.max>
+      _{MsgSummary}
+
+<main.responsive>
 
   $maybe (_,_,_,_,_,score,pass) <- res
-    <h6.mdc-typography--headline6>_{MsgExamResults}
-    <div.mdc-data-table>
-      <div.mdc-data-table__table-container>
-        <table.mdc-data-table__table>
-          <tbody.mdc-data-table__content>
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgStatus}
-              <td.mdc-data-table__cell>
-                $if score >= pass
-                  _{MsgPass}
-                $else
-                  _{MsgFail}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgScore}
-              <td.mdc-data-table__cell>#{printf "%.0f" score}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgPassMark}
-              <td.mdc-data-table__cell>#{printf "%.0f" pass}
+    
+    <fieldset>
+      <legend>_{MsgExamResults}
+
+      <table>
+        <tbody>
+          <tr.wave>
+            <th scope=row>_{MsgStatus}
+            <td>
+              $if score >= pass
+                _{MsgPass}
+              $else
+                _{MsgFail}
+          <tr.wave>
+            <th scope=row>_{MsgScore}
+            <td>#{printf "%.0f" score}
+          <tr.wave>
+            <th scope=row>_{MsgPassMark}
+            <td>#{printf "%.0f" pass}
 
   $maybe Entity _ (Candidate fname gname aname _ _) <- candidate
     $maybe (code,name,attempt,start,end,_,_) <- res
       
-      <h6.mdc-typography--headline6>_{MsgExamInfo}
-      <div.mdc-data-table>
-        <div.mdc-data-table__table-container>
-          <table.mdc-data-table__table>
-            <tbody.mdc-data-table__content>
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgCode}
-                <td.mdc-data-table__cell>#{code}
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgExam}
-                <td.mdc-data-table__cell>#{name}
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgCandidate}
-                <td.mdc-data-table__cell>
-                  #{fname} #{gname}
-                  $maybe aname <- aname
-                    \ #{aname}
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgAttempt}
-                <td.mdc-data-table__cell>#{attempt}
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgTimeStart}
-                <td.mdc-data-table__cell #examTimeStart data-value=#{iso8601Show start}>
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgTimeEnd}
-                $maybe end <- end
-                  <td.mdc-data-table__cell #examTimeEnd data-value=#{iso8601Show end}>
-                $nothing
-                  <td.mdc-data-table__cell>
+      <fieldset>
+        <legend>_{MsgExamInfo}
+        
+        <table>
+          <tbody>
+            <tr.wave>
+              <th scope=row>_{MsgCode}
+              <td>#{code}
+            <tr.wave>
+              <th scope=row>_{MsgExam}
+              <td>#{name}
+            <tr.wave>
+              <th scope=row>_{MsgCandidate}
+              <td>
+                #{fname} #{gname}
+                $maybe aname <- aname
+                  \ #{aname}
+            <tr.wave>
+              <th scope=row>_{MsgAttempt}
+              <td>#{attempt}
+            <tr.wave>
+              <th scope=row>_{MsgTimeStart}
+              <td #examTimeStart data-value=#{iso8601Show start}>
+            <tr.wave>
+              <th scope=row>_{MsgTimeEnd}
+              $maybe end <- end
+                <td #examTimeEnd data-value=#{iso8601Show end}>
+              $nothing
+                <td>
                   
-  <div.actions>
-    <a.mdc-button.mdc-button href="@{SummaryR tid eid}?_accept=application/pdf" role=button target=_blank
+  <nav.right-align>
+    <a.button.border href=@?{(SummaryR tid eid,[("_accept","application/pdf")])} role=button target=_blank
       onclick="this.href = `${this.href}&tz=${new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1]}`">
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>PDF
-    <a.mdc-button.mdc-button--raised href=#{ult} role=button>
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgFinish}
+      PDF
+      
+    <a.button href=#{ult} role=button>
+      _{MsgFinish}

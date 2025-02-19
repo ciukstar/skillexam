@@ -1,16 +1,10 @@
 
-window.mdc.autoInit();
-
-[document.getElementById('profilePhoto')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    document.getElementById('profileMenu').MDCMenuSurface.open()
-  })
-});
-
 Array.from(
   document.querySelectorAll('span.as-percentage')
 ).forEach(function (x) {
   x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
-    style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 1
-  })
+    style: 'percent',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
+  });
 });

@@ -1,112 +1,73 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #leftMainMenuOpen>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title>_{MsgTopSkilled}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      $maybe Entity cid (Candidate fname name aname _ _) <- user
-        <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
-          <img #profilePhoto src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
-            onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">
-          <div.mdc-menu.mdc-menu-surface.profile data-mdc-auto-init=MDCMenuSurface #profileMenu>
-            <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
-              role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+^{widgetMainMenu idOverlay idDialogMainMenu}
 
-              <form method=post action=@{SignOutR} #formLogout>
-                <li.mdc-deprecated-list-item role=menuitem onclick="formLogout.submit()">
-                  <span.mdc-deprecated-list-item__ripple>
-                  <i.material-symbols-outlined style="margin-right:1rem">logout
-                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
-      $nothing
-        <a.mdc-top-app-bar__action-item.mdc-icon-button
-          href=@{SignInR} role=button aria-label=_{MsgLogin}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>login
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgTopSkilled}
+        
+    ^{widgetAccount}
 
-<main.mdc-top-app-bar--fixed-adjust>
+
+<main.responsive.no-padding>
   $if null rating
-    <div.no-content>
-      <i.material-symbols-outlined>folder_open
-      <p>
+    <figure.center-align>
+      <i.extra>folder_open
+      <figcaption>
         _{MsgNoExamsYet}.
   $else
-    <div.header>
-      <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button #buttonDropDown
-        onclick="document.getElementById('dialogSkills').MDCDialog.open()">
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        $if null skills
-          <span.mdc-button__label>_{MsgSkills}
-        $else
-          <span.mdc-button__label
-            style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:none">
-            #{intercalate ", " ((skillName . entityVal) <$> skills)}
-        <i.material-symbols-outlined>arrow_drop_down
+    <button.responsive.margin.border type=button data-ui=##{idDialogSkills}>
+      $if null skills
+        <span>_{MsgSkills}
+      $else
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:none">
+          #{intercalate ", " ((skillName . entityVal) <$> skills)}
 
-    <ul.mdc-list data-mdc-auto-init=MDCList>
-      <li.mdc-list-divider>
-      $forall (index, (Value cid,Value fname,Value gname,Value aname,Value score)) <- rating
-        <a.mdc-list-item.mdc-list-item--with-two-lines
-          .mdc-list-item--with-leading-thumbnail.mdc-list-item--with-trailing-icon
-          :pure cid == mcid:.mdc-list-item--activated
-          href=@{StatsR $ SkilledR cid (Skills sids)}
-          onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+      <i>arrow_drop_down
 
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start style="width:min-content">
-            <div style="display:flex;flex-direction:row;align-items:center;gap:1rem">
-              <span>#{index}
-              <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=40 height=40
-                style="border-radius:50%"
-                onerror="this.src = '@{PhotoPlaceholderR}'">
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>
-              #{fname} #{gname}
-              $maybe aname <- aname
-                \ #{aname}
-            <div.mdc-list-item__secondary-text>
-              _{MsgRating}: #{printf "%.0f" score}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <li.mdc-list-divider>
+    $forall (index, (Value cid,Value fname,Value gname,Value aname,Value score)) <- rating
+      <a.row.padding href=@{StatsR $ SkilledR cid (Skills sids)}
+        :pure cid == mcid:.active
+        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
 
-  <div.mdc-dialog.mdc-dialog--fullscreen data-mdc-auto-init=MDCDialog #dialogSkills>
-    <div.mdc-dialog__container>
-      <div.mdc-dialog__surface role=alertdialog aria-modal=true tabindex=-1>
-        <div.mdc-dialog__header>
-          <div.mdc-dialog__title>_{MsgSkills}
-          <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
-            <i.material-symbols-outlined>close
-        <div.mdc-dialog__content>
-          <form method=get action=@{StatsR TopSkilledR} #formSkills>
-            $forall Entity sid (Skill _ name _) <-allSkills
-              $with ident <- fromSqlKey sid
-                <div.mdc-form-field.mdc-form-field--nowrap>
-                  <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
-                    <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
-                     name=sid value=#{ident} :elem sid sids:checked>
-                    <div.mdc-checkbox__background>
-                      <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                        <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                      <div.mdc-checkbox__mixedmark>
-                    <div.mdc-checkbox__ripple>
-                    <div.mdc-checkbox__focus-ring>
-                  <label.mdc-list-item__primary-text for=checkbox#{ident}>
-                    #{name}
+        <span style="width:min-content">
+          <div style="display:flex;flex-direction:row;align-items:center;gap:1rem">
+            <span>#{index}
+            <img.small.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+              onerror="this.src = '@{PhotoPlaceholderR}'">
+              
+        <div.max>
+          <div.headline.large-text>
+            #{fname} #{gname}
+            $maybe aname <- aname
+              \ #{aname}
+          <div.supporting-text.secondary-text>
+            _{MsgRating}: #{printf "%.0f" score}
+            
+        <i.material-symbols-outlined>arrow_forward_ios
+        
+      <hr>
 
-        <div.mdc-dialog__actions>
-          <button.mdc-button type=button onclick="document.getElementById('dialogSkills').MDCDialog.close()">
-            <span.mdc-button__ripple>
-            <span.mdc-button__focus-ring>
-            <span.mdc-button__label>_{MsgCancel}
+  <dialog.max ##{idDialogSkills}>
+    <div.row>
+      <h6.max>_{MsgSkills}
+      <button.circle.transparent type=button data-ui=##{idDialogSkills}>
+        <i>close
 
-          <button.mdc-button.mdc-button--raised type=submit form=formSkills>
-            <span.mdc-button__ripple>
-            <span.mdc-button__focus-ring>
-            <span.mdc-button__label>_{MsgSelect}
+    <form method=get action=@{StatsR TopSkilledR} ##{idFormSkills}>
+      $forall Entity sid (Skill _ name _) <-allSkills
+        $with ident <- fromSqlKey sid
+          <label.checkbox>
+            <input type=checkbox name=sid value=#{ident} :elem sid sids:checked>
+            <span>
+              #{name}
 
-    <div.mdc-dialog__scrim>
+    <nav.right-align>
+      <button.transparent type=button data-ui=##{idDialogSkills}>
+        _{MsgCancel}
+
+      <button type=submit form=#{idFormSkills}>
+        _{MsgSelect}

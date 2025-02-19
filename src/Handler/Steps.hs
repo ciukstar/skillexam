@@ -15,17 +15,89 @@ module Handler.Steps
   , getRemainingTimeR
   ) where
 
-import Data.Complex (Complex ((:+)))
-import Data.Text (unpack, pack, Text)
+
+import ClassyPrelude (readMay)
+
+import Control.Monad.IO.Class (MonadIO (liftIO))
+
 import Data.Aeson (object, (.=))
+import Data.Complex (Complex ((:+)))
+import qualified Data.List.Safe as LS
 import Data.Maybe (fromMaybe)
+import Data.Text (unpack, pack, Text)
+import Data.Text.ICU.Calendar
+    (calendar, CalendarType (TraditionalCalendarType), setDay, setHour, setMinute, setSecond)
+import Data.Text.ICU.Types (LocaleName(Locale))
+import Data.Text.ICU.DateFormatter
+    (standardDateFormatter, FormatStyle (ShortFormatStyle, DefaultFormatStyle), formatCalendar)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDayTime, UTCTime), secondsToDiffTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
-import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Time.LocalTime (TimeOfDay(TimeOfDay), timeToTimeOfDay)
+
+import Database.Persist
+    ( Entity (Entity), entityVal, insertMany_
+    )
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
+import Database.Esqueleto.Experimental
+    ( selectOne, select, from, table, where_, val, min_, max_
+    , (^.), (==.), (>.), (<.), (=.), (:&) ((:&))
+    , Value (unValue, Value), orderBy, asc, just, selectQuery, subSelectMaybe
+    , delete, update, set, innerJoin, on, sum_, coalesceDefault
+    )
+
+import Foundation
+    ( App, Form, Handler
+    , Route (HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR)
+    , AppMessage
+      ( MsgQuestion, MsgPrevious, MsgNext, MsgComplete, MsgFinish
+      , MsgExam, MsgSummary, MsgCandidate, MsgAttempt, MsgCancel
+      , MsgStop, MsgTimeStart, MsgTimeEnd, MsgStopThisExam, MsgPleaseConfirm
+      , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
+      , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
+      , MsgExamInfo, MsgInvalidFormData
+      )
+    )
+
+import Graphics.PDF.Typesetting
+    ( drawTextBox, paragraph, setJustification, txt, Orientation(NE)
+    , Justification(LeftJustification)
+    , StandardParagraphStyle(NormalParagraph), StandardStyle(Font)
+    )
+import Graphics.PDF
+    ( PDF, addPage, strokeColor, drawWithPage, newSection, standardViewerPrefs
+    , pdfByteString, black, standardDocInfo
+    , Rectangle (Rectangle)
+    , Shape (stroke)    
+    , PDFDocumentInfo (author, subject, compressed, viewerPreferences)
+    , PDFRect (PDFRect)    
+    , PDFFont (PDFFont), mkStdFont
+    , FontName (Times_Roman, Times_Bold)
+    , AnyFont, Line (Line), Color (Rgb)
+    , PDFViewerPreferences (displayDoctitle)
+    )
+
+import Model
+    ( keyUtlDest
+    , ExamId, Exam
+    , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
+    , TestId, Test
+    , OptionId, Option (Option)
+    , Answer (Answer)
+    , Candidate (Candidate)
+    , EntityField
+      ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
+      , AnswerExam, AnswerStem, AnswerOption, ExamEnd
+      , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
+      , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
+      , TestName, OptionId, ExamCandidate
+      )
+    )
+
+import Settings (widgetFile)
+
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (Lang)
 import qualified Text.Printf as Printf
-import Settings (widgetFile)
 
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI
@@ -35,103 +107,38 @@ import Yesod.Core
     , provideJson, invalidArgsI, ContentType
     , ToContent (toContent), Content, ToTypedContent (toTypedContent)
     , HasContentType (getContentType)
-    , RenderMessage (renderMessage), getYesod, languages, addHeader
+    , RenderMessage (renderMessage)
+    , getYesod, languages, addHeader, newIdent, getMessageRender
     )
-import Yesod.Core.Widget (WidgetFor, whamlet)
-import Yesod.Core.Handler (HandlerFor, redirect)
-
+import Yesod.Core.Widget (whamlet)
+import Yesod.Core.Handler (redirect)
 import Yesod.Form.Functions (generateFormPost, runFormPost)
 import Yesod.Form.Fields (Textarea (unTextarea), urlField, textField)
 import Yesod.Form.Input (ireq, runInputPost, runInputGet, iopt)
-import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess)
-    )
-
-import Yesod.Persist
-    ( Entity (Entity, entityVal)
-    , PersistStoreWrite (insertMany_)
-    )
+import Yesod.Form.Types ( FormResult (FormSuccess, FormFailure) )
 import Yesod.Persist.Core (YesodPersist(runDB))
 
-import Foundation
-    ( App
-    , Route (HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR)
-    , AppMessage
-      ( MsgQuestion, MsgPrevious, MsgNext, MsgComplete, MsgFinish
-      , MsgExam, MsgSummary, MsgCandidate, MsgAttempt, MsgCancel
-      , MsgStop, MsgTimeStart, MsgTimeEnd, MsgStopThisExam, MsgPleaseConfirm
-      , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
-      , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
-      , MsgExamInfo
-      )
-    )
 
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Database.Esqueleto.Experimental
-    ( selectOne, select, from, table, where_, val, min_, max_
-    , (^.), (==.), (>.), (<.), (=.), (:&) ((:&))
-    , Value (unValue, Value), orderBy, asc, just, selectQuery, subSelectMaybe
-    , delete, update, set, innerJoin, on, sum_, coalesceDefault
-    )
-
-import Model
-    ( ExamId, StemId, Stem (Stem, stemOrdinal)
-    , EntityField
-      ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
-      , AnswerExam, AnswerStem, AnswerOption, ExamEnd
-      , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
-      , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
-      , TestName, OptionId, ExamCandidate
-      )
-    , TestId, Option (Option), OptionId, Answer (Answer), Test
-    , Candidate (Candidate), Exam
-    , keyUtlDest
-    , StemType (MultiResponse)
-    )
-
-import Graphics.PDF.Typesetting
-    ( drawTextBox, paragraph, setJustification, txt, Orientation(NE)
-    , Justification(LeftJustification)
-    , StandardParagraphStyle(NormalParagraph), StandardStyle(Font)
-    )
-import Graphics.PDF
-    ( PDF, addPage, strokeColor, drawWithPage, Rectangle (Rectangle)
-    , Shape (stroke)
-    , pdfByteString
-    , PDFDocumentInfo (author, subject, compressed, viewerPreferences), standardDocInfo
-    , PDFRect (PDFRect)
-    , black
-    , PDFFont (PDFFont), mkStdFont
-    , FontName (Times_Roman, Times_Bold)
-    , AnyFont, Line (Line), Color (Rgb)
-    , newSection, standardViewerPrefs, PDFViewerPreferences (displayDoctitle)
-    )
-import Data.Text.ICU.Calendar
-    (calendar, CalendarType (TraditionalCalendarType), setDay, setHour, setMinute, setSecond)
-import qualified Data.List.Safe as LS
-import Data.Text.ICU.Types (LocaleName(Locale))
-import Data.Text.ICU.DateFormatter
-    (standardDateFormatter, FormatStyle (ShortFormatStyle, DefaultFormatStyle), formatCalendar)
-import Data.Time.LocalTime (TimeOfDay(TimeOfDay), timeToTimeOfDay)
-
-
-getRemainingTimeR :: ExamId -> HandlerFor App TypedContent
+getRemainingTimeR :: ExamId -> Handler TypedContent
 getRemainingTimeR eid = do
     now <- liftIO getCurrentTime
+    
     mx <- runDB ( selectOne ( do
         e :& t <- from $ table @Exam
             `innerJoin` table @Test `on` (\(e :& t) -> e ^. ExamTest ==. t ^. TestId)
         where_ $ e ^. ExamId ==. val eid
         return (e ^. ExamStart, t ^. TestDuration) ) )
+        
     case mx of
       Just (Value s, Value l) -> selectRep $ provideJson $ object
           [ "left" .= (utctDayTime s + secondsToDiffTime (round (l * 60)) - utctDayTime now)
           , "total" .= (round (l * 60) :: Integer)
           ]
-      _ -> invalidArgsI [MsgInvalidData]
+          
+      _otherwise -> invalidArgsI [MsgInvalidData]
 
 
-postTerminateR :: TestId -> ExamId -> HandlerFor App Html
+postTerminateR :: TestId -> ExamId -> Handler Html
 postTerminateR tid eid = do
     runDB $ delete $ do
         x <- from $ table @Exam
@@ -140,7 +147,7 @@ postTerminateR tid eid = do
     redirectUltDest HomeR
 
 
-getSummaryR :: TestId -> ExamId -> HandlerFor App TypedContent
+getSummaryR :: TestId -> ExamId -> Handler TypedContent
 getSummaryR tid eid = do
 
     tz <- fromMaybe "GMT+0000" <$> runInputGet (iopt textField "tz")
@@ -376,7 +383,7 @@ instance HasContentType (PDF ()) where
 
 
 
-postCompleteR :: TestId -> ExamId -> StemId -> HandlerFor App Html
+postCompleteR :: TestId -> ExamId -> StemId -> Handler Html
 postCompleteR tid eid qid = do
     cnt <- (unValue =<<) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
@@ -414,7 +421,7 @@ postCompleteR tid eid qid = do
         where_ $ x ^. OptionStem ==. val qid
         orderBy [asc (x ^. OptionOrdinal)]
         return x
-    ((fr,widget),enctype) <- runFormPost $ formOptions eid qid options
+    ((fr,fw),et) <- runFormPost $ formOptions eid qid options
     case fr of
       FormSuccess rs -> do
           runDB $ do
@@ -430,12 +437,17 @@ postCompleteR tid eid qid = do
                   set x [ExamEnd =. just (val now)]
                   where_ $ x ^. ExamId ==. val eid
           redirect $ SummaryR tid eid
-      _ -> defaultLayout $ do
+          
+      _otherwise -> defaultLayout $ do
           setTitleI MsgQuestion
+          idTimer <- newIdent
+          idProgressTimer <- newIdent
+          idDialogTerminate <- newIdent
+          idFormOptions <- newIdent
           $(widgetFile "steps/step")
 
 
-postStepR :: TestId -> ExamId -> StemId -> HandlerFor App Html
+postStepR :: TestId -> ExamId -> StemId -> Handler Html
 postStepR tid eid qid = do
     location <- runInputPost $ ireq urlField "location"
     cnt <- (unValue =<<) <$> runDB ( selectOne $ do
@@ -474,7 +486,7 @@ postStepR tid eid qid = do
         where_ $ x ^. OptionStem ==. val qid
         orderBy [asc (x ^. OptionOrdinal)]
         return x
-    ((fr,widget),enctype) <- runFormPost $ formOptions eid qid options
+    ((fr,fw),et) <- runFormPost $ formOptions eid qid options
     case fr of
       FormSuccess rs -> do
           runDB $ delete $ do
@@ -486,12 +498,17 @@ postStepR tid eid qid = do
           runDB $ insertMany_ ((\(AnswerData e q o) -> Answer e q o now) <$> rs)
 
           redirect location
-      _ -> defaultLayout $ do
+          
+      _otherwise -> defaultLayout $ do
           setTitleI MsgQuestion
+          idTimer <- newIdent
+          idProgressTimer <- newIdent
+          idDialogTerminate <- newIdent
+          idFormOptions <- newIdent
           $(widgetFile "steps/step")
 
 
-getStepR :: TestId -> ExamId -> StemId -> HandlerFor App Html
+getStepR :: TestId -> ExamId -> StemId -> Handler Html
 getStepR tid eid qid = do
     cnt <- (unValue =<<) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
@@ -531,18 +548,21 @@ getStepR tid eid qid = do
         orderBy [asc (x ^. OptionOrdinal)]
         return x
 
-    (widget,enctype) <- generateFormPost $ formOptions eid qid options
+    (fw,et) <- generateFormPost $ formOptions eid qid options
 
     defaultLayout $ do
         setTitleI MsgQuestion
+        idTimer <- newIdent
+        idProgressTimer <- newIdent
+        idDialogTerminate <- newIdent
+        idFormOptions <- newIdent
         $(widgetFile "steps/step")
 
 
-data AnswerData = AnswerData ExamId StemId OptionId
+data AnswerData = AnswerData !ExamId !StemId !OptionId
 
 
-formOptions :: ExamId -> StemId -> [Entity Option]
-            -> Html -> MForm (HandlerFor App) (FormResult [AnswerData], WidgetFor App ())
+formOptions :: ExamId -> StemId -> [Entity Option] -> Form [AnswerData]
 formOptions eid qid options extra = do
 
     stem <- liftHandler $ runDB $ selectOne $ do
@@ -556,44 +576,39 @@ formOptions eid qid options extra = do
         where_ $ x ^. AnswerStem ==. val qid
         return $ x ^. AnswerOption )
 
-    r <- FormSuccess . (AnswerData eid qid . toSqlKey . read . unpack <$>) <$> lookupPostParams "answer"
+    msgr <- getMessageRender
+    let answer = "answer"
+    
+    maybeAnswers <- mapM ((toSqlKey <$>) . readMay) <$> lookupPostParams answer
+
+    let r = case maybeAnswers of
+              Nothing -> FormFailure [msgr MsgInvalidFormData]
+              Just ass -> FormSuccess (AnswerData eid qid <$> ass)
 
     let w = [whamlet|
-#{extra}
+                    #{extra}
 
-$maybe Entity _ (Stem _ _ _ _ stype _) <- stem
-  $if MultiResponse == stype
-    $forall Entity oid (Option _ i text _ _) <- options
-      $with ident <- fromSqlKey oid
-        <div.mdc-form-field data-mdc-auto-init=MDCFormField>
-          <span>#{i}
-          <span.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
-            <input.mdc-checkbox__native-control type=checkbox :elem oid answers:checked
-              name=answer value=#{ident} #option#{ident}>
-            <div.mdc-checkbox__background>
-              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <div.mdc-checkbox__mixedmark>
-            <div.mdc-checkbox__ripple>
-            <div.mdc-checkbox__focus-ring>
-          <label for=option#{ident}>
-            #{preEscapedToMarkup $ unTextarea text}
-  $else
-    $forall Entity oid (Option _ i text _ _) <- options
-      $with ident <- fromSqlKey oid
-        <div.mdc-form-field data-mdc-auto-init=MDCFormField>
-          <span>#{i}
-          <span.mdc-radio data-mdc-auto-init=MDCRadio>
-            <input.mdc-radio__native-control type=radio :elem oid answers:checked
-              name=answer value=#{ident} #option#{ident}>
-            <div.mdc-radio__background>
-              <div.mdc-radio__outer-circle>
-              <div.mdc-radio__inner-circle>
-            <div.mdc-radio__ripple>
-            <div.mdc-radio__focus-ring>
-          <label for=option#{ident}>
-            #{preEscapedToMarkup $ unTextarea text}
-|]
+                    $maybe Entity _ (Stem _ _ _ _ stype _) <- stem
+                      $if MultiResponse == stype
+                        $forall Entity oid (Option _ i text _ _) <- options
+                          $with ident <- fromSqlKey oid
+                            <div.row>
+                              <span>#{i}
+                              <label.checkbox.max>
+                                <input type=checkbox name=#{answer} value=#{ident} :elem oid answers:checked>
+                                <span>
+                                  #{preEscapedToMarkup $ unTextarea text}
+
+                      $else
+                        $forall Entity oid (Option _ i text _ _) <- options
+                          $with ident <- fromSqlKey oid
+                            <div.row>
+                              <span>#{i}
+                              <label.radio.max>
+                                <input type=radio name=#{answer} value=#{ident} :elem oid answers:checked>
+                                <span>
+                                  #{preEscapedToMarkup $ unTextarea text}
+                    |]
     return (r,w)
 
 

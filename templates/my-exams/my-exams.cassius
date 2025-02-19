@@ -1,12 +1,4 @@
-header.mdc-top-app-bar
-  img.photo
-    border-radius: 50%
-
 main
-  margin: 0
-  display: flex
-  flex-direction: column
-  justify-content: center
 
   div.login-prompt
     margin: 2rem

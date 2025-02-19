@@ -1,20 +1,18 @@
 
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
-        href=@{AdminR $ StemR eid qid} role=button>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgQuestion}
-    
-<main.mdc-top-app-bar--fixed-adjust>
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AdminR $ StemR eid qid} role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgQuestion}
+
+<main.responsive>
   <form method=post action=@{AdminR $ StemR eid qid} enctype=#{enctype}>
     ^{widget}
-    <div.actions>
-      <a.mdc-button href=@{AdminR $ StemR eid qid} role=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__label>_{MsgCancel}
-      <button.mdc-button.mdc-button--raised type=submit>
-        <span.mdc-button__ripple>
-        <span.mdc-button__label>_{MsgSave}
+    <nav.right-align>
+      <a.button.transparent href=@{AdminR $ StemR eid qid} role=button>
+        _{MsgCancel}
+        
+      <button type=submit>
+        _{MsgSave}

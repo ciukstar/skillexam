@@ -13,66 +13,78 @@ module Handler.Stems
   , getStemR
   ) where
 
-import qualified Data.List.Safe as LS (head)
 import Control.Applicative ( Alternative((<|>)) )
-import Data.Maybe (isJust, fromMaybe)
-import Data.Text (unpack, pack)
+
+import Data.Bifunctor (Bifunctor(bimap))
+import qualified Data.List.Safe as LS (head)
+import Data.Text (pack)
 import qualified Data.Text as T (lines)
-import Text.Hamlet (Html)
-import Data.Bifunctor (Bifunctor(first))
-import Yesod.Core
-    ( defaultLayout, SomeMessage (SomeMessage), whamlet
-    , MonadHandler (liftHandler)
-    , redirect, getMessages, addMessageI, lookupPostParams
-    , preEscapedToMarkup
-    )
-import Yesod.Core.Handler (HandlerFor)
-import Settings (widgetFile)
-import Yesod.Form.Functions (generateFormPost, mreq, runFormPost, checkM)
-import Yesod.Form.Fields (intField, textareaField, hiddenField, unTextarea, textField)
-import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
-    , FieldView (fvInput, fvLabel, fvErrors)
-    )
-import Yesod.Core.Widget (WidgetFor, setTitleI)
 
-import Foundation
-    ( App
-    , Route (AdminR)
-    , AdminR (TestR, StemsR, StemR, OptionsR, StemEditFormR, StemCreateFormR, StemsDeleteR)
-    , AppMessage
-      ( MsgQuestions, MsgQuestion, MsgAdd, MsgOrdinal, MsgText
-      , MsgSave, MsgCancel, MsgSkill, MsgDelete, MsgInvalidData
-      , MsgDuplicateValue, MsgPleaseConfirm, MsgAreYouSureDelete
-      , MsgOptions, MsgBack, MsgExam, MsgInstruction, MsgType
-      , MsgMultiResponse, MsgSingleResponse, MsgResponseOptions
-      , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited
-      )
-    )
-
-import Yesod.Persist.Core (runDB)
-import Database.Persist (Entity (Entity, entityVal), PersistStoreWrite (insert_, replace))
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, where_, orderBy, asc
     , (^.), (==.), (:&)((:&))
-    , val, not_, max_, Value (unValue), valList, in_, delete
+    , val, not_, max_, Value (unValue), delete
     , innerJoin, on
     )
+import Database.Persist (Entity (Entity, entityVal), insert_, replace)
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
+
+import Foundation
+    ( App, Handler, Form, widgetSnackbar
+    , Route (AdminR)
+    , AdminR
+      ( TestR, StemsR, StemR, OptionsR, StemEditFormR, StemCreateFormR
+      , StemsDeleteR
+      )
+    , AppMessage
+      ( MsgQuestions, MsgQuestion, MsgAdd, MsgOrdinal, MsgText
+      , MsgSave, MsgCancel, MsgSkill, MsgDelete, MsgInvalidData
+      , MsgDuplicateValue
+      , MsgOptions, MsgBack, MsgExam, MsgInstruction, MsgType
+      , MsgMultiResponse, MsgSingleResponse, MsgResponseOptions
+      , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited, MsgEdit
+      , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
+      )
+    )
+
+import Material3 (md3widget, md3textareaWidget, md3selectWidget)
 
 import Model
-    ( TestId, Test (Test)
-    , StemId, Stem (Stem, stemOrdinal, stemText, stemSkill, stemInstruc, stemType)
-    , EntityField (TestId, StemOrdinal, StemTest, SkillName, StemId, StemSkill, SkillId)
-    , Skill (Skill), StemType (SingleRespose, MultiResponse)
+    ( msgSuccess, msgError
+    , TestId, Test (Test, testName)
+    , StemId
+    , Stem (Stem, stemOrdinal, stemText, stemSkill, stemInstruc, stemType)
+    , Skill (skillName)
+    , StemType (SingleRespose, MultiResponse)
+    , EntityField
+      ( TestId, StemOrdinal, StemTest, SkillName, StemId, StemSkill
+      , SkillId
+      )
     )
+    
+import Settings (widgetFile)
+
+import Text.Hamlet (Html)
+
+import Yesod.Core
+    ( defaultLayout, SomeMessage (SomeMessage), whamlet
+    , MonadHandler (liftHandler)
+    , redirect, getMessages, addMessageI, preEscapedToMarkup, newIdent
+    )
+import Yesod.Core.Handler (HandlerFor)
+import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (intField, textareaField, unTextarea, selectFieldList)
+import Yesod.Form.Functions (generateFormPost, mreq, runFormPost, checkM)
+import Yesod.Form.Types
+    ( FormResult (FormSuccess)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    )
+import Yesod.Persist.Core (runDB)
 
 
 getStemR :: TestId -> StemId -> HandlerFor App Html
 getStemR eid qid = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     stem <- runDB $ selectOne $ do
         x :& e :& s <- from $ table @Stem
             `innerJoin` table @Test `on` (\(x :& e) -> x ^. StemTest ==. e ^. TestId)
@@ -80,23 +92,37 @@ getStemR eid qid = do
         where_ $ x ^. StemId ==. val qid
         where_ $ x ^. StemTest ==. val eid
         return (x,e,s)
+
+    (fw0,et0) <- generateFormPost formStemDelete
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgQuestion
-        $(widgetFile "stems/stem")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        $(widgetFile "stems/stem") 
 
 
-postStemsDeleteR :: TestId -> HandlerFor App Html
-postStemsDeleteR eid = do
-    qids <- (toSqlKey . read . unpack <$>) <$> lookupPostParams "id"
-    runDB $ delete $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemId `in_` valList qids
-    addMessageI "--mdc-theme-info" MsgRecordDeleted
-    redirect $ AdminR $ StemsR eid 
+formStemDelete :: Form ()
+formStemDelete extra = return (pure (), [whamlet|^{extra}|])
 
 
-postStemR :: TestId -> StemId -> HandlerFor App Html
+postStemsDeleteR :: TestId -> StemId -> Handler Html
+postStemsDeleteR eid qid = do
+    ((fr,_),_) <- runFormPost formStemDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemId ==. val qid
+          addMessageI msgSuccess MsgRecordDeleted
+          redirect $ AdminR $ StemsR eid
+
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect $ AdminR $ StemR eid qid
+
+
+postStemR :: TestId -> StemId -> Handler Html
 postStemR eid qid = do
     question <- runDB $ selectOne $ do
         x <- from $ table @Stem
@@ -126,7 +152,7 @@ getStemEditFormR eid qid = do
         $(widgetFile "stems/edit")
 
 
-getStemCreateFormR :: TestId -> HandlerFor App Html
+getStemCreateFormR :: TestId -> Handler Html
 getStemCreateFormR eid = do
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
@@ -139,7 +165,7 @@ getStemCreateFormR eid = do
         $(widgetFile "stems/create")
 
 
-postStemsR :: TestId -> HandlerFor App Html
+postStemsR :: TestId -> Handler Html
 postStemsR eid = do
     ((fr,widget),enctype) <- runFormPost $ formStem eid Nothing
     case fr of
@@ -159,9 +185,8 @@ postStemsR eid = do
               $(widgetFile "stems/create")
 
 
-getStemsR :: TestId -> HandlerFor App Html
+getStemsR :: TestId -> Handler Html
 getStemsR eid = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     activated <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     stems <- runDB $ select $ do
         x <- from $ table @Stem
@@ -175,22 +200,17 @@ getStemsR eid = do
         $(widgetFile "stems/stems")
 
 
-formStem :: TestId
-         -> Maybe (Entity Stem)
-         -> Html -> MForm (HandlerFor App) (FormResult Stem, WidgetFor App ())
+formStem :: TestId -> Maybe (Entity Stem) -> Form Stem
 formStem eid stem extra = do
-    skills <- liftHandler $ runDB $ select $ do
+    skills <- liftHandler $ (bimap unValue unValue <$>) <$> runDB ( select $ do
         x <- from $ table @Skill
-        orderBy [asc (x ^. SkillName)]
-        return x
+        orderBy [asc (x ^. SkillName), asc (x ^. SkillId)]
+        return (x ^. SkillName, x ^. SkillId) )
         
-    (skillR,skillV) <- first (toSqlKey <$>) <$> mreq hiddenField FieldSettings
+    (skillR,skillV) <- mreq (selectFieldList skills) FieldSettings
         { fsLabel = SomeMessage MsgSkill
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-select mdc-select--filled")]
-        } (fromSqlKey . stemSkill . entityVal <$> stem)
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (stemSkill . entityVal <$> stem)
 
     ordinal <- case stem of
       Nothing -> do
@@ -199,142 +219,52 @@ formStem eid stem extra = do
               where_ $ x ^. StemTest ==. val eid
               return $ max_ $ x ^. StemOrdinal)
           return $ n <|> pure 1
-      _ -> return Nothing
+          
+      _otherwise -> return Nothing
         
     (ordinalR,ordinalV) <- mreq uniqueOrdinalField FieldSettings
         { fsLabel = SomeMessage MsgOrdinal
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing , fsAttrs = []
         } ((stemOrdinal . entityVal <$> stem) <|> ordinal)
         
     (textR,textV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgText
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (stemText . entityVal <$> stem)
+
+    let types = [(MsgSingleResponse, SingleRespose),(MsgMultiResponse, MultiResponse)]
     
-    (typeR,typeV) <- first (read . unpack <$>) <$> mreq hiddenField FieldSettings
+    (typeR,typeV) <- mreq (selectFieldList types) FieldSettings
         { fsLabel = SomeMessage MsgType
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = []
-        } (pack . show . stemType . entityVal <$> stem)
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (stemType . entityVal <$> stem)
         
     (instrucR,instrucV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgInstruction
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (stemInstruc . entityVal <$> stem)
 
     let r = Stem eid <$> skillR <*> ordinalR <*> textR <*> typeR <*> instrucR
     let w = [whamlet|
-#{extra}
+                    #{extra}
 
-<label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors ordinalV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel ordinalV}
-  ^{fvInput ordinalV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors ordinalV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
+                    ^{md3widget ordinalV}
 
-<label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors textV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel textV}
-  <span.mdc-text-field__resizer>
-    ^{fvInput textV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors textV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
+                    ^{md3textareaWidget textV}
 
-<div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
-  :isJust (fvErrors typeV):.mdc-select--invalid>
-  ^{fvInput typeV}
-  <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
-    <span.mdc-select__ripple>
-    <span.mdc-floating-label>#{fvLabel typeV}
-    <span.mdc-select__selected-text-container>
-      <span.mdc-select__selected-text>
-    <span.mdc-select__dropdown-icon>
-      <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-        <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-        <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-    <span.mdc-line-ripple>
-    
+                    ^{md3selectWidget typeV}
 
-  <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-    <ul.mdc-deprecated-list role=listbox>
-      $forall (v,l) <- ((<$>) (first (pack . show)) [(SingleRespose,MsgSingleResponse),(MultiResponse,MsgMultiResponse)])
-        <li.mdc-deprecated-list-item role=option data-value=#{v} aria-selected=false>
-          <span.mdc-deprecated-list-item__ripple>
-          <span.mdc-deprecated-list-item__text>
-            _{l}
+                    ^{md3textareaWidget instrucV}
 
-$maybe errs <- fvErrors skillV
-  <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
-    #{errs}
-
-<label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors instrucV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel instrucV}
-  <span.mdc-text-field__resizer>
-    ^{fvInput instrucV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors instrucV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
-
-<div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
-  :isJust (fvErrors skillV):.mdc-select--invalid>
-  ^{fvInput skillV}
-  <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
-    <span.mdc-select__ripple>
-    <span.mdc-floating-label>#{fvLabel skillV}
-    <span.mdc-select__selected-text-container>
-      <span.mdc-select__selected-text>
-    <span.mdc-select__dropdown-icon>
-      <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-        <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-        <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-    <span.mdc-line-ripple>
-    
-
-  <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-    <ul.mdc-deprecated-list role=listbox>
-      $forall Entity sid (Skill _ name _) <- skills
-        <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey sid} aria-selected=false>
-          <span.mdc-deprecated-list-item__ripple>
-          <span.mdc-deprecated-list-item__text>
-            #{name}
-
-$maybe errs <- fvErrors skillV
-  <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
-    #{errs}
-
-|]
+                    ^{md3selectWidget skillV}
+                    |]
     return (r,w)
   where
 
       uniqueOrdinalField = checkM uniqueOrdinal intField
 
-      uniqueOrdinal :: Int -> HandlerFor App (Either AppMessage Int)
-      uniqueOrdinal n = do
-          
+      uniqueOrdinal :: Int -> Handler (Either AppMessage Int)
+      uniqueOrdinal n = do          
           mq <- runDB $ selectOne $ do
               x <- from $ table @Stem
               where_ $ x ^. StemTest ==. val eid

@@ -13,24 +13,21 @@ module Handler.Options
   , postOptionsDeleteR
   ) where
 
-import Data.Maybe (isJust, fromMaybe)
-import Data.Text (Text, unpack)
+import Data.Text (Text, pack)
 import qualified Data.Text as T (lines)
 import qualified Data.List.Safe as LS (head)
-import Text.Hamlet (Html)
-import Settings (widgetFile)
-import Yesod.Core (Yesod(defaultLayout), SomeMessage (SomeMessage), preEscapedToMarkup)
-import Yesod.Core.Handler (HandlerFor, redirect, getMessages, addMessageI, lookupPostParams)
-import Yesod.Core.Widget (WidgetFor, setTitleI, whamlet)
-import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess), FieldView (fvLabel, fvInput, fvErrors)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+
+import Database.Esqueleto.Experimental
+    ( select, selectOne, from, table, where_, val
+    , (^.), (==.), (:&) ((:&))
+    , orderBy, asc, innerJoin, on, Value (unValue), not_
+    , delete
     )
-import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, checkM)
-import Yesod.Form.Fields (textField, textareaField, doubleField, checkBoxField, intField, unTextarea)
+import Database.Persist (Entity (Entity), entityVal, insert_, replace)
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( App
+    ( Handler, Form, widgetSnackbar
     , Route (AdminR)
     , AdminR (StemR, OptionCreateFormR, OptionsR, OptionR, OptionEditFormR, OptionsDeleteR)
     , AppMessage
@@ -38,20 +35,13 @@ import Foundation
       , MsgCancel, MsgSave, MsgText, MsgCorrectAnswer, MsgAnswerPoints
       , MsgAnswerOption, MsgKey, MsgDistractor, MsgEdit, MsgDelete
       , MsgType, MsgQuestion, MsgExam, MsgSkill, MsgDuplicateValue
-      , MsgInvalidData, MsgClose, MsgPleaseConfirm, MsgAreYouSureDelete
+      , MsgInvalidData, MsgClose
       , MsgRecordDeleted, MsgRecordEdited, MsgNewRecordAdded
+      , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
       )
     )
 
-import Yesod.Persist (YesodPersist(runDB), Entity (entityVal), PersistStoreWrite (insert_, replace))
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Database.Persist (Entity (Entity))
-import Database.Esqueleto.Experimental
-    ( select, selectOne, from, table, where_, val
-    , (^.), (==.), (:&) ((:&))
-    , orderBy, asc, innerJoin, on, Value (unValue), not_, in_
-    , delete, valList
-    )
+import Material3 (md3widget, md3textareaWidget, md3switchWidget)
 
 import Model
     ( TestId, StemId, Option (Option, optionOrdinal, optionText, optionKey, optionPoints)
@@ -59,22 +49,43 @@ import Model
       ( OptionStem, OptionOrdinal, OptionId, StemId, StemTest, StemSkill
       , SkillId, TestId, StemText, TestName, SkillName
       )
-    , OptionId, Stem, Test, Skill
+    , OptionId, Stem, Test, Skill, msgSuccess, msgError
     )
+
+import Settings (widgetFile)
+
+import Text.Hamlet (Html)
+
+import Yesod.Core (Yesod(defaultLayout), SomeMessage (SomeMessage), preEscapedToMarkup, newIdent)
+import Yesod.Core.Handler (redirect, getMessages, addMessageI)
+import Yesod.Core.Widget (setTitleI, whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (textField, textareaField, doubleField, checkBoxField, intField, unTextarea)
+import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, checkM)
+import Yesod.Form.Types
+    ( FormResult (FormSuccess)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    )
+import Yesod.Persist (YesodPersist(runDB))
 
 
-postOptionsDeleteR :: TestId -> StemId -> HandlerFor App Html
-postOptionsDeleteR eid qid = do
-    oids <- (toSqlKey . read . unpack <$>) <$> lookupPostParams "id"
-    runDB $ delete $ do
-        x <- from $ table @Option
-        where_ $ x ^. OptionId `in_` valList oids
-    addMessageI "--mdc-theme-info" MsgRecordDeleted
-    redirect $ AdminR $ OptionsR eid qid
+postOptionsDeleteR :: TestId -> StemId -> OptionId -> Handler Html
+postOptionsDeleteR eid qid oid = do
+    ((fr,_),_) <- runFormPost formOptionDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete $ do
+              x <- from $ table @Option
+              where_ $ x ^. OptionId ==. val oid
+          addMessageI msgSuccess MsgRecordDeleted
+          redirect $ AdminR $ OptionsR eid qid
+          
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect $ AdminR $ OptionR eid qid oid
 
 
-postOptionR :: TestId -> StemId -> OptionId -> HandlerFor App Html
+postOptionR :: TestId -> StemId -> OptionId -> Handler Html
 postOptionR eid qid oid = do
     option <- runDB $ selectOne $ do
         x <- from $ table @Option
@@ -84,16 +95,16 @@ postOptionR eid qid oid = do
     case fr of
       FormSuccess o -> do
           runDB $ replace oid o
-          addMessageI "--mdc-theme-info" MsgRecordEdited
+          addMessageI msgSuccess MsgRecordEdited
           redirect $ AdminR $ OptionR eid qid oid
       _ -> defaultLayout $ do
-          addMessageI "--mdc-theme-error" MsgInvalidData
+          addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgAnswerOption
           $(widgetFile "options/edit")
 
 
-getOptionEditFormR :: TestId -> StemId -> OptionId -> HandlerFor App Html
+getOptionEditFormR :: TestId -> StemId -> OptionId -> Handler Html
 getOptionEditFormR eid qid oid = do
     option <- runDB $ selectOne $ do
         x <- from $ table @Option
@@ -106,7 +117,7 @@ getOptionEditFormR eid qid oid = do
         $(widgetFile "options/edit")
 
 
-getOptionR :: TestId -> StemId -> OptionId -> HandlerFor App Html
+getOptionR :: TestId -> StemId -> OptionId -> Handler Html
 getOptionR eid qid oid = do
     option <- ((\(x,q,e,s) -> (x,unValue q,unValue e,unValue s)) <$>) <$> runDB (selectOne $ do
         (x :& q :& e :& s) <- from $ table @Option
@@ -115,28 +126,38 @@ getOptionR eid qid oid = do
             `innerJoin` table @Skill `on` (\(_ :& q :& _ :& s) -> q ^. StemSkill ==. s ^. SkillId)
         where_ $ x ^. OptionId ==. val oid
         return (x, q ^. StemText, e ^. TestName, s ^. SkillName))
+
+    (fw0,et0) <- generateFormPost formOptionDelete
+        
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgAnswerOption
-        $(widgetFile "options/option")
+        idOverlay <- newIdent
+        idDialogDelete <- newIdent
+        $(widgetFile "options/option") 
 
 
-postOptionsR :: TestId -> StemId -> HandlerFor App Html
+formOptionDelete :: Form ()
+formOptionDelete extra = return (pure (), [whamlet|^{extra}|])
+
+
+postOptionsR :: TestId -> StemId -> Handler Html
 postOptionsR eid qid = do
     ((fr,widget),enctype) <- runFormPost $ formOption eid qid Nothing
     case fr of
       FormSuccess x -> do
           runDB $ insert_ x
-          addMessageI "--mdc-theme-info" MsgNewRecordAdded
+          addMessageI msgSuccess MsgNewRecordAdded
           redirect $ AdminR $ OptionsR eid qid
+          
       _ -> defaultLayout $ do
-          addMessageI "--mdc-theme-error" MsgInvalidData
+          addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgOption
           $(widgetFile "options/create")
 
 
-getOptionsR :: TestId -> StemId -> HandlerFor App Html
+getOptionsR :: TestId -> StemId -> Handler Html
 getOptionsR eid qid = do
     moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     options <- runDB $ select $ do
@@ -147,10 +168,10 @@ getOptionsR eid qid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgOptions
-        $(widgetFile "options/options")
+        $(widgetFile "options/options") 
 
 
-getOptionCreateFormR :: TestId -> StemId -> HandlerFor App Html
+getOptionCreateFormR :: TestId -> StemId -> Handler Html
 getOptionCreateFormR eid qid = do
     (widget,enctype) <- generateFormPost $ formOption eid qid Nothing
     defaultLayout $ do
@@ -159,104 +180,47 @@ getOptionCreateFormR eid qid = do
         $(widgetFile "options/create")
 
 
-formOption :: TestId -> StemId -> Maybe (Entity Option)
-           -> Html -> MForm (HandlerFor App) (FormResult Option, WidgetFor App ())
+formOption :: TestId -> StemId -> Maybe (Entity Option) -> Form Option
 formOption _ qid option extra = do
     (ordinalR,ordinalV) <- mreq uniqueOrdinalField FieldSettings
         { fsLabel = SomeMessage MsgOrdinal
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (optionOrdinal . entityVal <$> option)
+        
     (textR,textV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgText
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (optionText . entityVal <$> option)
+        
     (keyR,keyV) <- mreq checkBoxField FieldSettings
         { fsLabel = SomeMessage MsgCorrectAnswer
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (optionKey . entityVal <$> option)
+        
     (pointsR,pointsV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgAnswerPoints
-        , fsTooltip = Nothing
-        , fsId = Nothing
-        , fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (optionPoints . entityVal <$> option)
 
     let r = Option qid <$> ordinalR <*> textR <*> keyR <*> pointsR
     let w = [whamlet|
-#{extra}
-<label.mdc-text-field.mdc-text-field--filled.form-field data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors ordinalV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel ordinalV}
-  ^{fvInput ordinalV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors ordinalV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
+                    #{extra}
 
-<label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea.form-field data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors textV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel textV}
-  <span.mdc-text-field__resizer>
-    ^{fvInput textV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors textV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
+                    ^{md3widget ordinalV}
 
-$with checked <- fromMaybe False ((optionKey . entityVal) <$> option)
-  <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField>
-    <button.mdc-switch type=button role=switch aria-checked=false #switchKey data-mdc-auto-init=MDCSwitch
-      :checked:.mdc-switch--selected :checked:aria-checked=true
-      :not checked:.mdc-switch--unselected :not checked:aria-checked=false>
-      ^{fvInput keyV}
-      <div.mdc-switch__track>
-      <div.mdc-switch__handle-track>
-        <div.mdc-switch__handle>
-          <div.mdc-switch__shadow>
-            <div.mdc-elevation-overlay>
-          <div.mdc-switch__ripple>
-          <div.mdc-switch__icons>
-            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
-              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
-            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
-              <path d="M20 13H4v-2h16v2z">
+                    ^{md3textareaWidget textV}
 
-    <span.mdc-switch__focus-ring-wrapper>
-      <span.mdc-switch__focus-ring>
-    <label for=switchKey>#{fvLabel keyV}
+                    ^{md3switchWidget keyV}
 
-<label.mdc-text-field.mdc-text-field--filled.form-field data-mdc-auto-init=MDCTextField
-  :isJust (fvErrors pointsV):.mdc-text-field--invalid>
-  <span.mdc-text-field__ripple>
-  <span.mdc-floating-label>#{fvLabel pointsV}
-  ^{fvInput pointsV}
-  <span.mdc-line-ripple>
-$maybe errs <- fvErrors pointsV
-  <div.mdc-text-field-helper-line>
-    <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg>
-      #{errs}
-|]
+                    ^{md3widget pointsV}
+                    |]
     return (r,w)
 
   where
 
       uniqueOrdinalField = checkM uniqueOrdinal textField
 
-      uniqueOrdinal :: Text -> HandlerFor App (Either AppMessage Text)
+      uniqueOrdinal :: Text -> Handler (Either AppMessage Text)
       uniqueOrdinal ordinal = do
           mo <- runDB $ selectOne $ do
               x <- from $ table @Option

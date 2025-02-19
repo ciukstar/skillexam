@@ -1,0 +1,16 @@
+
+^{widgetMainMenu idOverlay idDialogMainMenu}
+
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgCandidates}
+
+    <div.row>
+      <a.button.circle.tansparent.no-elevate href=@{AdminR CandidatesSearchR} role=button>
+        <i>search
+        
+      ^{widgetAccount}

@@ -1,0 +1,33 @@
+
+<main.responsive.no-padding>
+
+  $if null candidates
+    <figure.center-align>
+      <i.extra>folder_open
+      <figcaption>
+        _{MsgNoCandidatesYet}.
+        
+  $else
+    $forall (Entity cid (Candidate fname gname aname _ _), Value nexams) <- candidates
+      <a.row.padding.wave href=@{AdminR $ CandidateR cid} :Just cid == activated:.active role=listitem>
+
+        <img.extra.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+     
+        <div.max>
+          <div.headline.large-text>
+            #{fname} #{gname}
+            $maybe aname <- aname
+              \ #{aname}
+          <div.supporting-text.secondary-text>
+            _{MsgExams}: #{nexams}
+     
+        <i.secondary-text>arrow_forward_ios
+
+      <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR CandidateCreateFormR}
+    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+    
+  ^{widgetSnackbar msgs}

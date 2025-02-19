@@ -1,0 +1,55 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@?{(AdminR CandidatesR,[("id",pack $ show $ fromSqlKey cid)])}
+      role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgCandidate}
+      
+    <div.row>
+      <button.circle.transparent type=button title=_{MsgDelete} data-ui=##{idDialogDelete}>
+        <i>delete
+        
+      <a.button.circle.transparent href=@{AdminR $ CandidateEditFormR cid} title=_{MsgEdit}>
+        <i>edit
+
+<main.responsive>
+  $maybe (Entity cid (Candidate fname gname aname _ _), _) <- candidate
+    <figure.center-align>
+      <img.extra.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+      <figcaption>
+        #{fname} #{gname}
+        $maybe aname <- aname
+          \ #{aname}
+
+    <div.tabs>
+      <a href=@{AdminR $ CandidateR cid} :Just (AdminR $ CandidateR cid) == curr:.active>
+        _{MsgDetails}
+        
+      <a href=@{AdminR $ CandidateSkillsR cid} :Just (AdminR $ CandidateSkillsR cid) == curr:.active>
+        _{MsgSkills}
+        
+      <a href=@{AdminR $ CandidateExamsR cid} :Just (AdminR $ CandidateExamsR cid) == curr:.active>
+        _{MsgExams}
+      
+    <div.page.no-padding.active>
+
+      ^{tab}
+
+^{widgetSnackbar msgs}
+
+<div.overlay ##{idOverlay} data-ui=##{idOverlay}>
+
+<dialog ##{idDialogDelete}>
+  <h5>_{MsgConfirmPlease}
+  <div>_{MsgDeleteAreYouSure}
+  <nav.right-align.no-space>
+    <button.transparent.link data-ui=##{idDialogDelete}>
+      _{MsgCancel}
+    <form method=post action=@{AdminR $ CandidateDeleR cid} enctype=#{et0}>
+      ^{fw0}
+      <button.primary type=submit>
+        _{MsgDelete}

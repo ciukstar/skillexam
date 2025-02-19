@@ -1,0 +1,33 @@
+
+<main.responsive.no-padding>
+
+  $if null tests
+    <figure.center-align>
+      <i.extra>folder_open
+      <figcaption>
+        _{MsgNoTestsYet}.
+        
+  $else
+    $forall Entity eid test <- tests
+      <a.row.wave.padding href=@{AdminR $ TestR eid} :Just eid == meid:.active>
+        <div.max>
+          <div.headline.large-text>#{testName test}
+          <div.supproting-text.secondary-text>#{testCode test}
+          <div.supproting-text.secondary-text>
+            $case testState test
+              $of TestStatePublished
+                _{MsgPublished}
+              $of TestStateUnpublished
+                _{MsgUnpublished}
+
+        <i.secondary-text>arrow_forward_ios
+
+      <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR TestCreateFormR}
+    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+
+^{widgetSnackbar msgs}
+          
+      

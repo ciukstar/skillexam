@@ -1,39 +1,29 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-icon-button.mdc-top-app-bar__navigation-icon.mdc-theme--text-primary-on-light
-        href=#{ult} role=button>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgExam}
 
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=#{ult} role=button>
+      <i>arrow_back
 
-<main.mdc-top-app-bar--fixed-adjust>
+    <h1.title.max>
+      _{MsgExam}
 
-  <form method=post action=@{ExamFormR} enctype=#{enctype} novalidate #formExam>
+<main.responsive>
+
+  <form method=post action=@{ExamFormR} enctype=#{enctype} novalidate ##{idForm}>
     ^{widget}
+
+    <nav.right-align.no-space>
+      <a.button.transparent.link href=#{ult} role=button>
+        _{MsgCancel}
         
-    <div.actions>
-      <a.mdc-button href=#{ult} role=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>
-          _{MsgCancel}
-      <button.mdc-button.mdc-button--raised type=submit formaction=@{ExamR}>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>
-          _{MsgStartExam}
+      <button.primary type=submit formaction=@{ExamR}>
+        _{MsgStartExam}
 
 
   $maybe (eid,cid) <- info
-    <div.mdc-list data-mdc-auto-init=MDCList>
-      <a.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon
-        href=@{ExamTestR cid eid}>
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__content>
-          <span.mdc-list-item__primary-text>
-            _{MsgExamInfo}
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward
+    <a.row.padding.wave.margin-top href=@{ExamTestR cid eid}>
+      <div.content.max>
+        <h6.headline.large-text>
+          _{MsgExamInfo}
+          
+      <i>arrow_forward_ios

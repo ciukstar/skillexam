@@ -1,51 +1,31 @@
 
-<main.mdc-top-app-bar--fixed-adjust>
+<main.responsive.no-padding>
 
-  <ul.mdc-list data-mdc-auto-init=MDCList>
-    <li.mdc-list-divider role=separator>
-    $forall Entity qid (Stem _ _ ordinal text qtype _) <- stems
-      <a.mdc-list-item.mdc-list-item--with-two-lines
-        .mdc-list-item--with-leading-icon.mdc-list-item--with-trailing-icon
-        :pure qid == activated:.mdc-list-item--activated
-        href=@{AdminR $ StemR eid qid} role=listitem
-        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+  $forall Entity qid (Stem _ _ ordinal text qtype _) <- stems
+    <a.row.padding.wave href=@{AdminR $ StemR eid qid} :pure qid == activated:.active>
 
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start>
-          <span>#{ordinal}
-        <span.mdc-list-item__content>
-          <span.mdc-list-item__primary-text>
-            $with ls <- T.lines $ unTextarea text
-              $maybe text <- LS.head ls
-                $if length ls > 1
-                  #{text}...
-                $else
-                  #{text}
-          <span.mdc-list-item__secondary-text>              
-            $if MultiResponse == qtype
-              _{MsgMultiResponse}
-            $else
-              _{MsgSingleResponse}
-              
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
-      <li.mdc-list-divider role=separator>
+      <div.secondary-text.large-text.bold>#{ordinal}
+      <div.max style="min-width:0">
+        <div.large-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          $with ls <- T.lines $ unTextarea text
+            $maybe text <- LS.head ls
+              $if length ls > 1
+                #{text}...
+              $else
+                #{text}
+        <div.secondary-text>              
+          $if MultiResponse == qtype
+            _{MsgMultiResponse}
+          $else
+            _{MsgSingleResponse}
 
-  <div.mdc-touch-target-wrapper #wrapperFabAdd>
-    <a.mdc-fab.mdc-fab--touch href=@{AdminR $ StemCreateFormR eid} #fabAdd role=button aria-label=_{MsgAdd}>
-      <span.mdc-fab__ripple>
-      <span.mdc-fab__focus-ring>
-      <i.mdc-fab__icon.material-symbols-outlined>add
-      <div.mdc-fab__touch>
+      <i.secondary-text>arrow_forward_ios
 
-  $forall (_,msg) <- msgs
-    <aside.mdc-snackbar.mdc-snackbar--leading data-mdc-auto-init=MDCSnackbar>
-      <div.mdc-snackbar__surface role=status aria-live=polite>
-        <div.mdc-snackbar__label aria-atomic=false>
-          #{msg}
-        <div.mdc-snackbar__actions aria-atomic=true>
-          <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
-            <span.mdc-icon-button__ripple>
-            <span.mdc-icon-button__focus-ring>
-            <i.material-symbols-outlined>close
-    
+    <hr>
+
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR $ StemCreateFormR eid}
+    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+
+^{widgetSnackbar msgs}

@@ -1,10 +1,6 @@
 
-window.mdc.autoInit()
-
-document.querySelector('div.mdc-select.candidate').MDCSelect.listen('MDCSelect:change',function (e) {
-  document.getElementById('formExam').submit()
-})
-
-document.querySelector('div.mdc-select.exam').MDCSelect.listen('MDCSelect:change',function (e) {
-  document.getElementById('formExam').submit()
-})
+[#{fvId candidateV},#{fvId testV}].map(x => document.getElementById(x)).forEach(x => {
+  x.addEventListener('change', e => {
+    document.getElementById(#{idForm}).submit();
+  });
+});

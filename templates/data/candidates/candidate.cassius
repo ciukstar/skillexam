@@ -1,0 +1,14 @@
+
+main
+      
+  div.mdc-data-table
+    width: 100%
+    border-right: 0
+    border-left: 0
+    border-radius: 0
+    tbody
+      tr th
+        white-space: normal
+        font-weight: 500
+      tr td
+        white-space: normal

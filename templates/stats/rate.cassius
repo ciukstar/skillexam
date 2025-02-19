@@ -1,9 +1,6 @@
 
 main
-  margin: 0 1rem
-  display: flex
-  flex-direction: column
-  gap: 1rem
-  #pie, #bar
-    width: 100%
-    height: calc( (100vh - 4rem - 5rem) / 2 )
+    
+    ##{idPieChart}, ##{idBarChart}
+        width: 100%
+        height: calc( (100vh - 4rem - 6rem) / 2 )

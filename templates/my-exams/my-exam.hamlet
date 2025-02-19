@@ -1,66 +1,68 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button.mdc-theme--text-primary-on-light
-        href=#{ult} role=button aria-label=_{MsgBack}>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>arrow_back
 
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgExamResults}
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=#{ult} role=button>
+      <i>arrow_back
 
-<main.mdc-top-app-bar--fixed-adjust>
+    <h1.title.max>
+      _{MsgExamResults}
+
+<main.responsive.no-padding>
 
   $maybe (Entity _ exam, Entity cid candidate, Entity _ test) <- test
 
-    <div.header>
-      <div>
-        $if score >= testPass test
-          <i.material-symbols-outlined.exam-status style="background-color:var(--color-pass)">
-            thumb_up
-        $else
-          <i.material-symbols-outlined.exam-status style="background-color:var(--color-fail)">
-            thumb_down
+    <div.row.padding>
+      $if score >= testPass test
+        <i.extra.circle.padding style="background-color:var(--color-pass)">
+          thumb_up
+      $else
+        <i.extra.circle.padding style="background-color:var(--color-fail)">
+          thumb_down
 
-      <div.mdc-layout-grid__cell.mdc-layout-grid__cell--span-11>
-        <div.mdc-typography--headline6>#{testName test}
-        <div.mdc-typography--subtitle1>#{printf "%.0f" score}/#{printf "%.0f" total}
+      <div.max>
+        <div.headline.large-text>
+          #{testName test}
+          
+        <div.supporting-text.secondary-text>
+          #{printf "%.0f" score}/#{printf "%.0f" total}
 
-    <div.mdc-data-table data-auto-init=MDCDataTable>
-      <div.mdc-data-table__container>
-        <table.mdc-data-table__table>
-          <tbody.mdc-data-table__content>
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgStatus}
-              <td.mdc-data-table__cell>
-                $if score >= testPass test
-                  _{MsgPass}
-                $else
-                  _{MsgFail}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgExam}
-              <td.mdc-data-table__cell>#{testName test}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgCandidate}
-              <td.mdc-data-table__cell>
-                <div.d-flex>
-                  <img.photo src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=24 heigt=24
-                    onerror="this.src = '@{PhotoPlaceholderR}'">
-                  <span>
-                    #{candidateFamilyName candidate} #{candidateGivenName candidate}
-                    $maybe aname <- candidateAdditionalName candidate
-                      \ #{aname}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgCompleted}
-              $maybe end <- examEnd exam
-                <td.mdc-data-table__cell.time data-value=#{iso8601Show end}>
-              $nothing
-                <td.mdc-data-table__cell.time>
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgScore}
-              <td.mdc-data-table__cell>#{printf "%.0f" score}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgPassScore}
-              <td.mdc-data-table__cell>#{printf "%.0f" (testPass test)}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgMaxScore}
-              <td.mdc-data-table__cell>#{printf "%.0f" total}
+    <table>
+      <tbody>
+        <tr.wave>
+          <th scope=row>_{MsgStatus}
+          <td>
+            $if score >= testPass test
+              _{MsgPass}
+            $else
+              _{MsgFail}
+        <tr.wave>
+          <th scope=row>_{MsgExam}
+          <td>#{testName test}
+        <tr.wave>
+          <th scope=row>_{MsgCandidate}
+          <td>
+            <div.row>
+              <img.small.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+                onerror="this.src = '@{PhotoPlaceholderR}'">
+              <span>
+                #{candidateFamilyName candidate} #{candidateGivenName candidate}
+                $maybe aname <- candidateAdditionalName candidate
+                  \ #{aname}
+        <tr.wave>
+          <th scope=row>_{MsgCompleted}
+          $maybe end <- examEnd exam
+            <td>
+              $with dt <- iso8601Show end
+                <time.full-datetime datetime=#{dt}>
+                  #{dt}
+          $nothing
+            <td>
+        <tr.wave>
+          <th scope=row>_{MsgScore}
+          <td>#{printf "%.0f" score}
+        <tr.wave>
+          <th scope=row>_{MsgPassScore}
+          <td>#{printf "%.0f" (testPass test)}
+        <tr.wave>
+          <th scope=row>_{MsgMaxScore}
+          <td>#{printf "%.0f" total}

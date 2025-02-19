@@ -1,0 +1,29 @@
+
+<main.responsive.no-padding>
+
+  $if null skills
+    <figure.center-align>
+      <i.extra>folder_open
+      <figcaption>
+        _{MsgNoSkillsYet}.
+        
+  $else            
+    $forall Entity sid (Skill code name _) <- skills
+      <a.row.wave.padding :Just sid == activated:.active
+        href=@?{(AdminR $ SkillR sid,[("location",rndr (AdminR $ SkillR sid) [("id",pack $ show $ fromSqlKey sid)])])}>
+        
+        <div.max>
+          <div.headline.large-text>#{name}
+          <div.supproting-text.secondary-text>
+            #{code}
+
+        <i.secondary-text>arrow_forward_ios
+
+      <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR SkillCreateFormR}
+    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+
+^{widgetSnackbar msgs}
+    

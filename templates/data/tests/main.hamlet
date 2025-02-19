@@ -1,0 +1,20 @@
+
+^{widgetMainMenu idOverlay idDialogMainMenu}
+
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgTests}
+
+    <div.row>
+      $maybe eid <- meid
+        <a.button.circle.tansparent.no-elevate href=@?{(AdminR TestSearchR,[("eid",pack $ show $ fromSqlKey eid)])} role=button>
+          <i>search
+      $nothing
+        <a.button.circle.tansparent.no-elevate href=@{AdminR TestSearchR} role=button>
+          <i>search
+        
+      ^{widgetAccount}

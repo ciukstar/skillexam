@@ -1,3 +1,4 @@
+PleaseLogInToIdentifyYourselfAsExamCandidate: Vă rugăm să vă conectați pentru a vă identifica ca candidat la examen
 InvalidUrlOrRemoved: Adresă URL nevalidă sau resursă eliminată
 Or: sau
 BackToHomepage: Reveniți la pagina de pornire

@@ -1,18 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Handler.Docs (getDocsR, getDocsErdR) where
-
-import Text.Hamlet (Html)
-import Yesod.Core
-    ( Yesod(defaultLayout), getUrlRender, preEscapedToMarkup
-    , RenderMessage (renderMessage), getYesod, languages
-    , TypedContent (TypedContent), cacheSeconds, typeSvg, ToContent (toContent)
-    )
-import Yesod.Core.Widget (setTitleI)
+module Handler.Docs (getDocsR) where
 
 import Foundation
-    ( Handler
-    , Route (AdminR, HomeR, MyExamsR, DocsErdR)
+    ( Handler, widgetAccount, widgetMainMenu
+    , Route (AdminR, HomeR, MyExamsR, StaticR)
     , AdminR (SkillsR, TestsR, CandidatesR)
     , AppMessage
       ( MsgAppName, MsgDocs, MsgCandidate, MsgSkill, MsgBasicEntities
@@ -25,8 +17,17 @@ import Foundation
       , MsgDoc025, MsgDoc026
       )
     )
+
 import Settings (widgetFile)
-import Data.FileEmbed (embedFile)
+import Settings.StaticFiles (img_SkillExam_ERD_svg)
+
+import Text.Hamlet (Html)
+
+import Yesod.Core
+    ( Yesod(defaultLayout), getUrlRender, preEscapedToMarkup
+    , RenderMessage (renderMessage), getYesod, languages, newIdent
+    )
+import Yesod.Core.Widget (setTitleI)
 
 
 getDocsR :: Handler Html
@@ -36,10 +37,6 @@ getDocsR = do
     rndr <- getUrlRender
     defaultLayout $ do
         setTitleI MsgDocs
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
         $(widgetFile "docs/docs")
-    
-
-getDocsErdR :: Handler TypedContent
-getDocsErdR = do
-    cacheSeconds $ 60 * 60 * 24 * 30 -- cache for a month
-    return $ TypedContent typeSvg $ toContent $(embedFile "static/img/SkillExam-ERD.svg")

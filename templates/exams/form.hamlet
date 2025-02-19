@@ -1,68 +1,18 @@
 
 #{extra}
+  
+<figure.center-align>
+  $case candidateR
+    $of FormSuccess cid
+      <img.circle.extra src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+    $of _
+      $maybe Entity cid _ <- candidate
+        <img.circle.extra src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
+          onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <img.circle.extra src=@{PhotoPlaceholderR} alt=_{MsgPhoto} loading=lazy> 
 
-<div.mdc-image-list>
-  <div.mdc-image-list__item>
-    $case cR
-      $of FormSuccess cid
-        <img.mdc-image-list__image.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=64 height=64
-          onerror="this.src = '@{PhotoPlaceholderR}'" #photoAvatar>
-      $of _
-        $maybe Entity cid _ <- candidate
-          <img.mdc-image-list__image.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=64 height=64
-            onerror="this.src = '@{PhotoPlaceholderR}'" #photoAvatar>
-        $nothing
-          <img.mdc-image-list__image.photo.avatar src=@{PhotoPlaceholderR} alt=_{MsgPhoto} width=64 height=64 #photoAvatar>
+^{md3selectWidget candidateV}
 
-<div.mdc-select.mdc-select--filled.mdc-select--required.candidate data-mdc-auto-init=MDCSelect
-  :isJust (fvErrors cV):.mdc-select--invalid>
-  ^{fvInput cV}
-  <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
-    <span.mdc-select__ripple>
-    <span.mdc-floating-label>#{fvLabel cV}
-    <span.mdc-select__selected-text-container>
-      <span.mdc-select__selected-text>
-    <span.mdc-select__dropdown-icon>
-      <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-        <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-        <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-    <span.mdc-line-ripple>
-  <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-    <ul.mdc-deprecated-list role=listbox>
-      $forall Entity cid (Candidate fname gname aname _ _) <- candidates
-        <li.mdc-deprecated-list-item.mdc-deprecated-list--avatar-list role=option data-value=#{fromSqlKey cid}>
-          <span.mdc-deprecated-list-item__ripple>
-          <span.mdc-deprecated-list-item__graphic>
-            <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=40 heigt=40
-              onerror="this.src = '@{PhotoPlaceholderR}'">
-          <span.mdc-deprecated-list-item__text>
-            #{fname} #{gname}
-            $maybe aname <- aname
-              \ #{aname}
-$maybe errs <- fvErrors cV
-  <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
-    #{errs}
-              
-<div.mdc-select.mdc-select--filled.mdc-select--required.exam data-mdc-auto-init=MDCSelect
-  :isJust (fvErrors tV):.mdc-select--invalid>
-  ^{fvInput tV}
-  <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
-    <span.mdc-select__ripple>
-    <span.mdc-floating-label>#{fvLabel tV}
-    <span.mdc-select__selected-text-container>
-      <span.mdc-select__selected-text>
-    <span.mdc-select__dropdown-icon>
-      <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-        <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-        <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-    <span.mdc-line-ripple>
-  <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-    <ul.mdc-deprecated-list role=listbox>
-      $forall Entity tid (Test _ name _ _ _ _) <- tests
-        <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey tid}>
-          <span.mdc-deprecated-list-item__ripple>
-          <span.mdc-deprecated-list-item__text>
-            #{name}
-$maybe errs <- fvErrors tV
-  <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
-    #{errs}
+^{md3selectWidget testV}

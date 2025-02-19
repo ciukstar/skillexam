@@ -12,65 +12,70 @@ module Handler.Stats
   , getTestSuccessRateR
   ) where
 
+import Control.Monad (unless)
+
 import Data.List (sortBy)
 import Data.Maybe (fromMaybe)
 import qualified Text.Printf as Printf (printf)
-import Control.Monad (unless)
 import Data.Text (pack, unpack, intercalate)
-import Text.Julius (rawJS)
-import Text.Hamlet (Html)
-import Yesod.Core
-    ( Yesod(defaultLayout), lookupGetParams, getUrlRenderParams
-    , lookupSession, setUltDestCurrent, addScript
-    , RenderMessage (renderMessage), getYesod, languages
+
+import Database.Esqueleto.Experimental
+    ( SqlExpr, Value (Value, unValue), select, from, table, orderBy
+    , (^.), (==.), (:&) ((:&)), (>=.)
+    , asc, where_, in_, valList, innerJoin, on, groupBy, sum_
+    , coalesceDefault, val, desc, selectOne, countRows, having, selectQuery
+    , countDistinct
     )
-import Yesod.Core.Widget (setTitleI)
-import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (intField, textField, unTextarea)
-import Settings (widgetFile)
-import Settings.StaticFiles (echarts_pie_bars_5_4_2_min_js, echarts_gauge_5_4_2_min_js)
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( Handler
-    , Route (StatsR, AdminR, PhotoPlaceholderR, SignInR, SignOutR, StaticR)
-    , StatsR (TopSkilledR, SkilledR, TopExamR, TopExamsR, TestSuccessRateR, ExamSuccessRatesR)
+    ( widgetMainMenu, widgetAccount, Handler
+    , Route (StatsR, AdminR, PhotoPlaceholderR, StaticR)
+    , StatsR
+      ( TopSkilledR, SkilledR, TopExamR, TopExamsR, TestSuccessRateR, ExamSuccessRatesR
+      )
     , AdminR (CandidatePhotoR)
     , AppMessage
       ( MsgTopSkilled, MsgSkills, MsgCancel, MsgSelect
       , MsgPhoto, MsgRating, MsgCandidate, MsgTopExams
       , MsgNumberOfExaminees, MsgExam, MsgPopularity, MsgDescr
-      , MsgSuccessRate, MsgLogin, MsgLogout, MsgPassRate
+      , MsgSuccessRate, MsgPassRate
       , MsgExamSuccessRate, MsgPass, MsgFail, MsgPassedFailedExamNumber
       , MsgNoExamsYet, MsgTotalCandidates
       )
     )
 
-import Yesod.Persist (Entity (Entity, entityVal))
-import Yesod.Persist.Core (YesodPersist(runDB))
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
-import Database.Esqueleto.Experimental
-    ( SqlExpr, Value (Value, unValue), select, from, table, orderBy
-    , (^.), (==.), (:&) ((:&)), (>=.)
-    , asc, where_, in_, valList, innerJoin, on, groupBy, sum_
-    , coalesceDefault, val, desc, selectOne, countRows, having, selectQuery, countDistinct
-    )
-
 import Model
-    ( userSessKey
-    , Skill(Skill, skillName)
-    , EntityField
-      ( SkillName, SkillId, AnswerExam, ExamId, ExamCandidate
-      , CandidateId, AnswerOption, OptionId, OptionStem, StemId, StemSkill
-      , CandidateFamilyName, CandidateGivenName, CandidateAdditionalName
-      , OptionPoints, OptionKey, ExamTest, TestId, TestName, TestPass
-      )
+    ( Skill(Skill, skillName)
     , Candidate (Candidate), CandidateId
     , Answer
     , Exam
     , Option
     , Stem, Skills (Skills)
     , Test (Test, testName), TestId
+    , EntityField
+      ( SkillName, SkillId, AnswerExam, ExamId, ExamCandidate
+      , CandidateId, AnswerOption, OptionId, OptionStem, StemId, StemSkill
+      , CandidateFamilyName, CandidateGivenName, CandidateAdditionalName
+      , OptionPoints, OptionKey, ExamTest, TestId, TestName, TestPass
+      )
     )
+    
+import Settings (widgetFile)
+import Settings.StaticFiles (echarts_pie_bars_5_4_2_min_js, echarts_gauge_5_4_2_min_js)
+    
+import Text.Julius (rawJS)
+import Text.Hamlet (Html)
+
+import Yesod.Core
+    ( Yesod(defaultLayout), lookupGetParams, setUltDestCurrent
+    , RenderMessage (renderMessage), addScript, getYesod, languages, newIdent
+    )
+import Yesod.Core.Widget (setTitleI)
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (intField, textField, unTextarea)
+import Yesod.Persist (Entity (Entity, entityVal))
+import Yesod.Persist.Core (YesodPersist(runDB))
 
 
 getTestSuccessRateR :: TestId -> Handler Html
@@ -115,6 +120,8 @@ getTestSuccessRateR tid = do
         ) )
     defaultLayout $ do
         setTitleI MsgPassRate
+        idPieChart <- newIdent
+        idBarChart <- newIdent
         addScript $ StaticR echarts_pie_bars_5_4_2_min_js
         $(widgetFile "stats/rate")
 
@@ -122,14 +129,6 @@ getTestSuccessRateR tid = do
 getExamSuccessRatesR :: Handler Html
 getExamSuccessRatesR = do
     mtid <- (toSqlKey <$>) <$> runInputGet ( iopt intField "tid" )
-    user <- do
-        muid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-        case muid of
-          Just uid -> runDB $ selectOne $ do
-              x <- from $ table @Candidate
-              where_ $ x ^. CandidateId ==. val uid
-              return x
-          Nothing -> return Nothing
 
     let trans = zip [1::Int ..]
             . sortBy (\(_,_,_,_,e) (_,_,_,_,e') -> compare e' e)
@@ -165,6 +164,8 @@ getExamSuccessRatesR = do
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgSuccessRate
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
         $(widgetFile "stats/success-rates")
 
 
@@ -185,21 +186,13 @@ getTopExamR tid = do
 
     defaultLayout $ do
         setTitleI MsgExam
+        idGauge <- newIdent
         addScript $ StaticR echarts_gauge_5_4_2_min_js
         $(widgetFile "stats/exam")
 
 
 getTopExamsR :: Handler Html
-getTopExamsR = do
-    user <- do
-        muid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-        case muid of
-          Just uid -> runDB $ selectOne $ do
-              x <- from $ table @Candidate
-              where_ $ x ^. CandidateId ==. val uid
-              return x
-          Nothing -> return Nothing
-          
+getTopExamsR = do          
     tests <- zip [1::Int .. ] <$> runDB ( select $ do
         e :& t <- from $ table @Exam
             `innerJoin` table @Test
@@ -216,6 +209,8 @@ getTopExamsR = do
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgTopExams
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
         $(widgetFile "stats/top-exams")
 
 
@@ -253,7 +248,6 @@ getSkilledR cid (Skills sids) = do
     let params = ("cid", (pack . show . fromSqlKey) cid)
             : ("scrollY", scrollY)
             : (("sid",) . pack . show . fromSqlKey <$> sids) 
-    rndr <- getUrlRenderParams
     defaultLayout $ do
         setTitleI MsgCandidate
         $(widgetFile "stats/skilled")
@@ -264,14 +258,6 @@ getTopSkilledR = do
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     sids <- (toSqlKey . read . unpack <$>) <$> lookupGetParams "sid"
     mcid <- (toSqlKey <$>) <$> runInputGet (iopt intField "cid")
-    user <- do
-        muid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-        case muid of
-          Just uid -> runDB $ selectOne $ do
-              x <- from $ table @Candidate
-              where_ $ x ^. CandidateId ==. val uid
-              return x
-          Nothing -> return Nothing
     
     skills <- runDB $ select $ do
         s <- from $ table @Skill
@@ -313,6 +299,10 @@ getTopSkilledR = do
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgTopSkilled
+        idOverlay <- newIdent
+        idDialogMainMenu <- newIdent
+        idDialogSkills <- newIdent
+        idFormSkills <- newIdent
         $(widgetFile "stats/top-skilled")
 
 

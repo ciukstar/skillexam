@@ -3,7 +3,7 @@ let style = getComputedStyle(document.querySelector(':root'));
 let colorPass = style.getPropertyValue('--color-pass');
 let colorFail = style.getPropertyValue('--color-fail');
 
-echarts.init(document.getElementById('pie')).setOption({
+echarts.init(document.getElementById(#{idPieChart})).setOption({
   title: {
     text: #{renderMessage app langs MsgExamSuccessRate},
     top: 8,
@@ -24,10 +24,10 @@ echarts.init(document.getElementById('pie')).setOption({
   dataset: [{
     source: [
       { value: #{rawJS $ show rpass},
-	name: #{renderMessage app langs MsgPass}
+        name: #{renderMessage app langs MsgPass}
       },
       { value: #{rawJS $ show rfail},
-	name: #{renderMessage app langs MsgFail}
+        name: #{renderMessage app langs MsgFail}
       }
     ]
   }],
@@ -48,10 +48,10 @@ echarts.init(document.getElementById('pie')).setOption({
         show: true,
         position: 'inside',
         formatter: x => new Number(x.data.value).toLocaleString(navigator.language,{
-	  style: 'percent',
-	  minimumFractionDigits: 1,
-	  maximumFractionDigits: 1
-	}),
+          style: 'percent',
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1
+        }),
         fontSize: 14
       },
       emphasis: {
@@ -65,7 +65,7 @@ echarts.init(document.getElementById('pie')).setOption({
   ]
 });
 
-echarts.init(document.getElementById('bar')).setOption({
+echarts.init(document.getElementById(#{idBarChart})).setOption({
   grid: {
     bottom: '15%'
   },

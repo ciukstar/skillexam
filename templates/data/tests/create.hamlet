@@ -1,0 +1,24 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{AdminR TestsR} role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgTest}
+
+<main.responsive>
+  
+  <form method=post action=@{AdminR TestsR} enctype=#{enctype} novalidate>
+  
+    ^{widget}
+    
+    <nav.right-align>
+    
+      <a.button.transparent href=@{AdminR TestsR} role=button>
+        _{MsgCancel}
+        
+      <button type=submit>
+        _{MsgSave}
+
+^{widgetSnackbar msgs}

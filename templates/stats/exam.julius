@@ -1,5 +1,5 @@
 
-echarts.init(document.getElementById('gauge')).setOption({
+echarts.init(document.getElementById(#{idGauge})).setOption({
   series: [
     {
       type: 'gauge',
@@ -9,7 +9,7 @@ echarts.init(document.getElementById('gauge')).setOption({
       max: 1,
       progress: {
         show: true,
-	roundCap: true,
+        roundCap: true,
         width: 18
       },
       itemStyle: {
@@ -30,8 +30,8 @@ echarts.init(document.getElementById('gauge')).setOption({
         show: false
       },
       splitLine: {
-	show: true,
-	distance: -30,
+        show: true,
+        distance: -30,
         length: 8,
         lineStyle: {
           width: 1,
@@ -42,27 +42,27 @@ echarts.init(document.getElementById('gauge')).setOption({
         distance: -12,
         color: '#999',
         fontSize: 12,
-	formatter: x => x * 100
+        formatter: x => x * 100
       },
       anchor: {
         show: false
       },
       title: {
         show: true,
-	offsetCenter: [0,'10%']
+        offsetCenter: [0,'10%']
       },
       detail: {
         valueAnimation: true,
         fontSize: 40,
         offsetCenter: [0, '-20%'],
-	formatter: x => Number(x).toLocaleString(navigator.language,{
-	  style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 1
-	})
+        formatter: x => Number(x).toLocaleString(navigator.language,{
+          style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 1
+        })
       },
       data: [
         {
           value: #{rawJS $ show $ examinees / candidates},
-	  name: '#{rawJS $ printf "%.0f" examinees} / #{rawJS $ printf "%.0f" candidates}'
+          name: '#{rawJS $ printf "%.0f" examinees} / #{rawJS $ printf "%.0f" candidates}'
         }
       ]
     }
