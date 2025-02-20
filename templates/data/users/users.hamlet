@@ -13,9 +13,9 @@
 
 <main.responsive.no-padding>
   $forall Entity uid (User email _ uname super admin _ _ _) <- users
-    <a.row.padding.wave href=@{AdminR $ UserR uid}>
+    <a.row.padding.wave href=@{DataR $ UserR uid}>
 
-      <img.circle src=@{AdminR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
+      <img.circle src=@{DataR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
         
       <div.content.max>
         <h6.headline.large-text>
@@ -36,7 +36,7 @@
 
     <hr>
 
-  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR UserNewR}
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR UserNewR}
     style="z-index:1" onclick="event.stopPropagation()">
     <i>add
 

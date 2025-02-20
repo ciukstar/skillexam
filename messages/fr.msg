@@ -1,3 +1,6 @@
+
+LoginPlease: Veuillez vous connecter pour accéder à cette page
+AnotherAccountAccessProhibited: L'accès au compte d'un autre utilisateur est interdit
 PleaseLogInToIdentifyYourselfAsExamCandidate: Veuillez vous connecter pour vous identifier en tant que candidat à l'examen
 InvalidUrlOrRemoved: URL non valide ou ressource supprimée
 Or: ou
@@ -106,7 +109,7 @@ Points: Points
 Minutes: Minutes
 Popularity: Popularité
 LoginPrompt: Veuillez vous connecter pour trouver vos examens.
-NoExams: Vous n'avez pas encore passé d'examens.
+NoExams: Vous n'avez pas encore passé d'examens
 AssessedSkills: Compétences évaluées
 TakeThisExam: Passer cet examen
 DataAndAnalytics: Données et analyses

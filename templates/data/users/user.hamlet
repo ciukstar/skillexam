@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR UsersR}>
+    <a.button.circle.transparent href=@{DataR UsersR}>
       <i>arrow_back
       
     <h1.title.max>
@@ -13,7 +13,7 @@
 
         <i>delete
         
-      <a.button.circle.transparent href=@{AdminR $ UserEditR uid} title=_{MsgEdit}>
+      <a.button.circle.transparent href=@{DataR $ UserEditR uid} title=_{MsgEdit}>
         <i>edit
 
 <main.responsive>
@@ -22,7 +22,7 @@
     <dl.margin>
       <dt.bold>_{MsgPhoto}
       <dd.small-margin>
-        <img.circle src=@{AdminR $ UserPhotoR uid} loading=lazy alt=_{MsgPhoto} width=48 height=48>
+        <img.circle src=@{DataR $ UserPhotoR uid} loading=lazy alt=_{MsgPhoto} width=48 height=48>
 
       <dt.bold>_{MsgName}
       <dd.small-margin>
@@ -48,7 +48,7 @@
           _{MsgNo}
 
     <p.center-align>
-      <a.button.border.transparent href=@{AdminR $ UserResetPasswordR uid} role=button>
+      <a.button.border.transparent href=@{DataR $ UserResetPasswordR uid} role=button>
         <i>lock_reset
         _{MsgChangePassword}
 
@@ -63,7 +63,7 @@
     <button.transparent.link data-ui=##{idOverlay}
       onclick="document.getElementById('#{idDialogDelete}').close()">
       _{MsgCancel}
-    <form method=post action=@{AdminR $ UserDeleR uid} enctype=#{et0}>
+    <form method=post action=@{DataR $ UserDeleR uid} enctype=#{et0}>
       ^{fw0}
       <button.primary type=submit>
         _{MsgDele}

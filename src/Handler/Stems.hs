@@ -31,8 +31,8 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( App, Handler, Form, widgetSnackbar
-    , Route (AdminR)
-    , AdminR
+    , Route (DataR)
+    , DataR
       ( TestR, StemsR, StemR, OptionsR, StemEditFormR, StemCreateFormR
       , StemsDeleteR
       )
@@ -115,11 +115,11 @@ postStemsDeleteR eid qid = do
               x <- from $ table @Stem
               where_ $ x ^. StemId ==. val qid
           addMessageI msgSuccess MsgRecordDeleted
-          redirect $ AdminR $ StemsR eid
+          redirect $ DataR $ StemsR eid
 
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
-          redirect $ AdminR $ StemR eid qid
+          redirect $ DataR $ StemR eid qid
 
 
 postStemR :: TestId -> StemId -> Handler Html
@@ -133,7 +133,7 @@ postStemR eid qid = do
       FormSuccess q -> do
           runDB $ replace qid q
           addMessageI "--mdc-theme-info" MsgRecordEdited
-          redirect $ AdminR $ StemR eid qid
+          redirect $ DataR $ StemR eid qid
       _ -> defaultLayout $ do
           setTitleI MsgQuestion
           $(widgetFile "stems/edit")
@@ -172,7 +172,7 @@ postStemsR eid = do
       FormSuccess q -> do
           runDB $ insert_ q
           addMessageI "--mdc-theme-info" MsgNewRecordAdded
-          redirect $ AdminR $ StemsR eid
+          redirect $ DataR $ StemsR eid
       _ -> do
           test <- runDB $ selectOne $ do
               x <- from $ table @Test

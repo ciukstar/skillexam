@@ -30,11 +30,11 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( widgetMainMenu, widgetAccount, Handler
-    , Route (StatsR, AdminR, PhotoPlaceholderR, StaticR)
+    , Route (StatsR, DataR, PhotoPlaceholderR, StaticR)
     , StatsR
       ( TopSkilledR, SkilledR, TopExamR, TopExamsR, TestSuccessRateR, ExamSuccessRatesR
       )
-    , AdminR (CandidatePhotoR)
+    , DataR (CandidatePhotoR)
     , AppMessage
       ( MsgTopSkilled, MsgSkills, MsgCancel, MsgSelect
       , MsgPhoto, MsgRating, MsgCandidate, MsgTopExams

@@ -11,7 +11,7 @@
  
   $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
     <figure.row>
-      <img.extra.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+      <img.extra.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
         onerror="this.src = '@{PhotoPlaceholderR}'">
       <figcaption.large-text>
         #{fname} #{gname}

@@ -10,7 +10,7 @@
       _{MsgSkills}
 
     <div.row>
-      <a.button.circle.tansparent.no-elevate href=@{AdminR SkillsSearchR} role=button>
+      <a.button.circle.tansparent.no-elevate href=@{DataR SkillsSearchR} role=button>
         <i>search
         
       ^{widgetAccount}

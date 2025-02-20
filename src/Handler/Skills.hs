@@ -29,8 +29,8 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( Form, Handler, widgetMainMenu, widgetAccount, widgetSnackbar
-    , Route (AdminR)
-    , AdminR
+    , Route (DataR)
+    , DataR
       ( SkillsR, SkillR, SkillEditFormR, SkillCreateFormR
       , SkillsSearchR, SkillsDeleteR
       )
@@ -87,7 +87,7 @@ postSkillR sid = do
       FormSuccess x -> do
           runDB $ replace sid x
           addMessageI msgSuccess MsgRecordEdited
-          redirect $ AdminR $ SkillR sid
+          redirect $ DataR $ SkillR sid
       _ -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
@@ -120,7 +120,7 @@ getSkillR sid = do
         
     let params = [("id", pack . show . fromSqlKey $ sid)]
     
-    ult <- getUrlRenderParams >>= \rndr -> return $ fromMaybe (rndr (AdminR SkillsR) params) location
+    ult <- getUrlRenderParams >>= \rndr -> return $ fromMaybe (rndr (DataR SkillsR) params) location
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSkill
@@ -135,7 +135,7 @@ formSkillDelete extra = return (pure (), [whamlet|^{extra}|])
 
 postSkillsDeleteR :: SkillId -> Handler Html
 postSkillsDeleteR sid = do
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr (AdminR SkillsR))  <$> lookupPostParam "location"
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr (DataR SkillsR))  <$> lookupPostParam "location"
           
     ((fr,_),_) <- runFormPost formSkillDelete
     case fr of
@@ -191,7 +191,7 @@ postSkillsR = do
       FormSuccess skill -> do
           sid <- runDB $ insert skill
           addMessageI msgSuccess MsgNewRecordAdded
-          redirect (AdminR SkillsR,[("id", pack . show . fromSqlKey $ sid)])
+          redirect (DataR SkillsR,[("id", pack . show . fromSqlKey $ sid)])
           
       _ -> defaultLayout $ do
           addMessageI msgError MsgInvalidData

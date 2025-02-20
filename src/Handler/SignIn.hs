@@ -24,8 +24,8 @@ import Yesod.Form.Fields (hiddenField)
 
 import Foundation
     ( Handler, Widget
-    , Route (AdminR, HomeR, SignInR, PhotoPlaceholderR)
-    , AdminR (CandidatePhotoR, CandidatePhotosR)
+    , Route (DataR, HomeR, SignInR, PhotoPlaceholderR)
+    , DataR (CandidatePhotoR, CandidatePhotosR)
     , AppMessage
       ( MsgLogin, MsgCandidate, MsgPhoto, MsgSignIn
       , MsgAuthentication
@@ -129,7 +129,7 @@ formSignIn candidates extra = do
         <li.mdc-deprecated-list-item data-value=#{fromSqlKey cid}>
           <span.mdc-deprecated-list-item__ripple>
           <span.mdc-deprecated-list-item__graphic>
-            <img.photo src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=40 heigt=40
+            <img.photo src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} width=40 heigt=40
               onerror="this.src = '@{PhotoPlaceholderR}'">
           <span.mdc-deprecated-list-item__text>
             #{fname} #{gname}

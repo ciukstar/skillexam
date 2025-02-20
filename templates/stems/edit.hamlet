@@ -1,17 +1,17 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR $ StemR eid qid} role=button aria-label=_{MsgBack}>
+    <a.button.circle.transparent href=@{DataR $ StemR eid qid} role=button aria-label=_{MsgBack}>
       <i>arrow_back
 
     <h1.title.max>
       _{MsgQuestion}
 
 <main.responsive>
-  <form method=post action=@{AdminR $ StemR eid qid} enctype=#{enctype}>
+  <form method=post action=@{DataR $ StemR eid qid} enctype=#{enctype}>
     ^{widget}
     <nav.right-align>
-      <a.button.transparent href=@{AdminR $ StemR eid qid} role=button>
+      <a.button.transparent href=@{DataR $ StemR eid qid} role=button>
         _{MsgCancel}
         
       <button type=submit>

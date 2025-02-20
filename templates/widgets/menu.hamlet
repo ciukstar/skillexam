@@ -16,10 +16,16 @@
     <a href=@{HomeR} :curr == Just HomeR:.active>
       <i>search
       <span>_{MsgExams}
-      
-    <a href=@{MyExamsR} :curr == Just MyExamsR:.active>
-      <i>school
-      <span>_{MsgMyExams}
+
+    $maybe Entity uid _ <- user
+      <a href=@{MyExamsR uid} :curr == Just (MyExamsR uid):.active>
+        <i>school
+        <span>_{MsgMyExams}
+    $nothing
+      <a href=@{AuthR LoginR}>
+        <i>school
+        <span>_{MsgMyExams}
+       
 
     <hr>
     <label>_{MsgAnalytics}
@@ -39,19 +45,19 @@
     <hr>
     <label>_{MsgData}
       
-    <a href=@{AdminR CandidatesR} :curr == Just (AdminR CandidatesR):.active>
+    <a href=@{DataR CandidatesR} :curr == Just (DataR CandidatesR):.active>
       <i>group
       <span>_{MsgCandidates}
       
-    <a href=@{AdminR TestsR} :curr == Just (AdminR TestsR):.active>
+    <a href=@{DataR TestsR} :curr == Just (DataR TestsR):.active>
       <i>playlist_add_check
       <span>_{MsgTests}
       
-    <a href=@{AdminR SkillsR} :curr == Just (AdminR SkillsR):.active>
+    <a href=@{DataR SkillsR} :curr == Just (DataR SkillsR):.active>
       <i>engineering
       <span>_{MsgSkills}
       
-    <a href=@{AdminR UsersR} :curr == Just (AdminR UsersR):.active>
+    <a href=@{DataR UsersR} :curr == Just (DataR UsersR):.active>
       <i>settings_account_box
       <span>_{MsgUsers}
       

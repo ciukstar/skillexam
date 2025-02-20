@@ -1,3 +1,6 @@
+
+LoginPlease: Please log in to access this page
+AnotherAccountAccessProhibited: Access to another user's account is prohibited
 PleaseLogInToIdentifyYourselfAsExamCandidate: Please log in to identify yourself as an exam candidate
 InvalidUrlOrRemoved: Invalid URL or resource removed
 Or: or
@@ -106,7 +109,7 @@ Points: Points
 Minutes: Minutes
 Popularity: Popularity
 LoginPrompt: Please login to find your exams.
-NoExams: You haven't taken any exams yet.
+NoExams: You haven't taken any exams yet
 AssessedSkills: Assessed skills
 TakeThisExam: Take this exam
 DataAndAnalytics: Data & Analytics

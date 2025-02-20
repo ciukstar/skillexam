@@ -10,9 +10,9 @@ $else
 
   $forall (Entity rid (Exam {}), Entity _ (Test _ ename _ pass _ _), Value score) <- tests
     
-    $with l <- rndr (AdminR $ CandidateExamsR cid) [("id",pack $ show $ fromSqlKey rid)]
+    $with l <- rndr (DataR $ CandidateExamsR cid) [("id",pack $ show $ fromSqlKey rid)]
       
-      <a.row.padding.wave href=@?{(MyExamR rid,[("location",l)])} :pure rid == mrid:.active>
+      <a.row.padding.wave href=@?{(DataR $ CandidateExamR cid rid,[("location",l)])} :pure rid == mrid:.active>
 
         $if score >= pass
           <i.large.circle.small-padding style="background-color:var(--color-pass)">

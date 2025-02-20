@@ -2,7 +2,7 @@
 <main.responsive.no-padding>
 
   $forall Entity qid (Stem _ _ ordinal text qtype _) <- stems
-    <a.row.padding.wave href=@{AdminR $ StemR eid qid} :pure qid == activated:.active>
+    <a.row.padding.wave href=@{DataR $ StemR eid qid} :pure qid == activated:.active>
 
       <div.secondary-text.large-text.bold>#{ordinal}
       <div.max style="min-width:0">
@@ -24,7 +24,7 @@
     <hr>
 
 
-  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR $ StemCreateFormR eid}
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR $ StemCreateFormR eid}
     aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
     <i>add
 

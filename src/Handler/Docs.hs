@@ -4,8 +4,8 @@ module Handler.Docs (getDocsR) where
 
 import Foundation
     ( Handler, widgetAccount, widgetMainMenu
-    , Route (AdminR, HomeR, MyExamsR, StaticR)
-    , AdminR (SkillsR, TestsR, CandidatesR)
+    , Route (DataR, HomeR, MyExamsR, StaticR, AuthR)
+    , DataR (SkillsR, TestsR, CandidatesR)
     , AppMessage
       ( MsgAppName, MsgDocs, MsgCandidate, MsgSkill, MsgBasicEntities
       , MsgOverview, MsgAnswer, MsgExam, MsgOption, MsgQuestion
@@ -23,6 +23,7 @@ import Settings.StaticFiles (img_SkillExam_ERD_svg)
 
 import Text.Hamlet (Html)
 
+import Yesod.Auth (Route (LoginR), YesodAuth(maybeAuthId))
 import Yesod.Core
     ( Yesod(defaultLayout), getUrlRender, preEscapedToMarkup
     , RenderMessage (renderMessage), getYesod, languages, newIdent
@@ -35,6 +36,7 @@ getDocsR = do
     app <- getYesod
     langs <- languages
     rndr <- getUrlRender
+    uid <- maybeAuthId
     defaultLayout $ do
         setTitleI MsgDocs
         idOverlay <- newIdent

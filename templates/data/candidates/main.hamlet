@@ -10,7 +10,7 @@
       _{MsgCandidates}
 
     <div.row>
-      <a.button.circle.tansparent.no-elevate href=@{AdminR CandidatesSearchR} role=button>
+      <a.button.circle.tansparent.no-elevate href=@{DataR CandidatesSearchR} role=button>
         <i>search
         
       ^{widgetAccount}

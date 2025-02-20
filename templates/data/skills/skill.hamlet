@@ -12,7 +12,7 @@
       <button.circle.transparent type=button title=_{MsgDelete} data-ui=##{idDialogDelete}>
         <i>delete
         
-      <a.button.circle.transparent href=@{AdminR $ SkillEditFormR sid} title=_{MsgEdit} role=button>
+      <a.button.circle.transparent href=@{DataR $ SkillEditFormR sid} title=_{MsgEdit} role=button>
         <i>edit
 
 <main.responsive>
@@ -41,7 +41,7 @@
   <nav.right-align.no-space>
     <button.transparent.link data-ui=##{idDialogDelete}>
       _{MsgCancel}
-    <form method=post action=@{AdminR $ SkillsDeleteR sid} enctype=#{et0}>
+    <form method=post action=@{DataR $ SkillsDeleteR sid} enctype=#{et0}>
       ^{fw0}
       <button.primary type=submit>
         _{MsgDelete}

@@ -40,10 +40,10 @@ import Yesod.Persist.Core (YesodPersist(runDB))
 import Foundation
     ( Handler, Widget
     , Route
-      ( AdminR, HomeR, ExamR, ExamFormR, ExamTestR
+      ( DataR, HomeR, ExamR, ExamFormR, ExamTestR
       , StepR, PhotoPlaceholderR
       )
-    , AdminR (CandidatePhotoR)
+    , DataR (CandidatePhotoR)
     , AppMessage
       ( MsgExam, MsgCandidate, MsgExam, MsgStartExam
       , MsgCancel, MsgAttempt, MsgPhoto, MsgPoints, MsgName
@@ -62,7 +62,11 @@ import Database.Esqueleto.Experimental
 
 import Model
     ( Exam (Exam)
-    , Candidate (Candidate, candidateGivenName, candidateFamilyName, candidateAdditionalName), CandidateId
+    , CandidateId
+    , Candidate
+      ( Candidate, candidateGivenName, candidateFamilyName
+      , candidateAdditionalName
+      )
     , EntityField
       ( CandidateFamilyName, CandidateGivenName, CandidateAdditionalName
       , TestName, StemTest, StemOrdinal, StemId, ExamTest

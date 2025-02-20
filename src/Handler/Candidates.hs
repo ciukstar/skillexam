@@ -15,6 +15,7 @@ module Handler.Candidates
   , postCandidateDeleR
   , getCandidatesSearchR
   , getCandidateExamsR
+  , getCandidateExamR
   , getCandidateSkillsR
   , getCandidatePhotosR
   ) where
@@ -23,8 +24,6 @@ import Control.Applicative ((<|>))
 
 import Data.Maybe (fromMaybe)
 import qualified Data.List.Safe as LS (head)
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
-import Data.Time.Calendar (toGregorian)
 import Data.Text (unpack, pack)
 import Data.Text.ICU.Calendar (setDay)
 import Data.Text.ICU
@@ -32,14 +31,17 @@ import Data.Text.ICU
     , standardDateFormatter, FormatStyle (NoFormatStyle, ShortFormatStyle)
     , formatCalendar
     )
+import Data.Time.Calendar (toGregorian)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
+import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Database.Esqueleto.Experimental
     ( select, from, table, orderBy, desc, innerJoin, on
     , (^.), (==.), (%), (++.), (||.), (:&) ((:&)), (<=.), (&&.)
     , val, selectOne, where_, delete, in_
-    , upper_, like, just, Value (Value)
+    , upper_, like, just, Value (Value, unValue)
     , distinct, selectQuery, groupBy, countRows, leftJoin, coalesceDefault
-    , SqlExpr, sum_, subSelectList
+    , SqlExpr, sum_, subSelectList, asc
     )
 import Database.Persist
     ( Entity (Entity, entityVal), (=.)
@@ -50,12 +52,12 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Foundation
     ( Form, Handler, widgetAccount, widgetMainMenu, widgetSnackbar
     , Route
-      ( StaticR, PhotoPlaceholderR, MyExamR
-      , AdminR
+      ( StaticR, PhotoPlaceholderR
+      , DataR
       )
-    , AdminR
+    , DataR
       ( CandidatesR, CandidateR, CandidateSkillsR, CandidatePhotoR, CandidateExamsR
-      , CandidateDeleR, CandidatesSearchR, CandidateCreateFormR
+      , CandidateDeleR, CandidatesSearchR, CandidateCreateFormR, CandidateExamR
       , CandidateEditFormR
       )
     , AppMessage
@@ -67,28 +69,30 @@ import Foundation
       , MsgRecordDeleted, MsgPass, MsgFail, MsgNoSkillsYet
       , MsgNoExamsYet, MsgPassExamInvite, MsgTakePhoto, MsgUploadPhoto
       , MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
+      , MsgExam, MsgCompleted, MsgExamResults, MsgMaxScore, MsgPassScore
+      , MsgScore, MsgStatus, MsgUser
       )
     )
 
-import Material3 (md3widget)
+import Material3 (md3widget, md3selectWidget)
 
 import Model
     ( msgSuccess, msgError, keyUtlDest
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName
-      , candidateAdditionalName, candidateBday
+      , candidateAdditionalName, candidateBday, candidateUser
       )
     , CandidateId, Photo (Photo)
-    , Exam (Exam)
-    , Test (Test), Stem, Answer, Option, Skill (Skill)
+    , ExamId, Exam (Exam, examEnd)
+    , Test (Test, testName, testPass), Stem, Answer, Option, Skill (Skill)
     , EntityField
       ( CandidateId, PhotoCandidate, PhotoPhoto, CandidateFamilyName
       , CandidateGivenName, CandidateAdditionalName
       , ExamTest, ExamCandidate
       , StemId, TestId, ExamId, AnswerExam
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
-      , SkillName, OptionPoints, TestPass, StemTest
-      )
+      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId, UserEmail
+      ), User (User)
     )
 
 import Settings (widgetFile)
@@ -98,11 +102,12 @@ import Settings.StaticFiles
     )
     
 import Text.Hamlet (Html)
+import qualified Text.Printf as Printf (printf)
 
 import Yesod.Core
     ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
     , TypedContent (TypedContent), ToContent (toContent), emptyContent
-    , liftIO, getUrlRenderParams
+    , liftIO, getUrlRenderParams, MonadHandler (liftHandler)
     )
 import Yesod.Core.Handler
     ( redirect, FileInfo, fileSourceByteString, languages
@@ -112,7 +117,7 @@ import Yesod.Core.Handler
     )
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (textField, dayField, fileField, intField)
+import Yesod.Form.Fields (textField, dayField, fileField, intField, selectFieldList)
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
 import Yesod.Form.Types
     (FormResult (FormSuccess)
@@ -120,6 +125,7 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Persist (YesodPersist(runDB))
+import Data.Bifunctor (Bifunctor(bimap, first))
 
 
 getCandidatesSearchR :: Handler Html
@@ -153,7 +159,7 @@ getCandidatesSearchR = do
 postCandidateDeleR :: CandidateId -> Handler Html
 postCandidateDeleR cid = do
 
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> do
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> do
         l <- lookupPostParam "location"
         ult <- lookupSession keyUtlDest
         return $ l <|> ult
@@ -179,7 +185,7 @@ postCandidateR cid = do
         where_ $ x ^. CandidateId ==. val cid
         return x
     ((fr,widget),enctype) <- runFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
     case fr of
       FormSuccess (c,photo) -> do
           runDB $ replace cid c
@@ -192,7 +198,7 @@ postCandidateR cid = do
             _otherwise -> return ()
             
           addMessageI msgSuccess MsgRecordEdited
-          redirectUltDest $ AdminR CandidatesR
+          redirectUltDest $ DataR CandidatesR
           
       _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
@@ -208,7 +214,7 @@ getCandidateEditFormR cid = do
         where_ $ x ^. CandidateId ==. val cid
         return x
     (widget,enctype) <- generateFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgCandidate
@@ -262,6 +268,42 @@ getCandidateSkillsR cid = do
         idOverlay <- newIdent
         idDialogDelete <- newIdent
         $(widgetFile "data/candidates/candidate")
+
+
+getCandidateExamR :: CandidateId -> ExamId -> Handler Html
+getCandidateExamR cid eid = do
+    test <- runDB $ selectOne $ do
+        (x :& c :& e) <- from $ table @Exam
+            `innerJoin` table @Candidate `on` (\(x :& c) -> x ^. ExamCandidate ==. c ^. CandidateId)
+            `innerJoin` table @Test `on` (\(x :& _ :& e) -> x ^. ExamTest ==. e ^. TestId)
+        where_ $ x ^. ExamId ==. val eid
+        return (x,c,e)
+
+    total <- fromMaybe 0 . (unValue =<<) <$> case test of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
+          x :& q <- from $ table @Option
+             `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
+          where_ $ q ^. StemTest ==. val tid
+          return $ sum_ $ x ^. OptionPoints
+      Nothing -> return $ pure $ Value $ pure (0 :: Double)
+
+    score <- fromMaybe 0 . (unValue =<<) <$> case test of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
+          x :& q <- from $ table @Option
+             `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
+          where_ $ q ^. StemTest ==. val tid
+          where_ $ x ^. OptionId `in_` subSelectList
+             ( from $ selectQuery $ do
+                   y <- from $ table @Answer
+                   where_ $ y ^. AnswerExam ==. val eid
+                   return $ y ^. AnswerOption
+             )
+          return $ sum_ $ x ^. OptionPoints
+      Nothing -> return $ pure $ Value $ pure (0 :: Double)
+
+    defaultLayout $ do
+        setTitleI MsgExam
+        $(widgetFile "data/candidates/exam")
 
 
 getCandidateExamsR :: CandidateId -> Handler Html
@@ -368,10 +410,10 @@ postCandidatesR = do
                 return ()
             Nothing -> return ()
           addMessageI msgSuccess MsgNewRecordAdded
-          redirectUltDest $ AdminR CandidatesR
+          redirectUltDest $ DataR CandidatesR
           
       _otherwise -> defaultLayout $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
           setTitleI MsgCandidate
           $(widgetFile "data/candidates/create")
 
@@ -402,7 +444,7 @@ getCandidatesR = do
 getCandidateCreateFormR :: Handler Html
 getCandidateCreateFormR = do
     (widget,enctype) <- generateFormPost $ formCandidate Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ AdminR CandidatesR) <$> lookupSession keyUtlDest
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
     defaultLayout $ do
         setTitleI MsgCandidate
         $(widgetFile "data/candidates/create")
@@ -429,6 +471,16 @@ formCandidate candidate extra = do
         { fsLabel = SomeMessage MsgBirthday
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateBday . entityVal <$> candidate)
+
+    users <- liftHandler $ fieldListOptions <$> runDB ( select $ do
+        x <- from $ table @User
+        orderBy [asc (x ^. UserName), asc (x ^. UserId)]
+        return ((x ^. UserName, x ^. UserEmail), x ^. UserId) )
+
+    (userR,userV) <- mopt (selectFieldList users) FieldSettings
+        { fsLabel = SomeMessage MsgUser
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (candidateUser . entityVal <$> candidate)
         
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
@@ -436,7 +488,8 @@ formCandidate candidate extra = do
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
-    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> pure Nothing) <*> photoR
+    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> userR)
+                <*> photoR
     
     idLabelPhoto <- newIdent
     idImgPhoto <- newIdent
@@ -452,3 +505,12 @@ formCandidate candidate extra = do
     return ( r
            , $(widgetFile "data/candidates/form")
            )
+        
+  where
+      
+      fieldListOptions = (bimap ((\(x,y) -> fromMaybe y x) . bimap unValue unValue) unValue <$>)
+
+
+
+printf :: String -> Double -> String
+printf = Printf.printf

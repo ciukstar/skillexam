@@ -3,7 +3,7 @@
 
 <div.mdc-list role=list data-mdc-auto-init=MDCList>
   $forall (Entity rid (Exam _ _ attempt start _),Entity _ (Test _ name _ pass _ _),Value score) <- tests
-    <a.row.padding.wave href=@?{(MyExamR rid,[("id",pack $ show $ fromSqlKey rid)])}
+    <a.row.padding.wave href=@?{(MyExamR uid rid,[("id",pack $ show $ fromSqlKey rid)])}
       :Just rid == mrid:.activated
       onclick="this.value = `${this.value}&scrollY=${window.scrollY}`">
       
@@ -26,9 +26,8 @@
 
     <hr>
 
-$maybe _ <- mcid
-  <a.button.extended.large href=@{ExamFormR} role=button>
-    <i>
-      add
-    <span>
-      _{MsgTakeNewExam}
+<a.button.extended.large href=@{ExamFormR} role=button>
+  <i>
+    add
+  <span>
+    _{MsgTakeNewExam}

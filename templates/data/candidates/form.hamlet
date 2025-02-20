@@ -4,7 +4,7 @@
 <figure.center-align>
   <label for=#{fvId photoV} ##{idLabelPhoto}>
     $maybe Entity cid _ <- candidate
-      <img.circle.extra src=@{AdminR $ CandidatePhotoR cid} ##{idImgPhoto}
+      <img.circle.extra src=@{DataR $ CandidatePhotoR cid} ##{idImgPhoto}
                         loading=lazy alt=_{MsgPhoto} width=64 height=64>
     $nothing
       <img.circle.extra src=@{StaticR img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg}
@@ -29,6 +29,9 @@
 
 $forall v <- [fnameV,gnameV,anameV,bdayV]
   ^{md3widget v}
+
+^{md3selectWidget userV}
+
       
 <div.overlay ##{idOverlay} data-ui=##{idOverlay}>
 

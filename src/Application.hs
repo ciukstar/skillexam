@@ -92,7 +92,7 @@ import Handler.Candidates
     , postCandidatesR, getCandidatePhotoR, getCandidateR
     , getCandidateEditFormR, postCandidateR
     , postCandidateDeleR, getCandidatesSearchR
-    , getCandidateExamsR
+    , getCandidateExamsR, getCandidateExamR
     , getCandidateSkillsR, getCandidatePhotosR
     )
     

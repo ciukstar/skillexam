@@ -1,3 +1,6 @@
+
+LoginPlease: Пожалуйста, войдите для доступа к этой странице
+AnotherAccountAccessProhibited: Доступ к учетной записи другого пользователя запрещен
 PleaseLogInToIdentifyYourselfAsExamCandidate: Пожалуйста, войдите в систему, чтобы идентифицировать себя как кандидата на экзамен
 InvalidUrlOrRemoved: Неверный URL-адрес или ресурс удален
 Or: или
@@ -106,7 +109,7 @@ Points: Баллы
 Minutes: Минуты
 Popularity: Популярность
 LoginPrompt: Пожалуйста, войдите, чтобы найти свои экзамены.
-NoExams: Вы еще не сдавали экзамены.
+NoExams: Вы еще не сдавали экзамены
 AssessedSkills: Оцениваемые навыки
 TakeThisExam: Сдать этот экзамен
 DataAndAnalytics: Данные и аналитика

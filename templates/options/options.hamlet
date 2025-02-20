@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR $ StemR eid qid} role=button aria-label=_{MsgBack}>
+    <a.button.circle.transparent href=@{DataR $ StemR eid qid} role=button aria-label=_{MsgBack}>
       <i>arrow_back
 
     <h1.title.max>
@@ -10,7 +10,7 @@
 <main.responsive>
 
   $forall Entity oid (Option _ ordinal text key points) <- options
-    <a.row.padding.wave href=@{AdminR $ OptionR eid qid oid} :Just oid == moid:.active>
+    <a.row.padding.wave href=@{DataR $ OptionR eid qid oid} :Just oid == moid:.active>
 
       <div.secondary-text.large-text.bold>#{ordinal}
       
@@ -35,7 +35,7 @@
     <hr>
 
 
-  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR $ OptionCreateFormR eid qid}
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR $ OptionCreateFormR eid qid}
     aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
     <i>add
 

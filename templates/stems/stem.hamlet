@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@?{(AdminR $ StemsR eid,[("qid",pack $ show $ fromSqlKey qid)])}
+    <a.button.circle.transparent href=@?{(DataR $ StemsR eid,[("qid",pack $ show $ fromSqlKey qid)])}
       role=button aria-label=_{MsgBack}>
       <i>arrow_back
 
@@ -12,7 +12,7 @@
       <button.circle.transparent type=button title=_{MsgDelete} data-ui=##{idDialogDelete}>
         <i>delete
         
-      <a.button.circle.transparent href=@{AdminR $ StemEditFormR eid qid} title=_{MsgEdit}>
+      <a.button.circle.transparent href=@{DataR $ StemEditFormR eid qid} title=_{MsgEdit}>
         <i>edit
 
 <main.responsive>
@@ -43,7 +43,7 @@
           <td>#{skillName skill}
     
 
-    <a.row.padding.wave href=@{AdminR $ OptionsR eid qid}>
+    <a.row.padding.wave href=@{DataR $ OptionsR eid qid}>
       <i.secondary-text>format_list_numbered
       <div.max>
         <div.large-text>
@@ -63,7 +63,7 @@
   <nav.right-align.no-space>
     <button.transparent.link data-ui=##{idDialogDelete}>
       _{MsgCancel}
-    <form method=post action=@{AdminR $ StemsDeleteR eid qid} enctype=#{et0}>
+    <form method=post action=@{DataR $ StemsDeleteR eid qid} enctype=#{et0}>
       ^{fw0}
       <button.primary type=submit>
         _{MsgDelete}

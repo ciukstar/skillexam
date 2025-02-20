@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR CandidatesR} role=button>
+    <a.button.circle.transparent href=@{DataR CandidatesR} role=button>
       <i>arrow_back
 
     <h1.title.max>
@@ -9,7 +9,7 @@
 
 <main.responsive>
 
-  <form method=post action=@{AdminR $ CandidateR cid} enctype=#{enctype} novalidate>
+  <form method=post action=@{DataR $ CandidateR cid} enctype=#{enctype} novalidate>
     ^{widget}
     
     <nav.right-align>

@@ -1,10 +1,10 @@
 
-<form method=get action=@{AdminR SkillsSearchR} ##{idFormQuery}>
+<form method=get action=@{DataR SkillsSearchR} ##{idFormQuery}>
 
 <header.fixed.no-padding>
 
   <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
-    <a.start.transparent.round.circle.wave href=@{AdminR SkillsR}>
+    <a.start.transparent.round.circle.wave href=@{DataR SkillsR}>
       <i>arrow_back    
 
     $maybe q <- mq

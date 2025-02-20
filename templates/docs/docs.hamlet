@@ -19,29 +19,32 @@
 
   <h2>_{MsgOverview}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ AdminR SkillsR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ DataR SkillsR))}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc003 (rndr $ AdminR TestsR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc003 (rndr $ DataR TestsR))}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc004 (rndr $ AdminR CandidatesR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc004 (rndr $ DataR CandidatesR))}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc005 (rndr HomeR))}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr MyExamsR))}
+    $maybe uid <- uid
+      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ MyExamsR uid))}
+    $nothing
+      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ AuthR LoginR))}
     
   <h2>_{MsgBasicEntities}
 
   <h3>_{MsgSkill}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc007 (rndr $ AdminR SkillsR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc007 (rndr $ DataR SkillsR))}
 
   <h3>_{MsgCandidate}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc008 (rndr $ AdminR CandidatesR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc008 (rndr $ DataR CandidatesR))}
 
   <h3>_{MsgTest}
   <p>
-    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc009 (rndr $ AdminR TestsR))}
+    #{preEscapedToMarkup $ renderMessage app langs (MsgDoc009 (rndr $ DataR TestsR))}
   <p>_{MsgDoc010}
   <p>_{MsgDoc011}
   <p>_{MsgDoc012}

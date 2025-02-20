@@ -34,8 +34,8 @@ import qualified Database.Persist as P ((=.), delete)
 
 import Foundation
     ( Handler, Form, widgetMainMenu, widgetAccount, widgetSnackbar
-    , Route (AdminR, StaticR)
-    , AdminR
+    , Route (DataR, StaticR)
+    , DataR
       ( UserPhotoR, UsersR, UserR, UserNewR, UserEditR, UserDeleR
       , UserResetPasswordR
       )
@@ -108,7 +108,7 @@ postUserResetPasswordR uid = do
               where_ $ x ^. UserId ==. val uid
 
           addMessageI msgSuccess MsgPasswordChanged
-          redirect $ AdminR $ UserR uid
+          redirect $ DataR $ UserR uid
           
       _otherwise -> do
           addMessageI msgSuccess MsgInvalidFormData
@@ -166,15 +166,15 @@ postUserDeleR uid = do
           case user of
             Just (Entity _ (User _ _ _ True _ _ _ _)) -> do
                 addMessageI msgError MsgSuperuserCannotBeDeleted
-                redirect $ AdminR $ UserR uid
+                redirect $ DataR $ UserR uid
             _otherwise -> return ()
               
           runDB $ P.delete uid
           addMessageI msgSuccess MsgRecordDeleted
-          redirect $ AdminR UsersR
+          redirect $ DataR UsersR
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
-          redirect $ AdminR $ UserR uid
+          redirect $ DataR $ UserR uid
 
 
 getUserEditR :: UserId -> Handler Html
@@ -232,7 +232,7 @@ postUserR uid = do
                     , UserPhotoAttribution P.=. attrib
                     ]
           addMessageI msgSuccess MsgRecordEdited
-          redirect $ AdminR $ UserR uid
+          redirect $ DataR $ UserR uid
           
       FormSuccess (User email _ name _ admin authType vekey verified,(Nothing,attrib)) -> do
           void $ runDB $ update $ \x -> do
@@ -248,7 +248,7 @@ postUserR uid = do
               set x [UserPhotoAttribution =. val attrib]
               where_ $ x ^. UserPhotoUser ==. val uid
           addMessageI msgSuccess MsgRecordEdited
-          redirect $ AdminR $ UserR uid
+          redirect $ DataR $ UserR uid
 
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
@@ -294,7 +294,7 @@ postUsersR = do
                     , UserPhotoAttribution P.=. attrib
                     ]
           addMessageI msgSuccess MsgRecordAdded
-          redirect $ AdminR UsersR
+          redirect $ DataR UsersR
           
       FormSuccess (r,(Nothing,attrib)) -> do
           uid <- runDB $ insert r
@@ -302,7 +302,7 @@ postUsersR = do
               set x [UserPhotoAttribution =. val attrib]
               where_ $ x ^. UserPhotoUser ==. val uid
           addMessageI msgSuccess MsgRecordAdded
-          redirect $ AdminR UsersR
+          redirect $ DataR UsersR
 
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData

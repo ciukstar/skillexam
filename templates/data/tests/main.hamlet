@@ -11,10 +11,10 @@
 
     <div.row>
       $maybe eid <- meid
-        <a.button.circle.tansparent.no-elevate href=@?{(AdminR TestSearchR,[("eid",pack $ show $ fromSqlKey eid)])} role=button>
+        <a.button.circle.tansparent.no-elevate href=@?{(DataR TestSearchR,[("eid",pack $ show $ fromSqlKey eid)])} role=button>
           <i>search
       $nothing
-        <a.button.circle.tansparent.no-elevate href=@{AdminR TestSearchR} role=button>
+        <a.button.circle.tansparent.no-elevate href=@{DataR TestSearchR} role=button>
           <i>search
         
       ^{widgetAccount}

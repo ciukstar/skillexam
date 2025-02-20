@@ -33,8 +33,8 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( App, Form, Handler, widgetMainMenu, widgetAccount, widgetSnackbar
-    , Route (AdminR)
-    , AdminR
+    , Route (DataR)
+    , DataR
       ( TestsR, TestR, TestDeleR, TestSearchR, TestEditFormR, TestCreateFormR
       , StemsR, TestPublishR, TestUnpublishR
       )
@@ -102,9 +102,9 @@ postTestPublishR eid = do
           runDB $ update $ \x -> do
               set x [TestState =. val TestStatePublished]
               where_ $ x ^. TestId ==. val eid
-          redirect $ AdminR $ TestR eid
+          redirect $ DataR $ TestR eid
           
-      _otherwise -> redirect $ AdminR $ TestR eid
+      _otherwise -> redirect $ DataR $ TestR eid
 
 
 postTestUnpublishR :: TestId -> HandlerFor App Html
@@ -119,9 +119,9 @@ postTestUnpublishR eid = do
           runDB $ update $ \x -> do
               set x [TestState =. val TestStateUnpublished]
               where_ $ x ^. TestId ==. val eid
-          redirect $ AdminR $ TestR eid
+          redirect $ DataR $ TestR eid
           
-      _otherwise -> redirect $ AdminR $ TestR eid
+      _otherwise -> redirect $ DataR $ TestR eid
 
 
 formTestStateToggle :: Maybe TestState -> Html -> MForm (HandlerFor App) (FormResult TestState, WidgetFor App ())
@@ -162,11 +162,11 @@ postTestDeleR eid = do
               where_ $ x ^. TestId ==. val eid
           
           addMessageI msgSuccess MsgRecordDeleted
-          redirect $ AdminR TestsR
+          redirect $ DataR TestsR
           
       _otherwise -> do          
           addMessageI msgError MsgInvalidFormData
-          redirect $ AdminR $ TestR eid
+          redirect $ DataR $ TestR eid
 
 
 getTestR :: TestId -> HandlerFor App Html
@@ -200,7 +200,7 @@ postTestR eid = do
       FormSuccess x -> do
           runDB $ replace eid x
           addMessageI msgSuccess MsgRecordEdited
-          redirect $ AdminR $ TestR eid
+          redirect $ DataR $ TestR eid
           
       _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
@@ -229,7 +229,7 @@ postTestsR = do
       FormSuccess test -> do
           runDB $ insert_ test
           addMessageI msgSuccess MsgNewRecordAdded
-          redirect $ AdminR TestsR
+          redirect $ DataR TestsR
           
       _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData

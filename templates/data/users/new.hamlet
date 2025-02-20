@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR UsersR}>
+    <a.button.circle.transparent href=@{DataR UsersR}>
       <i>arrow_back
       
     <h1.title.max>
@@ -9,10 +9,10 @@
       
 <main.responsive>
 
-  <form.margin method=post action=@{AdminR UsersR} enctype=#{et} novalidate>
+  <form.margin method=post action=@{DataR UsersR} enctype=#{et} novalidate>
     ^{fw}
     <nav.right-align>
-      <a.button.transparent href=@{AdminR UsersR}>
+      <a.button.transparent href=@{DataR UsersR}>
         _{MsgCancel}
       <button.primary type=submit>
         _{MsgSave}

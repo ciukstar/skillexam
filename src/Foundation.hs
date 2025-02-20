@@ -16,7 +16,7 @@ module Foundation where
 import Control.Monad ((>>))
 import Control.Monad.Logger (LogSource)
 
-import Data.Bool (Bool (False))
+import Data.Bool (Bool (False), otherwise)
 import qualified Data.CaseInsensitive as CI
 import Data.List (length, zip)
 import qualified Data.List.Safe as LS (head)
@@ -46,7 +46,7 @@ import Yesod.Core.Handler
     ( getYesod, defaultCsrfCookieName, defaultCsrfHeaderName
     , withUrlRenderer, languages, HandlerFor, newIdent, getMessages
     , setUltDestCurrent, selectRep, provideRep, getMessageRender
-    , getRouteToParent, getUrlRender, lookupSession
+    , getRouteToParent, getUrlRender, lookupSession, setUltDest
     )
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Core
@@ -111,6 +111,7 @@ widgetSnackbar msgs = $(widgetFile "widgets/snackbar")
 widgetMainMenu :: Text -> Text -> Widget
 widgetMainMenu idOverlay idDialogMainMenu = do
     curr <- getCurrentRoute
+    user <- maybeAuth
     idButtonMainMenuClose <- newIdent
     $(widgetFile "widgets/menu")
 
@@ -147,9 +148,9 @@ instance Yesod App where
       master <- getYesod
       
       pc <- widgetToPageContent $ do
-          -- addStylesheet $ StaticR css_outlined_css
-          -- addStylesheet $ StaticR material_components_web_min_css
-          -- addScript $ StaticR material_components_web_min_js
+          addStylesheet $ StaticR css_outlined_css
+          addStylesheet $ StaticR material_components_web_min_css
+          addScript $ StaticR material_components_web_min_js
           $(widgetFile "default-layout")
       
       langs <- languages
@@ -157,9 +158,7 @@ instance Yesod App where
       withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
-    authRoute
-        :: App
-        -> Maybe (Route App)
+    authRoute :: App -> Maybe (Route App)
     authRoute _ = Just $ AuthR LoginR
 
     isAuthorized
@@ -173,39 +172,10 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
     
-    isAuthorized HomeR _ = setUltDestCurrent >> return Authorized
-
-    isAuthorized (AdminR SkillsR) _ = return Authorized
-    isAuthorized (AdminR TestsR) _ = return Authorized
-    isAuthorized (AdminR CandidatesR) _ = return Authorized
-    isAuthorized (AdminR SkillCreateFormR) _ = return Authorized
-    isAuthorized (AdminR SkillsSearchR) _ = return Authorized
-    isAuthorized (AdminR (SkillsDeleteR _)) _ = return Authorized
-    isAuthorized (AdminR (SkillR _)) _ = return Authorized
-    isAuthorized (AdminR (SkillEditFormR _)) _ = return Authorized
-    isAuthorized (AdminR TestCreateFormR) _ = return Authorized
-    isAuthorized (AdminR TestEditFormR {}) _ = return Authorized
-    isAuthorized (AdminR TestR {}) _ = return Authorized
-    isAuthorized (AdminR (TestDeleR _)) _ = return Authorized
-    isAuthorized (AdminR TestSearchR) _ = return Authorized
-    isAuthorized (AdminR StemsR {}) _ = return Authorized
-    isAuthorized (AdminR StemCreateFormR {}) _ = return Authorized
-    isAuthorized (AdminR StemEditFormR {}) _ = return Authorized
-    isAuthorized (AdminR StemR {}) _ = return Authorized
-    isAuthorized (AdminR StemsDeleteR {}) _ = return Authorized
-    isAuthorized (AdminR OptionsR {}) _ = return Authorized
-    isAuthorized (AdminR OptionCreateFormR {}) _ = return Authorized
-    isAuthorized (AdminR OptionR {}) _ = return Authorized
-    isAuthorized (AdminR OptionEditFormR {}) _ = return Authorized
-    isAuthorized (AdminR OptionsDeleteR {}) _ = return Authorized
-    isAuthorized (AdminR CandidateCreateFormR) _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
-    isAuthorized (AdminR (CandidatePhotoR _)) _ = return Authorized
-    isAuthorized (AdminR (CandidateR _)) _ = return Authorized
-    isAuthorized (AdminR (CandidateEditFormR _)) _ = return Authorized
-    isAuthorized (AdminR (CandidateDeleR _)) _ = return Authorized
-    isAuthorized (AdminR CandidatesSearchR) _ = return Authorized
-    isAuthorized (AdminR (CandidateExamsR _)) _ = return Authorized
+    
+    isAuthorized HomeR _ = setUltDestCurrent >> return Authorized
+    
     isAuthorized StepR {} _ = return Authorized
     isAuthorized DocsR _ = return Authorized
     isAuthorized ExamFormR _ = return Authorized
@@ -214,22 +184,19 @@ instance Yesod App where
     isAuthorized SignOutR _ = return Authorized
     isAuthorized CompleteR {} _ = return Authorized
     isAuthorized SummaryR {} _ = return Authorized
-    isAuthorized MyExamsR _ = return Authorized
+    
+    isAuthorized r@(MyExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(MyExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(MyExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
     isAuthorized (ExamSkillsR _) _ = return Authorized
     
     isAuthorized (SearchExamInfoR _) _ = return Authorized
     isAuthorized (SearchExamSkillsR _) _ = return Authorized
-
     
     isAuthorized TerminateR {} _ = return Authorized
-    isAuthorized MyExamR {} _ = return Authorized
-    isAuthorized MyExamsSearchR _ = return Authorized
-    isAuthorized (AdminR (CandidateSkillsR _)) _ = return Authorized
-    isAuthorized (AdminR (TestPublishR _)) _ = return Authorized
-    isAuthorized (AdminR (TestUnpublishR _)) _ = return Authorized
-    isAuthorized (AdminR CandidatePhotosR) _ = return Authorized
     isAuthorized (ExamTestR {}) _ = return Authorized
     isAuthorized (StatsR TopSkilledR) _ = return Authorized
     isAuthorized (StatsR SkilledR {}) _ = return Authorized
@@ -239,13 +206,54 @@ instance Yesod App where
     isAuthorized (StatsR (TestSuccessRateR _)) _ = return Authorized
     isAuthorized (RemainingTimeR _) _ = return Authorized
 
-    isAuthorized (AdminR (UserResetPasswordR _)) _ = isAdmin
-    isAuthorized (AdminR (UserDeleR _)) _ = isAdmin
-    isAuthorized (AdminR (UserEditR _)) _ = isAdmin
-    isAuthorized (AdminR UserNewR) _ = isAdmin
-    isAuthorized (AdminR (UserR _)) _ = isAdmin
-    isAuthorized (AdminR UsersR) _ = setUltDestCurrent >> isAdmin
-    isAuthorized (AdminR (UserPhotoR _)) _ = return Authorized
+    isAuthorized (DataR SkillCreateFormR) _ = isAdmin
+    isAuthorized (DataR SkillsSearchR) _ = isAdmin
+    isAuthorized (DataR (SkillsDeleteR _)) _ = isAdmin
+    isAuthorized (DataR (SkillR _)) _ = isAdmin
+    isAuthorized (DataR (SkillEditFormR _)) _ = isAdmin
+    isAuthorized (DataR SkillsR) _ = setUltDestCurrent >> isAdmin
+    
+    isAuthorized (DataR (TestPublishR _)) _ = isAdmin
+    isAuthorized (DataR (TestUnpublishR _)) _ = isAdmin
+    isAuthorized (DataR TestCreateFormR) _ = isAdmin
+    isAuthorized (DataR TestEditFormR {}) _ = isAdmin
+    isAuthorized (DataR TestR {}) _ = isAdmin
+    isAuthorized (DataR (TestDeleR _)) _ = isAdmin
+    isAuthorized (DataR TestSearchR) _ = isAdmin
+    isAuthorized (DataR TestsR) _ = setUltDestCurrent >> isAdmin
+    
+    isAuthorized (DataR StemsR {}) _ = isAdmin
+    isAuthorized (DataR StemCreateFormR {}) _ = isAdmin
+    isAuthorized (DataR StemEditFormR {}) _ = isAdmin
+    isAuthorized (DataR StemR {}) _ = isAdmin
+    isAuthorized (DataR StemsDeleteR {}) _ = isAdmin
+    
+    isAuthorized (DataR OptionsR {}) _ = isAdmin
+    isAuthorized (DataR OptionCreateFormR {}) _ = isAdmin
+    isAuthorized (DataR OptionR {}) _ = isAdmin
+    isAuthorized (DataR OptionEditFormR {}) _ = isAdmin
+    isAuthorized (DataR OptionsDeleteR {}) _ = isAdmin
+
+    isAuthorized (DataR (CandidateSkillsR _)) _ = isAdmin
+    isAuthorized (DataR CandidateCreateFormR) _ = isAdmin
+    isAuthorized (DataR (CandidateR _)) _ = isAdmin
+    isAuthorized (DataR (CandidateEditFormR _)) _ = isAdmin
+    isAuthorized (DataR (CandidateDeleR _)) _ = isAdmin
+    isAuthorized (DataR CandidatesSearchR) _ = isAdmin
+    isAuthorized (DataR (CandidateExamsR _)) _ = isAdmin
+    isAuthorized (DataR (CandidateExamR _ _)) _ = isAdmin
+    isAuthorized (DataR CandidatesR) _ = setUltDestCurrent >> isAdmin
+        
+    isAuthorized (DataR (CandidatePhotoR _)) _ = return Authorized
+    isAuthorized (DataR CandidatePhotosR) _ = return Authorized
+
+    isAuthorized (DataR (UserResetPasswordR _)) _ = isAdmin
+    isAuthorized (DataR (UserDeleR _)) _ = isAdmin
+    isAuthorized (DataR (UserEditR _)) _ = isAdmin
+    isAuthorized (DataR UserNewR) _ = isAdmin
+    isAuthorized (DataR (UserR _)) _ = isAdmin
+    isAuthorized (DataR UsersR) _ = setUltDestCurrent >> isAdmin
+    isAuthorized (DataR (UserPhotoR _)) _ = return Authorized
     
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -313,7 +321,15 @@ instance Yesod App where
     errorHandler x = defaultErrorHandler x
 
 
+isAuthenticatedSelf :: UserId -> Handler AuthResult
+isAuthenticatedSelf uid = do
+    muid <- maybeAuthId
+    case muid of
+        Just uid' | uid == uid' -> return Authorized
+                  | otherwise -> unauthorizedI MsgAnotherAccountAccessProhibited
+        Nothing -> unauthorizedI MsgLoginPlease
 
+        
 isAdmin :: Handler AuthResult
 isAdmin = do
     user <- maybeAuth

@@ -1,11 +1,11 @@
 
 $maybe Entity uid (User email _ name _ _ _ _ _) <- user
   <button.circle.transparent.no-elevate data-ui=#accountmenutrigger>
-    <img.photo.profile src=@{AdminR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy
+    <img.photo.profile src=@{DataR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy
       onerror="this.src = '@{PhotoPlaceholderR}'" title=#{fromMaybe email name}>
 
     <menu.left.no-wrap #accountmenutrigger>
-      <a.row href=@{AuthR LogoutR}>
+      <a.row.padding href=@{AuthR LogoutR}>
         <i>logout
         <div.max>
           <div>_{MsgLogout}

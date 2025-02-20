@@ -6,5 +6,5 @@ document.querySelector(
 ).MDCSelect.listen('MDCSelect:change',function (e) {
   document.querySelector(
     'img.photo.avatar'
-  ).setAttribute('src',`@{AdminR CandidatePhotosR}?id=${e.detail.value}`)
+  ).setAttribute('src',`@{DataR CandidatePhotosR}?id=${e.detail.value}`)
 })

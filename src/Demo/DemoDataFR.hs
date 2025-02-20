@@ -53,10 +53,28 @@ populateFR = do
                             Freepik
                           |]
 
-    pass1 <- liftIO $ saltPass "bernardj"
-    uid1 <- insert $ User { userEmail = "bernardj@xmailx.fr"
+    pass1 <- liftIO $ saltPass "lmartin"
+    uid1 <- insert $ User { userEmail = "lmartin@xmailx.fr"
                           , userPassword = Just pass1
-                          , userName = Just "Bernard Jade"
+                          , userName = Just "Léo Martin"
+                          , userSuper = False
+                          , userAdmin = True
+                          , userAuthType = UserAuthTypePassword
+                          , userVerkey = Nothing
+                          , userVerified = False
+                          }
+
+    liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
+      insert_ UserPhoto { userPhotoUser = uid1
+                        , userPhotoMime = "image/avif"
+                        , userPhotoPhoto = bs
+                        , userPhotoAttribution = Just freepik
+                        }
+
+    pass2 <- liftIO $ saltPass "jbernard"
+    uid2 <- insert $ User { userEmail = "jbernard@xmailx.fr"
+                          , userPassword = Just pass2
+                          , userName = Just "Jade Bernard"
                           , userSuper = False
                           , userAdmin = False
                           , userAuthType = UserAuthTypePassword
@@ -65,34 +83,16 @@ populateFR = do
                           }
 
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
-      insert_ UserPhoto { userPhotoUser = uid1
-                        , userPhotoMime = "image/avif"
-                        , userPhotoPhoto = bs
-                        , userPhotoAttribution = Just freepik
-                        }
-
-    pass2 <- liftIO $ saltPass "thomasgr"
-    uid2 <- insert $ User { userEmail = "thomasgr@xmailx.fr"
-                          , userPassword = Just pass2
-                          , userName = Just "Thomas Gabriel Raphaël"
-                          , userSuper = False
-                          , userAdmin = False
-                          , userAuthType = UserAuthTypePassword
-                          , userVerkey = Nothing
-                          , userVerified = False
-                          }
-
-    liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
       insert_ UserPhoto { userPhotoUser = uid2
                         , userPhotoMime = "image/avif"
                         , userPhotoPhoto = bs
                         , userPhotoAttribution = Just freepik
                         }
 
-    pass3 <- liftIO $ saltPass "richardal"
-    uid3 <- insert $ User { userEmail = "richardal@xmailx.fr"
+    pass3 <- liftIO $ saltPass "grthomas"
+    uid3 <- insert $ User { userEmail = "grthomas@xmailx.fr"
                           , userPassword = Just pass3
-                          , userName = Just "Richard Arthur Louis"
+                          , userName = Just "Gabriel Raphaël Thomas"
                           , userSuper = False
                           , userAdmin = False
                           , userAuthType = UserAuthTypePassword
@@ -107,10 +107,10 @@ populateFR = do
                         , userPhotoAttribution = Just freepik
                         }
 
-    pass4 <- liftIO $ saltPass "duboisaa"
-    uid4 <- insert $ User { userEmail = "duboisaa@xmailx.fr"
+    pass4 <- liftIO $ saltPass "lerobert"
+    uid4 <- insert $ User { userEmail = "lerobert@xmailx.fr"
                           , userPassword = Just pass4
-                          , userName = Just "Dubois Alice Ambre"
+                          , userName = Just "Louise Emma Robert"
                           , userSuper = False
                           , userAdmin = False
                           , userAuthType = UserAuthTypePassword
@@ -130,7 +130,7 @@ populateFR = do
                , candidateGivenName = "Léo"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-28) today
-               , candidateUser = Nothing
+               , candidateUser = Just uid1
                }
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c001
@@ -143,7 +143,7 @@ populateFR = do
                , candidateGivenName = "Jade"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-26) today
-               , candidateUser = Nothing
+               , candidateUser = Just uid2
                }        
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c002
@@ -156,7 +156,7 @@ populateFR = do
                , candidateGivenName = "Gabriel"
                , candidateAdditionalName = Just "Raphaël"
                , candidateBday = Just $ addGregorianYearsClip (-21) today
-               , candidateUser = Nothing
+               , candidateUser = Just uid3
                }
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c003
@@ -169,7 +169,7 @@ populateFR = do
                , candidateGivenName = "Louise"
                , candidateAdditionalName = Just "Emma"
                , candidateBday = Just $ addGregorianYearsClip (-30) today
-               , candidateUser = Nothing
+               , candidateUser = Just uid4
                }
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c004

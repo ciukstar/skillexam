@@ -11,10 +11,10 @@
 
     <div.row>
       $maybe rid <- mrid
-        <a.button.circle.tansparent.no-elevate href=@?{(MyExamsSearchR,[("id",pack $ show $ fromSqlKey rid)])} role=button>
+        <a.button.circle.tansparent.no-elevate href=@?{(MyExamsSearchR uid,[("id",pack $ show $ fromSqlKey rid)])} role=button>
           <i>search
       $nothing
-        <a.button.circle.tansparent.no-elevate href=@{MyExamsSearchR} role=button>
+        <a.button.circle.tansparent.no-elevate href=@{MyExamsSearchR uid} role=button>
           <i>search
         
       ^{widgetAccount}
@@ -22,19 +22,12 @@
 
 <main.responsive.no-padding>
 
-  $maybe _ <- mcid
-    $if null tests
-      <div.no-content>
-        <i.material-symbols-outlined>folder_open
-        <p>
-          _{MsgNoExams}
-    $else
-      ^{list}
-
-  $nothing
-
-    <div.login-prompt>
-      <p>
-        _{MsgLoginPrompt}
-      <a.button.primary href=@{SignInR} role=button>
-        _{MsgLogin}
+  $if null tests
+    <figure.center-align>
+      <i.extra>folder_open
+      <figcaption>
+        <div>
+          _{MsgNoExams}.
+   
+  $else
+    ^{list}

@@ -6,7 +6,7 @@
 <figure.center-align>
   <label for=#{fvId photoV} ##{idLabelPhoto}>
     $maybe Entity uid _ <- user
-      <img.circle.extra src=@{AdminR $ UserPhotoR uid} ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
+      <img.circle.extra src=@{DataR $ UserPhotoR uid} ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
     $nothing
       <img.circle.extra src=@{StaticR img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg}
            ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>

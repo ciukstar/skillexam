@@ -10,22 +10,17 @@ module Handler.MyExams
   , getMyExamsSearchR
   ) where
 
-import qualified Text.Printf as Printf (printf)
+import Data.Maybe (fromMaybe)
+import Data.Text (unpack, Text, pack)
 import Data.Time.Format.ISO8601 (iso8601Show)
-import Data.Maybe (fromMaybe, isJust, isNothing, fromJust)
-import Yesod.Core.Handler (HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, getCurrentRoute, newIdent)
-import Yesod.Core (Html, Yesod (defaultLayout), setTitleI)
-import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (searchField, intField, textField, urlField)
-import Settings ( widgetFile )
 
 import Foundation
   ( App
   , Route
-    ( AdminR, MyExamsR, MyExamR, PhotoPlaceholderR, SignInR
+    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR, SignInR
     , SignOutR, ExamFormR, MyExamsSearchR
     )
-  , AdminR (CandidatePhotoR)
+  , DataR (CandidatePhotoR)
   , AppMessage
     ( MsgTakeNewExam, MsgMyExams, MsgNoExams, MsgLoginPrompt
     , MsgLogin, MsgPhoto, MsgLogout, MsgAttempt, MsgExam, MsgBack
@@ -33,10 +28,6 @@ import Foundation
     , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgNoExamsFoundFor
     ), widgetAccount, widgetMainMenu
   )
-import Database.Persist (Entity (Entity))
-import Database.Persist.Sql (toSqlKey, fromSqlKey)
-import Data.Text (unpack, Text, pack)
-import Yesod.Persist.Core (YesodPersist(runDB))
 
 import Database.Esqueleto.Experimental
     ( SqlQuery, SqlExpr, selectOne, from, table, where_, val
@@ -44,27 +35,42 @@ import Database.Esqueleto.Experimental
     , select, orderBy, desc, on, innerJoin, sum_
     , Value (Value, unValue), in_, like
     , subSelectList, selectQuery, upper_
-    , groupBy, coalesceDefault
+    , groupBy, coalesceDefault, just
     )
+import Database.Persist (Entity (Entity))
+import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Model
-    ( Candidate (Candidate, candidateAdditionalName, candidateGivenName, candidateFamilyName)
+    ( userSessKey
+    , Candidate (candidateAdditionalName, candidateGivenName, candidateFamilyName)
     , CandidateId
     , EntityField
       ( CandidateId, ExamCandidate, ExamStart
       , ExamAttempt, ExamTest, TestId, ExamId
       , StemId, StemTest, OptionStem, OptionPoints, OptionId, AnswerOption
-      , AnswerExam, TestName
+      , AnswerExam, TestName, CandidateUser
       )
-    , userSessKey
     , Exam (Exam, examEnd)
     , Test (Test, testPass, testName)
-    , ExamId, Option, Stem, Answer
+    , ExamId, Option, Stem, Answer, UserId
     )
 
+import Settings ( widgetFile )
 
-getMyExamsSearchR :: HandlerFor App Html
-getMyExamsSearchR = do
+import qualified Text.Printf as Printf (printf)
+
+import Yesod.Core (Html, Yesod (defaultLayout), setTitleI)
+import Yesod.Core.Handler
+    ( HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, newIdent
+    , getCurrentRoute
+    )
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (searchField, intField, textField, urlField)
+import Yesod.Persist.Core (YesodPersist(runDB))
+
+
+getMyExamsSearchR :: UserId -> HandlerFor App Html
+getMyExamsSearchR uid = do
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "id")
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     mq <- runInputGet $ iopt (searchField True) "q"
@@ -75,7 +81,7 @@ getMyExamsSearchR = do
       Nothing -> return []
           
     setUltDestCurrent
-    curr <- fromMaybe MyExamsSearchR <$> getCurrentRoute
+    curr <- fromMaybe (MyExamsSearchR uid) <$> getCurrentRoute
     let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgSearch
@@ -86,8 +92,8 @@ printf :: String -> Double -> String
 printf = Printf.printf
 
 
-getMyExamR :: ExamId -> HandlerFor App Html
-getMyExamR rid = do
+getMyExamR :: UserId -> ExamId -> HandlerFor App Html
+getMyExamR uid rid = do
     test <- runDB $ selectOne $ do
         (x :& c :& e) <- from $ table @Exam
             `innerJoin` table @Candidate `on` (\(x :& c) -> x ^. ExamCandidate ==. c ^. CandidateId)
@@ -117,31 +123,27 @@ getMyExamR rid = do
           return $ sum_ $ x ^. OptionPoints
       Nothing -> return $ pure $ Value $ pure (0 :: Double)
 
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr MyExamsR) <$> runInputGet (iopt urlField "location")
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr (MyExamsR uid)) <$> runInputGet (iopt urlField "location")
     defaultLayout $ do
         setTitleI MsgExam
         $(widgetFile "my-exams/my-exam")
     
 
-getMyExamsR :: HandlerFor App Html
-getMyExamsR = do
+getMyExamsR :: UserId -> HandlerFor App Html
+getMyExamsR uid = do
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "id")
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
-    mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-    candidate <- case mcid of
-      Just cid -> runDB $ selectOne $ do
-          x <- from $ table @Candidate
-          where_ $ x ^. CandidateId ==. val cid
-          return x
-      _ -> return Nothing
+    
+    candidate <- runDB $ selectOne $ do
+        x <- from $ table @Candidate
+        where_ $ x ^. CandidateUser ==. just (val uid)
+        return x
 
-    tests <- case mcid of
-      Just cid -> runDB $ select $ queryScores cid Nothing
+    tests <- case candidate of
+      Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
       Nothing -> return []
           
     setUltDestCurrent
-    curr <- fromMaybe MyExamsR <$> getCurrentRoute
-    let mq = Nothing :: Maybe Text
     let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgMyExams

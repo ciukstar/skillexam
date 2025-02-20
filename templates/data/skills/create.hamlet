@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{AdminR SkillsR} role=button aria-label=_{MsgBack}>
+    <a.button.circle.transparent href=@{DataR SkillsR} role=button aria-label=_{MsgBack}>
       <i>arrow_back
 
     <h1.title.max>
@@ -10,10 +10,10 @@
 
 <main.responsive>
 
-  <form method=post action=@{AdminR SkillsR} enctype=#{enctype} novalidate>
+  <form method=post action=@{DataR SkillsR} enctype=#{enctype} novalidate>
     ^{widget}
     <nav.right-align>
-      <a.button.transparent href=@{AdminR SkillsR} role=button>
+      <a.button.transparent href=@{DataR SkillsR} role=button>
         _{MsgCancel}
 
       <button type=submit>

@@ -36,7 +36,7 @@
         <span style="width:min-content">
           <div style="display:flex;flex-direction:row;align-items:center;gap:1rem">
             <span>#{index}
-            <img.small.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+            <img.small.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
               onerror="this.src = '@{PhotoPlaceholderR}'">
               
         <div.max>

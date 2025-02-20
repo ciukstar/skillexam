@@ -50,7 +50,7 @@
           <td>
             $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
               <div #candidateInfo>
-                <img.photo.avatar src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} height=24 width=24
+                <img.photo.avatar src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} height=24 width=24
                   onerror="this.src = '@{PhotoPlaceholderR}'">
                 <div>
                   #{fname} #{gname}

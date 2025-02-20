@@ -1,3 +1,5 @@
+LoginPlease: Vă rugăm să vă conectați pentru a accesa această pagină
+AnotherAccountAccessProhibited: Accesul la contul altui utilizator este interzis
 PleaseLogInToIdentifyYourselfAsExamCandidate: Vă rugăm să vă conectați pentru a vă identifica ca candidat la examen
 InvalidUrlOrRemoved: Adresă URL nevalidă sau resursă eliminată
 Or: sau
@@ -106,7 +108,7 @@ Points: Puncte
 Minutes: Minute
 Popularity: Popularitate
 LoginPrompt: Vă rugăm să vă autentificați pentru a vă găsi examenele.
-NoExams: Încă nu ai susținut niciun examen.
+NoExams: Încă nu ai susținut niciun examen
 AssessedSkills: Abilități evaluate
 TakeThisExam: Susține acest examen
 DataAndAnalytics: Date și analize

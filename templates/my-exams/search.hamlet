@@ -1,11 +1,11 @@
 
-<form method=get action=@{MyExamsSearchR} #formQ>
+<form method=get action=@{MyExamsSearchR uid} #formQ>
 
 <header.fixed.no-padding>
 
   <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
   
-    <a.start.transparent.round.circle.wave href=@{MyExamsR}>
+    <a.start.transparent.round.circle.wave href=@{MyExamsR uid}>
       <i>arrow_back
 
     $maybe q <- mq

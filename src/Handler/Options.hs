@@ -28,8 +28,8 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( Handler, Form, widgetSnackbar
-    , Route (AdminR)
-    , AdminR (StemR, OptionCreateFormR, OptionsR, OptionR, OptionEditFormR, OptionsDeleteR)
+    , Route (DataR)
+    , DataR (StemR, OptionCreateFormR, OptionsR, OptionR, OptionEditFormR, OptionsDeleteR)
     , AppMessage
       ( MsgOptions, MsgBack, MsgAnswerOptions, MsgAdd, MsgOrdinal, MsgOption
       , MsgCancel, MsgSave, MsgText, MsgCorrectAnswer, MsgAnswerPoints
@@ -78,11 +78,11 @@ postOptionsDeleteR eid qid oid = do
               x <- from $ table @Option
               where_ $ x ^. OptionId ==. val oid
           addMessageI msgSuccess MsgRecordDeleted
-          redirect $ AdminR $ OptionsR eid qid
+          redirect $ DataR $ OptionsR eid qid
           
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
-          redirect $ AdminR $ OptionR eid qid oid
+          redirect $ DataR $ OptionR eid qid oid
 
 
 postOptionR :: TestId -> StemId -> OptionId -> Handler Html
@@ -96,7 +96,7 @@ postOptionR eid qid oid = do
       FormSuccess o -> do
           runDB $ replace oid o
           addMessageI msgSuccess MsgRecordEdited
-          redirect $ AdminR $ OptionR eid qid oid
+          redirect $ DataR $ OptionR eid qid oid
       _ -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
@@ -148,7 +148,7 @@ postOptionsR eid qid = do
       FormSuccess x -> do
           runDB $ insert_ x
           addMessageI msgSuccess MsgNewRecordAdded
-          redirect $ AdminR $ OptionsR eid qid
+          redirect $ DataR $ OptionsR eid qid
           
       _ -> defaultLayout $ do
           addMessageI msgError MsgInvalidData

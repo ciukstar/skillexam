@@ -9,9 +9,9 @@
         
   $else
     $forall (Entity cid (Candidate fname gname aname _ _), Value nexams) <- candidates
-      <a.row.padding.wave href=@{AdminR $ CandidateR cid} :Just cid == activated:.active role=listitem>
+      <a.row.padding.wave href=@{DataR $ CandidateR cid} :Just cid == activated:.active role=listitem>
 
-        <img.extra.circle src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+        <img.extra.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
      
         <div.max>
@@ -26,7 +26,7 @@
 
       <hr>
 
-  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{AdminR CandidateCreateFormR}
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR CandidateCreateFormR}
     aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
     <i>add
     

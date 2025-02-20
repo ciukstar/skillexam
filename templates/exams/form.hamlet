@@ -4,11 +4,11 @@
 <figure.center-align>
   $case candidateR
     $of FormSuccess cid
-      <img.circle.extra src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
+      <img.circle.extra src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
         onerror="this.src = '@{PhotoPlaceholderR}'">
     $of _
       $maybe Entity cid _ <- candidate
-        <img.circle.extra src=@{AdminR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
+        <img.circle.extra src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
           onerror="this.src = '@{PhotoPlaceholderR}'">
       $nothing
         <img.circle.extra src=@{PhotoPlaceholderR} alt=_{MsgPhoto} loading=lazy> 
