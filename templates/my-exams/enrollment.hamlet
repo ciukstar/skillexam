@@ -1,22 +1,22 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=#{ult} role=button>
+    <a.button.circle.transparent href=@{MyExamsR uid} role=button>
       <i>arrow_back
 
     <h1.title.max>
-      _{MsgExam}
+      _{MsgEnrollment}
 
 <main.responsive>
 
-  <form method=post action=@{ExamFormR uid} enctype=#{enctype} novalidate ##{idForm}>
-    ^{widget}
+  <form method=post action=@{ExamEnrollFormR uid} enctype=#{et} novalidate ##{idForm}>
+    ^{fw}
 
-    <nav.right-align.no-space>
-      <a.button.transparent.link href=#{ult} role=button>
+    <nav.right-align>
+      <a.button.transparent.link href=@{MyExamsR uid} role=button>
         _{MsgCancel}
         
-      <button.primary type=submit formaction=@{ExamR uid}>
+      <button.primary type=submit>
         _{MsgStartExam}
 
 

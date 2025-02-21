@@ -4,7 +4,7 @@
     <a.button.circle.transparent href=#{backlink} aria-label=_{MsgBack} rel=prev ##{idButtonBack}>
       <i>arrow_back
     
-    <h6.title.max>
+    <h1.title.max>
       _{MsgAuthentication}
     
 <main.responsive.padding.center-align>
@@ -18,3 +18,5 @@
               style="padding:0 0.5rem;position:absolute;left:50%;transform:translate(-50%,-50%)">
               
             _{MsgOr}
+
+^{widgetSnackbar msgs}

@@ -3,11 +3,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Handler.MyExams
   ( getMyExamsR
   , getMyExamR
   , getMyExamsSearchR
+  , getLoginMyExamsR
+  , getExamEnrollFormR
   ) where
 
 import Data.Maybe (fromMaybe)
@@ -15,18 +18,19 @@ import Data.Text (unpack, Text, pack)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Foundation
-  ( App
+  ( App, Handler, widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
-    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR, SignInR
-    , SignOutR, ExamFormR, MyExamsSearchR
+    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR, ExamFormR
+    , MyExamsSearchR, AuthR, HomeR, ExamEnrollFormR, ExamTestR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
-    ( MsgTakeNewExam, MsgMyExams, MsgNoExams, MsgLoginPrompt
-    , MsgLogin, MsgPhoto, MsgLogout, MsgAttempt, MsgExam, MsgBack
+    ( MsgTakeNewExam, MsgMyExams, MsgNoExams
+    , MsgLogin, MsgPhoto, MsgAttempt, MsgExam, MsgBack
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
     , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgNoExamsFoundFor
-    ), widgetAccount, widgetMainMenu
+    , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment, MsgCancel, MsgExamInfo, MsgStartExam
+    ), Form
   )
 
 import Database.Esqueleto.Experimental
@@ -42,31 +46,56 @@ import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Model
     ( userSessKey
-    , Candidate (candidateAdditionalName, candidateGivenName, candidateFamilyName)
     , CandidateId
+    , Candidate (candidateAdditionalName, candidateGivenName, candidateFamilyName)
+    , ExamId, Exam (Exam, examEnd)
+    , Test (Test, testPass, testName)
+    , Option, Stem, Answer, UserId
     , EntityField
       ( CandidateId, ExamCandidate, ExamStart
       , ExamAttempt, ExamTest, TestId, ExamId
       , StemId, StemTest, OptionStem, OptionPoints, OptionId, AnswerOption
       , AnswerExam, TestName, CandidateUser
       )
-    , Exam (Exam, examEnd)
-    , Test (Test, testPass, testName)
-    , ExamId, Option, Stem, Answer, UserId
     )
 
 import Settings ( widgetFile )
 
 import qualified Text.Printf as Printf (printf)
 
-import Yesod.Core (Html, Yesod (defaultLayout), setTitleI)
+import Yesod.Auth (Route(LoginR))
+import Yesod.Core (Html, Yesod (defaultLayout), setTitleI, getMessages)
 import Yesod.Core.Handler
     ( HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, newIdent
-    , getCurrentRoute
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields (searchField, intField, textField, urlField)
+import Yesod.Form.Functions (generateFormPost)
 import Yesod.Persist.Core (YesodPersist(runDB))
+
+
+getExamEnrollFormR :: UserId -> Handler Html
+getExamEnrollFormR uid = do
+
+    let info = Nothing
+    
+    (fw,et) <- generateFormPost $ formEnrollment uid
+    defaultLayout $ do
+        setUltDestCurrent
+        setTitleI MsgEnrollment
+        idForm <- newIdent
+        $(widgetFile "my-exams/enrollment")
+
+
+formEnrollment :: UserId -> Form Test
+formEnrollment uid extra = undefined
+
+
+getLoginMyExamsR :: Handler Html
+getLoginMyExamsR = defaultLayout $ do
+    setUltDestCurrent
+    setTitleI MsgAuthenticate
+    $(widgetFile "my-exams/login")
 
 
 getMyExamsSearchR :: UserId -> HandlerFor App Html
@@ -81,7 +110,6 @@ getMyExamsSearchR uid = do
       Nothing -> return []
           
     setUltDestCurrent
-    curr <- fromMaybe (MyExamsSearchR uid) <$> getCurrentRoute
     let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgSearch
@@ -144,12 +172,13 @@ getMyExamsR uid = do
       Nothing -> return []
           
     setUltDestCurrent
+    msgs <- getMessages
     let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgMyExams
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
-        $(widgetFile "my-exams/my-exams") 
+        $(widgetFile "my-exams/my-exams")
 
 
 queryScores :: CandidateId -> Maybe Text

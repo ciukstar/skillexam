@@ -18,8 +18,13 @@
           <p>#{code}
 
       <nav>
-        <form method=get action=@{ExamFormR}>
-          <button type=submit name=eid value=#{fromSqlKey eid}>
+        $maybe Entity uid _ <- user
+          <form method=get action=@{ExamFormR uid}>
+            <button type=submit name=eid value=#{fromSqlKey eid}>
+              <i>add
+              <span>_{MsgTakeThisExam}
+       $nothing
+          <a.button href=# role=button>
             <i>add
             <span>_{MsgTakeThisExam}
 

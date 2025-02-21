@@ -2,7 +2,7 @@
 <header.fixed>
   <nav.responsive.max>
     <a.button.circle.transparent role=button
-      href=@?{(ExamFormR,[("cid",pack $ show $ fromSqlKey cid),("eid",pack $ show $ fromSqlKey tid)])}>
+      href=@?{(ExamFormR uid,[("cid",pack $ show $ fromSqlKey cid),("eid",pack $ show $ fromSqlKey tid)])}>
       <i>arrow_back
 
     <h1.title.max>

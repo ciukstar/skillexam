@@ -60,6 +60,7 @@ import Settings ( widgetFile )
 
 import qualified Text.Printf as Printf (printf)
 
+import Yesod.Auth (maybeAuth)
 import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
     , YesodRequest (reqGetParams), getRequest
@@ -78,6 +79,7 @@ printf = Printf.printf
 
 getSearchExamSkillsR :: TestId -> Handler Html
 getSearchExamSkillsR eid = do
+    user <- maybeAuth
     curr <- getCurrentRoute
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
@@ -96,6 +98,7 @@ getSearchExamSkillsR eid = do
 
 getSearchExamInfoR :: TestId -> Handler Html
 getSearchExamInfoR tid = do
+    user <- maybeAuth
     curr <- getCurrentRoute
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
@@ -134,6 +137,7 @@ getSearchExamInfoR tid = do
 
 getExamSkillsR :: TestId -> Handler Html
 getExamSkillsR eid = do
+    user <- maybeAuth
     curr <- getCurrentRoute
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do
@@ -153,6 +157,7 @@ getExamSkillsR eid = do
 
 getExamInfoR :: TestId -> Handler Html
 getExamInfoR tid = do
+    user <- maybeAuth
     curr <- getCurrentRoute
     location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do

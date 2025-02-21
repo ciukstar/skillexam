@@ -52,7 +52,8 @@ import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Core
     ( MonadUnliftIO, unauthorizedI, object, (.=)
     , ErrorResponse (NotFound, PermissionDenied, InvalidArgs)
-    , TypedContent, Yesod (errorHandler), defaultErrorHandler, setTitleI, WidgetFor
+    , TypedContent, Yesod (errorHandler), defaultErrorHandler
+    , setTitleI, WidgetFor
     )
 import Yesod.Core.Types     (Logger)
 import Yesod.Default.Util   (addStaticContentExternal)
@@ -60,6 +61,7 @@ import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import Yesod.Form.Types (MForm, FormResult)
+
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -178,16 +180,22 @@ instance Yesod App where
     
     isAuthorized StepR {} _ = return Authorized
     isAuthorized DocsR _ = return Authorized
-    isAuthorized ExamFormR _ = return Authorized
-    isAuthorized ExamR _ = return Authorized
+    
+    isAuthorized r@(ExamFormR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+
     isAuthorized SignInR _ = return Authorized
     isAuthorized SignOutR _ = return Authorized
+    
     isAuthorized CompleteR {} _ = return Authorized
     isAuthorized SummaryR {} _ = return Authorized
+
     
-    isAuthorized r@(MyExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(MyExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamEnrollFormR uid) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(MyExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(MyExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(MyExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized LoginMyExamsR _ = return Authorized
 
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
@@ -363,9 +371,10 @@ instance YesodAuth App where
     -- Where to send a user after logout
     logoutDest :: App -> Route App
     logoutDest _ = HomeR
+    
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer :: App -> Bool
-    redirectToReferer _ = True 
+    redirectToReferer _ = True
 
     authLayout :: (MonadHandler m, HandlerSite m ~ App) => WidgetFor App () -> m Html
     authLayout w = liftHandler $ do
@@ -382,6 +391,7 @@ instance YesodAuth App where
         let indexes = [1..]
         authLayout $ do
             setTitleI LoginTitle
+            msgs <- getMessages
             idButtonBack <- newIdent
             $(widgetFile "auth/login")
 
@@ -391,8 +401,15 @@ instance YesodAuth App where
             x <- from $ table @User
             where_ $ x ^. UserEmail ==. val ident
             return x
+            
         case user of
-          Just (Entity uid _) -> return $ Authenticated uid
+          Just (Entity uid _) -> do
+              rndr <- getUrlRender
+              r <- (Just (rndr LoginMyExamsR) ==) <$> lookupSession keyUtlDest
+              when r $ setUltDest $ MyExamsR uid
+              
+              return $ Authenticated uid
+              
           Nothing -> return $ UserError InvalidLogin
 
     -- You can add other plugins like Google Email, email or OAuth here

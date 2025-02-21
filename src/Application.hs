@@ -69,6 +69,8 @@ import Handler.MyExams
     ( getMyExamsR
     , getMyExamR
     , getMyExamsSearchR
+    , getLoginMyExamsR
+    , getExamEnrollFormR
     )
 
 import Handler.Steps

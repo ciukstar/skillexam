@@ -19,24 +19,14 @@
 
 <main.responsive.no-padding>
 
-  $maybe _ <- mcid
-    $maybe q <- mq
-      $if null tests
-        <div.no-content>
-          <i.material-symbols-outlined>search_off
-          <p>
-            _{MsgNoExamsFoundFor q}
-      $else
-        ^{list}
-        
-    $nothing
+  $maybe q <- mq
+    $if null tests
+      <div.no-content>
+        <i.material-symbols-outlined>search_off
+        <p>
+          _{MsgNoExamsFoundFor q}
+    $else
       ^{list}
-      
-  $nothing
 
-    <div.login-prompt.center-align>
-      <p>
-        _{MsgLoginPrompt}
-        
-      <a.button href=@{SignInR} role=button>
-        _{MsgLogin}
+  $nothing
+    ^{list}

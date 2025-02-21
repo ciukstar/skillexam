@@ -1,7 +1,9 @@
 
-/users/#UserId/search/exams  MyExamsSearchR GET
-/users/#UserId/exams/#ExamId MyExamR        GET
-/users/#UserId/exams         MyExamsR       GET
+/users/#UserId/enroll        ExamEnrollFormR GET
+/users/#UserId/search/exams  MyExamsSearchR  GET
+/users/#UserId/exams/#ExamId MyExamR         GET
+/users/#UserId/exams         MyExamsR        GET
+/my-exams                    LoginMyExamsR   GET
 
 /remaining-time/#ExamId           RemainingTimeR GET
 /summary/#TestId/#ExamId          SummaryR       GET
@@ -9,9 +11,9 @@
 /terminate/#TestId/#ExamId        TerminateR     POST
 /steps/#TestId/#ExamId/#StemId    StepR          GET POST
 
-/form/exam                                  ExamFormR GET POST
-/exam/candidates/#CandidateId/tests/#TestId ExamTestR GET
-/exam                                       ExamR     POST
+/users/#UserId/enrollment                                 ExamFormR GET POST
+/users/#UserId/exam/candidates/#CandidateId/tests/#TestId ExamTestR GET
+/users/#UserId/exam                                       ExamR     POST
 
 
 /docs DocsR GET

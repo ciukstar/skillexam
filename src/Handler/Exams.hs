@@ -10,35 +10,26 @@ module Handler.Exams
   , getExamTestR
   ) where
 
-import qualified Text.Printf as Printf (printf)
-import Data.Time.Clock (getCurrentTime)
-import Data.Maybe (isJust, fromMaybe)
-import Text.Hamlet (Html)
 import Control.Applicative ( Alternative((<|>)) )
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Yesod.Core
-    ( Yesod(defaultLayout), setTitleI, redirect, lookupSession
-    , SomeMessage (SomeMessage), MonadHandler (liftHandler), getUrlRender, newIdent
-    )
 
-import Settings (widgetFile)
-import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
-    , FieldView (fvInput, fvLabel, fvErrors, fvId)
-    )
-
-import Yesod.Form.Functions (mreq, generateFormPost, runFormPost)
-import Yesod.Form.Fields (hiddenField, intField, selectFieldList)
-import Yesod.Form.Input (runInputGet, iopt)
-import Database.Persist (Entity (Entity, entityKey), PersistStoreWrite (insert))
-import Data.Bifunctor (Bifunctor(first, second))
+import Data.Bifunctor (Bifunctor(second))
+import Data.Maybe (fromMaybe)
 import Data.Text (unpack, pack, Text)
+import Data.Time.Clock (getCurrentTime)
+
+import Database.Esqueleto.Experimental
+    ( SqlExpr, select, selectOne, from, table, orderBy, asc, val
+    , (^.), (==.), (:&) ((:&))
+    , where_, subSelectMaybe, selectQuery, min_, just
+    , Value (Value, unValue), max_, on, groupBy, countRows, leftJoin
+    , sum_, coalesceDefault
+    )
+import Database.Persist (Entity (Entity), entityKey, insert)
 import Database.Persist.Sql (toSqlKey, fromSqlKey)
-import Yesod.Persist.Core (YesodPersist(runDB))
 
 import Foundation
-    ( Handler, Widget
+    ( Handler, Form
     , Route
       ( DataR, HomeR, ExamR, ExamFormR, ExamTestR
       , StepR, PhotoPlaceholderR
@@ -52,39 +43,47 @@ import Foundation
       )
     )
 
-import Database.Esqueleto.Experimental
-    ( SqlExpr, select, selectOne, from, table, orderBy, asc, val
-    , (^.), (==.), (:&) ((:&))
-    , where_, subSelectMaybe, selectQuery, min_, just
-    , Value (Value, unValue), max_, on, groupBy, countRows, leftJoin
-    , sum_, coalesceDefault
-    )
+import Material3 (md3selectWidget)
 
 import Model
-    ( Exam (Exam)
+    ( userSessKey, keyUtlDest, Exam (Exam)
     , CandidateId
     , Candidate
       ( Candidate, candidateGivenName, candidateFamilyName
       , candidateAdditionalName
       )
+    , Test (Test, testName), TestId
+    , Stem, Option
     , EntityField
       ( CandidateFamilyName, CandidateGivenName, CandidateAdditionalName
       , TestName, StemTest, StemOrdinal, StemId, ExamTest
       , ExamCandidate, ExamAttempt, CandidateId
       , TestId, OptionStem, OptionPoints
-      )
-    , Test (Test, testName), TestId
-    , Stem, userSessKey, keyUtlDest, Option
+      ), UserId
     )
-import Material3 (md3selectWidget)
+    
+import Settings (widgetFile)
+    
+import Text.Hamlet (Html)
+import qualified Text.Printf as Printf (printf)
+
+import Yesod.Core
+    ( Yesod(defaultLayout), setTitleI, redirect, lookupSession
+    , SomeMessage (SomeMessage), MonadHandler (liftHandler), getUrlRender, newIdent
+    )
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Types
+    ( FormResult (FormSuccess)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    , FieldView (fvId)
+    )
+import Yesod.Form.Functions (mreq, generateFormPost, runFormPost)
+import Yesod.Form.Fields (intField, selectFieldList)
+import Yesod.Persist.Core (YesodPersist(runDB))
 
 
-printf :: String -> Double -> String
-printf = Printf.printf
-
-
-getExamTestR :: CandidateId -> TestId -> Handler Html
-getExamTestR cid tid = do
+getExamTestR :: UserId -> CandidateId -> TestId -> Handler Html
+getExamTestR uid cid tid = do
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
@@ -123,8 +122,8 @@ getExamTestR cid tid = do
         $(widgetFile "exams/exam")
 
 
-postExamR :: Handler Html
-postExamR = do
+postExamR :: UserId -> Handler Html
+postExamR uid = do
     idForm <- newIdent
     ((fr,widget),enctype) <- runFormPost $ formExam idForm Nothing Nothing
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
@@ -154,8 +153,8 @@ postExamR = do
           $(widgetFile "exams/enrollment")
 
 
-postExamFormR :: Handler Html
-postExamFormR = do
+postExamFormR :: UserId -> Handler Html
+postExamFormR uid = do
     idForm <- newIdent
     ((fr,widget),enctype) <- runFormPost $ formExam idForm Nothing Nothing
     let info = case fr of
@@ -169,8 +168,8 @@ postExamFormR = do
         $(widgetFile "exams/enrollment")
 
 
-getExamFormR :: Handler Html
-getExamFormR = do
+getExamFormR :: UserId -> Handler Html
+getExamFormR uid = do
     mcid <- do
         x <- (toSqlKey <$>) <$> runInputGet (iopt intField "cid")
         y <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
@@ -194,8 +193,7 @@ getExamFormR = do
         $(widgetFile "exams/enrollment")
 
 
-formExam :: Text -> Maybe (Entity Candidate) -> Maybe TestId
-         -> Html -> MForm Handler (FormResult ExamData, Widget)
+formExam :: Text -> Maybe (Entity Candidate) -> Maybe TestId -> Form ExamData
 formExam idForm candidate tid extra = do
 
     candidates <- liftHandler $ runDB $ select $ do
@@ -242,3 +240,7 @@ formExam idForm candidate tid extra = do
 
 
 data ExamData = ExamData !TestId !CandidateId !Int
+
+
+printf :: String -> Double -> String
+printf = Printf.printf

@@ -22,7 +22,7 @@
         <i>school
         <span>_{MsgMyExams}
     $nothing
-      <a href=@{AuthR LoginR}>
+      <a href=@{LoginMyExamsR}>
         <i>school
         <span>_{MsgMyExams}
        
