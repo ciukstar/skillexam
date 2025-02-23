@@ -1,0 +1,18 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{MyExamsR uid} role=button>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgCandidate}
+
+<main.responsive>
+
+  <form method=post action=@{CandidateEnrollFormR uid tid} enctype=#{enctype} novalidate>
+    ^{widget}
+    <nav.right-align>
+      <a.button.transparent href=@{MyExamsR uid} role=button>
+        _{MsgCancel}
+      <button type=submit>
+        _{MsgSave}

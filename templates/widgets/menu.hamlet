@@ -27,8 +27,9 @@
         <span>_{MsgMyExams}
        
 
-    <hr>
-    <label>_{MsgAnalytics}
+    <hr.top-margin>
+    <div.small-text>
+      _{MsgAnalytics}
       
     <a href=@{StatsR TopSkilledR} :curr == Just (StatsR TopSkilledR):.active>
       <i>award_star
@@ -42,8 +43,9 @@
       <i>multiline_chart
       <span>_{MsgSuccessRate}
       
-    <hr>
-    <label>_{MsgData}
+    <hr.top-margin>
+    <div.small-text>
+      _{MsgData}
       
     <a href=@{DataR CandidatesR} :curr == Just (DataR CandidatesR):.active>
       <i>group
@@ -61,8 +63,9 @@
       <i>settings_account_box
       <span>_{MsgUsers}
       
-    <hr>
-    <label>_{MsgResources}
+    <hr.top-margin>
+    <div.small-text>
+      _{MsgResources}
 
     <a href=@{DocsR} :curr == Just (DocsR):.active>
       <i>quick_reference

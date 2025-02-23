@@ -1,3 +1,5 @@
+NoQuestionsForTheTest: Вопросов для теста нет
+SelectATestForTheExam: Выберите тест для экзамена
 LoginToSeeYourExamsPlease: Пожалуйста, войдите в систему, чтобы увидеть свои экзамены
 LoginPlease: Пожалуйста, войдите для доступа к этой странице
 AnotherAccountAccessProhibited: Доступ к учетной записи другого пользователя запрещен

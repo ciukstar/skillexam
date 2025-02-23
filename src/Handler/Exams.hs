@@ -88,7 +88,7 @@ getExamTestR uid cid tid = do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
         return x
-    test <-(second (((+1) <$>) <$>) <$>) <$> runDB ( selectOne $ do
+    test <- (second (((+1) <$>) <$>) <$>) <$> runDB ( selectOne $ do
           (x :& (_,nq,maxScore) :& (_,nt)) <- from $ table @Test
             `leftJoin` from ( selectQuery $ do
                                    q :& (_,maxScore) <- from $ table @Stem

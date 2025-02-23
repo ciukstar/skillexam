@@ -22,6 +22,7 @@ module Handler.Candidates
 
 import Control.Applicative ((<|>))
 
+import Data.Bifunctor (Bifunctor(bimap))
 import Data.Maybe (fromMaybe)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, pack)
@@ -85,6 +86,7 @@ import Model
     , CandidateId, Photo (Photo)
     , ExamId, Exam (Exam, examEnd)
     , Test (Test, testName, testPass), Stem, Answer, Option, Skill (Skill)
+    , User
     , EntityField
       ( CandidateId, PhotoCandidate, PhotoPhoto, CandidateFamilyName
       , CandidateGivenName, CandidateAdditionalName
@@ -92,7 +94,7 @@ import Model
       , StemId, TestId, ExamId, AnswerExam
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
       , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId, UserEmail
-      ), User (User)
+      )
     )
 
 import Settings (widgetFile)
@@ -125,7 +127,6 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Persist (YesodPersist(runDB))
-import Data.Bifunctor (Bifunctor(bimap, first))
 
 
 getCandidatesSearchR :: Handler Html

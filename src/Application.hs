@@ -66,11 +66,12 @@ import Handler.Stats
     )
 
 import Handler.MyExams
-    ( getMyExamsR
+    ( getMyExamsR, postMyExamsR
     , getMyExamR
     , getMyExamsSearchR
     , getLoginMyExamsR
-    , getExamEnrollFormR
+    , getExamEnrollFormR, postExamEnrollFormR
+    , getCandidateEnrollFormR
     )
 
 import Handler.Steps

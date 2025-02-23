@@ -1,3 +1,5 @@
+NoQuestionsForTheTest: There are no questions for the test
+SelectATestForTheExam: Select a test for the exam
 LoginToSeeYourExamsPlease: Please log in to see your exams
 LoginPlease: Please log in to access this page
 AnotherAccountAccessProhibited: Access to another user's account is prohibited

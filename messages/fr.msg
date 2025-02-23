@@ -1,3 +1,5 @@
+NoQuestionsForTheTest: Il n'y a pas de questions pour le test
+SelectATestForTheExam: Sélectionnez un test pour l'examen
 LoginToSeeYourExamsPlease: Veuillez vous connecter pour voir vos examens
 LoginPlease: Veuillez vous connecter pour accéder à cette page
 AnotherAccountAccessProhibited: L'accès au compte d'un autre utilisateur est interdit

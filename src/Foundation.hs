@@ -191,7 +191,8 @@ instance Yesod App where
     isAuthorized SummaryR {} _ = return Authorized
 
     
-    isAuthorized r@(ExamEnrollFormR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamEnrollFormR uid _ _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(CandidateEnrollFormR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(MyExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(MyExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(MyExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid

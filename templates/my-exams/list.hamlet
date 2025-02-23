@@ -25,8 +25,25 @@ $forall (Entity rid (Exam _ _ attempt start _),Entity _ (Test _ name _ pass _ _)
 
   <hr>
 
-<a.button.extended.large href=@{ExamEnrollFormR uid} role=button>
+<button.extended.large.elevate data-ui=##{idDialogTests}>
   <i>
     add
   <span>
     _{MsgTakeNewExam}
+
+
+<dialog.max ##{idDialogTests}>
+  <div.row>
+    <h6.large-text.bold.max>
+      _{MsgSelectATestForTheExam}
+    <button.circle.transparent type=button data-ui=##{idDialogTests}>
+      <i.secondary-text>_{MsgClose}
+      
+  <form method=post action=@{MyExamsR uid} enctype=#{et}>
+    ^{fw}
+    <nav.right-align>
+      <button.transparent type=button data-ui=##{idDialogTests}>
+        _{MsgCancel}
+      <button type=submit>
+        _{MsgSelect}
+    

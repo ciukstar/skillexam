@@ -1,3 +1,5 @@
+NoQuestionsForTheTest: Nu există întrebări pentru test
+SelectATestForTheExam: Selectați un test pentru examen
 LoginToSeeYourExamsPlease: Vă rugăm să vă conectați pentru a vă vedea examenele
 LoginPlease: Vă rugăm să vă conectați pentru a accesa această pagină
 AnotherAccountAccessProhibited: Accesul la contul altui utilizator este interzis

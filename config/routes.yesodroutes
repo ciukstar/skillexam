@@ -1,9 +1,10 @@
 
-/users/#UserId/enroll        ExamEnrollFormR GET
-/users/#UserId/search/exams  MyExamsSearchR  GET
-/users/#UserId/exams/#ExamId MyExamR         GET
-/users/#UserId/exams         MyExamsR        GET
-/my-exams                    LoginMyExamsR   GET
+/users/#UserId/candidates/#CandidateId/tests/#TestId/enrollment ExamEnrollFormR      GET POST
+/users/#UserId/tests/#TestId/enrollment                         CandidateEnrollFormR GET
+/users/#UserId/search/exams                                     MyExamsSearchR       GET
+/users/#UserId/exams/#ExamId                                    MyExamR              GET
+/users/#UserId/exams                                            MyExamsR             GET POST
+/my-exams                                                       LoginMyExamsR        GET
 
 /remaining-time/#ExamId           RemainingTimeR GET
 /summary/#TestId/#ExamId          SummaryR       GET
