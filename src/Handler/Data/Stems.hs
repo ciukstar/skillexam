@@ -3,7 +3,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handler.Stems
+module Handler.Data.Stems
   ( getStemsR
   , getStemCreateFormR
   , postStemsR
@@ -99,7 +99,7 @@ getStemR eid qid = do
         setTitleI MsgQuestion
         idOverlay <- newIdent
         idDialogDelete <- newIdent
-        $(widgetFile "stems/stem") 
+        $(widgetFile "data/stems/stem") 
 
 
 formStemDelete :: Form ()
@@ -136,7 +136,7 @@ postStemR eid qid = do
           redirect $ DataR $ StemR eid qid
       _ -> defaultLayout $ do
           setTitleI MsgQuestion
-          $(widgetFile "stems/edit")
+          $(widgetFile "data/stems/edit")
 
 
 getStemEditFormR :: TestId -> StemId -> HandlerFor App Html
@@ -149,7 +149,7 @@ getStemEditFormR eid qid = do
     (widget,enctype) <- generateFormPost $ formStem eid question
     defaultLayout $ do
         setTitleI MsgQuestion
-        $(widgetFile "stems/edit")
+        $(widgetFile "data/stems/edit")
 
 
 getStemCreateFormR :: TestId -> Handler Html
@@ -162,7 +162,7 @@ getStemCreateFormR eid = do
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgQuestion
-        $(widgetFile "stems/create")
+        $(widgetFile "data/stems/create")
 
 
 postStemsR :: TestId -> Handler Html
@@ -182,7 +182,7 @@ postStemsR eid = do
               addMessageI "--mdc-theme-error" MsgInvalidData
               msgs <- getMessages
               setTitleI MsgQuestion
-              $(widgetFile "stems/create")
+              $(widgetFile "data/stems/create")
 
 
 getStemsR :: TestId -> Handler Html
@@ -196,8 +196,8 @@ getStemsR eid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgQuestions
-        $(widgetFile "stems/main")
-        $(widgetFile "stems/stems")
+        $(widgetFile "data/stems/main")
+        $(widgetFile "data/stems/stems")
 
 
 formStem :: TestId -> Maybe (Entity Stem) -> Form Stem

@@ -1,345 +1,232 @@
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Handler.Tests
-  ( getTestsR
-  , getTestCreateFormR
-  , postTestsR
-  , getTestEditFormR
-  , postTestR
-  , getTestR
-  , postTestDeleR
-  , getTestSearchR
-  , postTestPublishR
-  , postTestUnpublishR
+  ( getExamTestsR
+  , getSearchExamR
+  , getExamInfoR
+  , getExamSkillsR
+  , getSearchExamInfoR
+  , getSearchExamSkillsR
   ) where
 
-import Control.Applicative (Alternative ((<|>)))
-
-import Data.Bifunctor (Bifunctor(first))
-import Data.Maybe (isJust)
-import Data.Text (Text, unpack, pack)
+import Data.Text (pack)
+import Data.Maybe (fromMaybe)
 
 import Database.Esqueleto.Experimental
-    (select, from, table, where_, orderBy, desc
-    , (^.), (==.), (%), (++.), (||.), (=.)
-    , val, selectOne, delete, upper_
-    , like, just, update, set, Value (unValue)
+    ( SqlExpr, selectOne, from, table, where_, val, like
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
+    , select, orderBy, desc, on, innerJoin, distinct
+    , upper_, countRows, Value (Value), selectQuery, crossJoin
+    , countDistinct
     )
-import Database.Persist (Entity (Entity), entityVal, insert_, replace)
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
+import Database.Persist (Entity (Entity))
+import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
-    ( App, Form, Handler, widgetMainMenu, widgetAccount, widgetSnackbar
-    , Route (DataR)
-    , DataR
-      ( TestsR, TestR, TestDeleR, TestSearchR, TestEditFormR, TestCreateFormR
-      , StemsR, TestPublishR, TestUnpublishR
-      )
-    , AppMessage
-      ( MsgTests, MsgSearch, MsgAdd, MsgBack, MsgCode
-      , MsgName, MsgDescr, MsgTest, MsgCancel, MsgSave, MsgInvalidData
-      , MsgDuplicateValue, MsgEdit, MsgDelete
-      , MsgQuestions, MsgDuration, MsgPassMark
-      , MsgMinutes, MsgPoints, MsgExamQuestions
-      , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited, MsgExamState
-      , MsgPublished, MsgUnpublished, MsgPublish, MsgUnpublish, MsgNoTestsYet
-      , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
-      )
+  ( Handler, widgetMainMenu, widgetSnackbar, widgetAccount
+  , Route
+    ( HomeR, SearchExamR, ExamInfoR, SearchExamInfoR
+    , ExamSkillsR, ExamFormR, SearchExamSkillsR
     )
-
-import Material3 (md3widget, md3textareaWidget, md3selectWidget)
+  , AppMessage
+    ( MsgExams, MsgMyExams, MsgDescr, MsgPassMark
+    , MsgSearch, MsgExam, MsgDuration
+    , MsgCode, MsgName, MsgTakeThisExam, MsgPopularity, MsgPoints
+    , MsgMinutes, MsgDifficulty, MsgDifficultyLow, MsgDetails
+    , MsgSkills, MsgNoPublishedExamsYet, MsgDifficultyHigh
+    , MsgDifficultyMedium
+    )
+  )
 
 import Model
-    ( msgSuccess, msgError
-    , TestId
-    , Test (testCode, testName, testDescr, Test, testDuration, testPass, testState)
-    , EntityField (TestId, TestCode, TestName, TestDescr, TestState)
-    , TestState (TestStatePublished, TestStateUnpublished)
+    ( Candidate
+    , Stem
+    , Skill (Skill)
+    , TestState (TestStatePublished)
+    , Exam, Answer, Option
+    , Test (Test), TestId
+    , EntityField
+      ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
+      , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
+      , ExamId
+      )
     )
 
-import Settings (widgetFile)
+import Settings ( widgetFile )
 
-import Text.Hamlet (Html)
 import qualified Text.Printf as Printf (printf)
-import Text.Shakespeare.I18N (SomeMessage (SomeMessage))
 
-import Yesod.Core (defaultLayout, setTitleI, redirect, addMessageI, getMessages, newIdent)
+import Yesod.Auth (maybeAuth)
+import Yesod.Core
+    ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
+    , YesodRequest (reqGetParams), getRequest
+    )
 import Yesod.Core.Handler
-    ( HandlerFor, lookupGetParam, setUltDestCurrent
+    ( lookupGetParam, getCurrentRoute, getUrlRender
     )
-import Yesod.Core.Widget (WidgetFor, whamlet)
-import Yesod.Form.Fields
-    ( Textarea (Textarea), textField, textareaField, doubleField, intField
-    , hiddenField, selectFieldList
-    )
-import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost, checkM)
+import Yesod.Form.Fields (Textarea (Textarea), textField)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Types
-    ( MForm, FormResult
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
-    , FieldView (fvLabel, fvInput, fvErrors, fvRequired, fvId)
-    , FormResult (FormSuccess)
-    )
-import Yesod.Persist.Core (runDB)
+import Yesod.Persist.Core (YesodPersist(runDB))
 
 
 printf :: String -> Double -> String
 printf = Printf.printf
 
 
-postTestPublishR :: TestId -> HandlerFor App Html
-postTestPublishR eid = do
-    state <- (unValue <$>) <$> runDB ( selectOne $ do
+getSearchExamSkillsR :: TestId -> Handler Html
+getSearchExamSkillsR eid = do
+    user <- maybeAuth
+    curr <- getCurrentRoute
+    test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val eid
-        return (x ^. TestState) )
-    ((fr,_),_) <- runFormPost $ formTestStateToggle state
-    case fr of
-      FormSuccess _ -> do
-          runDB $ update $ \x -> do
-              set x [TestState =. val TestStatePublished]
-              where_ $ x ^. TestId ==. val eid
-          redirect $ DataR $ TestR eid
-          
-      _otherwise -> redirect $ DataR $ TestR eid
+        return x
+    skills <- runDB $ select $ distinct $ do
+        x :& q <- from $ table @Skill
+            `innerJoin` table @Stem `on` (\(x :& q) -> q ^. StemSkill ==. x ^. SkillId)
+        where_ $ q ^. StemTest ==. val eid
+        return x
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/skills")
+        $(widgetFile "home/search/exam/exam")
 
 
-postTestUnpublishR :: TestId -> HandlerFor App Html
-postTestUnpublishR eid = do
-    state <- (unValue <$>) <$> runDB ( selectOne $ do
+getSearchExamInfoR :: TestId -> Handler Html
+getSearchExamInfoR tid = do
+    user <- maybeAuth
+    curr <- getCurrentRoute
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val tid
+        return x
+    
+    (nbr,total,ratio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        x <- from $ table @Exam
+                        where_ $ x ^. ExamTest ==. val tid
+                        return (countDistinct (x ^. ExamCandidate) :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery
+                    (from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)))
+        return (n,t) )
+
+    (_,_,dRatio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        _ :& o :& e <- from $ table @Answer
+                            `innerJoin` table @Option `on` (\(a :& o) -> a ^. AnswerOption ==. o ^. OptionId)
+                            `innerJoin` table @Exam `on` (\(a :& _ :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        where_ $ o ^. OptionKey
+                        return (countRows :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery ( do
+                        _ :& e <- from $ table @Answer
+                            `innerJoin` table @Exam `on` (\(a :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        return (countRows :: SqlExpr (Value Double)) )
+        return (n,t) )
+
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/details")
+        $(widgetFile "home/search/exam/exam")
+
+
+getExamSkillsR :: TestId -> Handler Html
+getExamSkillsR eid = do
+    user <- maybeAuth
+    curr <- getCurrentRoute
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
+    test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val eid
-        return (x ^. TestState) )
-    ((fr,_),_) <- runFormPost $ formTestStateToggle state
-    case fr of
-      FormSuccess _ -> do
-          runDB $ update $ \x -> do
-              set x [TestState =. val TestStateUnpublished]
-              where_ $ x ^. TestId ==. val eid
-          redirect $ DataR $ TestR eid
-          
-      _otherwise -> redirect $ DataR $ TestR eid
+        return x
+    skills <- runDB $ select $ distinct $ do
+        x :& q <- from $ table @Skill
+            `innerJoin` table @Stem `on` (\(x :& q) -> q ^. StemSkill ==. x ^. SkillId)
+        where_ $ q ^. StemTest ==. val eid
+        return x
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/skills")
+        $(widgetFile "home/exam")
 
 
-formTestStateToggle :: Maybe TestState -> Html -> MForm (HandlerFor App) (FormResult TestState, WidgetFor App ())
-formTestStateToggle state extra = do
-    (r,v) <- first (read . unpack <$>) <$> mreq hiddenField "" (pack . show <$> state)
-    let w = [whamlet|#{extra} ^{fvInput v}|]
-    return (r,w)
+getExamInfoR :: TestId -> Handler Html
+getExamInfoR tid = do
+    user <- maybeAuth
+    curr <- getCurrentRoute
+    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val tid
+        return x
+    
+    (nbr,total,ratio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        x <- from $ table @Exam
+                        where_ $ x ^. ExamTest ==. val tid
+                        return (countDistinct (x ^. ExamCandidate) :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery
+                    (from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)))
+        return (n,t) )
+
+    (_,_,dRatio) <- maybe (0,1,0) (\(Value n,Value t) -> (n,t,n / t)) <$> runDB ( selectOne $ do
+        (n :& t) <- from $ selectQuery ( do
+                        _ :& o :& e <- from $ table @Answer
+                            `innerJoin` table @Option `on` (\(a :& o) -> a ^. AnswerOption ==. o ^. OptionId)
+                            `innerJoin` table @Exam `on` (\(a :& _ :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        where_ $ o ^. OptionKey
+                        return (countRows :: SqlExpr (Value Double)) )
+               `crossJoin` selectQuery ( do
+                        _ :& e <- from $ table @Answer
+                            `innerJoin` table @Exam `on` (\(a :& e) -> a ^. AnswerExam ==. e ^. ExamId)
+                        where_ $ e ^. ExamTest ==. val tid
+                        return (countRows :: SqlExpr (Value Double)) )
+        return (n,t) )
+
+    defaultLayout $ do
+        setTitleI MsgExam
+        let tab = $(widgetFile "home/details")
+        $(widgetFile "home/exam")
 
 
-getTestSearchR :: HandlerFor App Html
-getTestSearchR = do
-    mq <- lookupGetParam "q"
-    meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
+getSearchExamR :: Handler Html
+getSearchExamR = do
+    stati <- reqGetParams <$> getRequest 
+    mq <- runInputGet $ iopt textField "q"
     tests <- runDB $ select $ do
         x <- from $ table @Test
         case mq of
+          Just q -> where_ $ (upper_ (x ^. TestName) `like` (%) ++. upper_ (val q) ++. (%))
+            ||. (upper_ (x ^. TestCode) `like` (%) ++. upper_ (val q) ++. (%))
           Nothing -> return ()
-          Just q -> where_ $ (upper_ (x ^. TestCode) `like` (%) ++. upper_ (val q) ++. (%))
-            ||. (upper_ (x ^. TestName) `like` (%) ++. upper_ (val q) ++. (%))
-            ||. (upper_ (x ^. TestDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%))
         orderBy [desc (x ^. TestId)]
         return x
+
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSearch
-        idFormQuery <- newIdent
-        $(widgetFile "data/tests/search")
-        $(widgetFile "data/tests/tests")
+        $(widgetFile "home/search/search")
 
 
-postTestDeleR :: TestId -> HandlerFor App Html
-postTestDeleR eid = do
-    ((fr,_),_) <- runFormPost formTestDelete
-    case fr of
-      FormSuccess () -> do
-          runDB $ delete $ do
-              x <- from $ table @Test
-              where_ $ x ^. TestId ==. val eid
-          
-          addMessageI msgSuccess MsgRecordDeleted
-          redirect $ DataR TestsR
-          
-      _otherwise -> do          
-          addMessageI msgError MsgInvalidFormData
-          redirect $ DataR $ TestR eid
+getExamTestsR :: Handler Html
+getExamTestsR = do
+    mq <- runInputGet $ iopt textField "q"
 
-
-getTestR :: TestId -> HandlerFor App Html
-getTestR eid = do
-    test <- runDB $ selectOne $ do
-        x <- from $ table @Test
-        where_ $ x ^. TestId ==. val eid
-        return x
-    (widget,enctype) <- generateFormPost $ formTestStateToggle (testState . entityVal <$> test)
-    (fw0,et0) <- generateFormPost formTestDelete
-    msgs <- getMessages
-    defaultLayout $ do
-        setTitleI MsgTest
-        idOverlay <- newIdent
-        idDialogDelete <- newIdent
-        $(widgetFile "data/tests/test")
-
-
-formTestDelete :: Form ()
-formTestDelete extra = return (pure (), [whamlet|^{extra}|])
-
-
-postTestR :: TestId -> Handler Html
-postTestR eid = do
-    test <- runDB $ selectOne $ do
-        x <- from $ table @Test
-        where_ $ x ^. TestId ==. val eid
-        return x
-    ((fr,widget),enctype) <- runFormPost $ formTest test
-    case fr of
-      FormSuccess x -> do
-          runDB $ replace eid x
-          addMessageI msgSuccess MsgRecordEdited
-          redirect $ DataR $ TestR eid
-          
-      _otherwise -> defaultLayout $ do
-          addMessageI msgError MsgInvalidData
-          msgs <- getMessages
-          setTitleI MsgTest
-          $(widgetFile "data/tests/edit")
-
-
-getTestEditFormR :: TestId -> HandlerFor App Html
-getTestEditFormR eid = do
-    test <- runDB $ selectOne $ do
-        x <- from $ table @Test
-        where_ $ x ^. TestId ==. val eid
-        return x
-    (widget, enctype) <- generateFormPost $ formTest test
-    defaultLayout $ do
-        msgs <- getMessages
-        setTitleI MsgTest
-        $(widgetFile "data/tests/edit")
-
-
-postTestsR :: HandlerFor App Html
-postTestsR = do
-    ((fr,widget),enctype) <- runFormPost $ formTest Nothing
-    case fr of
-      FormSuccess test -> do
-          runDB $ insert_ test
-          addMessageI msgSuccess MsgNewRecordAdded
-          redirect $ DataR TestsR
-          
-      _otherwise -> defaultLayout $ do
-          addMessageI msgError MsgInvalidData
-          msgs <- getMessages
-          setTitleI MsgTest
-          $(widgetFile "data/tests/create")
-
-
-getTestCreateFormR :: HandlerFor App Html
-getTestCreateFormR = do
-    (widget,enctype) <- generateFormPost $ formTest Nothing
-    defaultLayout $ do
-        msgs <- getMessages
-        setTitleI MsgTest
-        $(widgetFile "data/tests/create")
-
-
-getTestsR :: HandlerFor App Html
-getTestsR = do
-    meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
-      
     tests <- runDB $ select $ do
         x <- from $ table @Test
+        where_ $ x ^. TestState ==. val TestStatePublished
         orderBy [desc (x ^. TestId)]
         return x
-    setUltDestCurrent
+
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgTests
+        setTitleI MsgMyExams
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
-        $(widgetFile "data/tests/main")
-        $(widgetFile "data/tests/tests")
-
-
-formTest :: Maybe (Entity Test) -> Form Test
-formTest test extra = do
-    (codeR,codeV) <- mreq uniqueCodeField FieldSettings
-        { fsLabel = SomeMessage MsgCode
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (testCode . entityVal <$> test)
-        
-    (nameR,nameV) <- mreq textField FieldSettings
-        { fsLabel = SomeMessage MsgName
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (testName . entityVal <$> test)
-        
-    (durationR,durationV) <- mreq doubleField FieldSettings
-        { fsLabel = SomeMessage MsgDuration
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (testDuration . entityVal <$> test)
-        
-    (passR,passV) <- mreq doubleField FieldSettings
-        { fsLabel = SomeMessage MsgPassMark
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (testPass . entityVal <$> test)
-        
-    (descrR,descrV) <- mopt textareaField FieldSettings
-        { fsLabel = SomeMessage MsgDescr
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (testDescr . entityVal <$> test)
-
-    let states = [(MsgUnpublished, TestStateUnpublished), (MsgPublished, TestStatePublished)]
-        
-    (stateR,stateV) <- mreq (selectFieldList states) FieldSettings
-        { fsLabel = SomeMessage MsgExamState
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing , fsAttrs = []
-        } ((testState . entityVal <$> test) <|> pure TestStateUnpublished)
-
-    let r = Test <$> codeR <*> nameR <*> durationR <*> passR <*> descrR <*> stateR
-
-    let w = [whamlet|
-                    #{extra}
-                    $forall v <- [codeV,nameV]
-                      ^{md3widget v}
-
-                    $forall (v,h) <- [(durationV,MsgMinutes),(passV,MsgPoints)]
-                      <div.field.label.border.round.small :isJust (fvErrors v):.invalid>
-
-                        ^{fvInput v}
-                        <label for=#{fvId v}>
-                          #{fvLabel v}
-                          $if fvRequired v
-                            <sup>*
-
-                        $maybe err <- fvErrors v
-                          <span.error>#{err}. _{h}
-                        $nothing
-                          <span.helper>_{h}
-
-
-                    ^{md3textareaWidget descrV}
-
-                    ^{md3selectWidget stateV}
-
-                    |]
-    return (r,w)
-  where
-
-    uniqueCodeField = checkM uniqueCode textField
-
-    uniqueCode :: Text -> HandlerFor App (Either AppMessage Text)
-    uniqueCode code = do
-        mx <- runDB $ selectOne $ do
-            x <- from $ table @Test
-            where_ $ x ^. TestCode ==. val code
-            return x
-        return $ case mx of
-          Nothing -> Right code
-          Just (Entity eid _) -> case test of
-            Nothing -> Left MsgDuplicateValue
-            Just (Entity eid' _) | eid' == eid -> Right code
-                                 | otherwise -> Left MsgDuplicateValue
+        $(widgetFile "home/home")

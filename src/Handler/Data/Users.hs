@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
-module Handler.Users
+module Handler.Data.Users
   ( getUsersR, postUsersR
   , getUserR, postUserR
   , getUserPhotoR

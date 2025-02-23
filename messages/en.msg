@@ -1,3 +1,7 @@
+AvailableTests: Available tests
+PassedExams: Passed exams
+TestYourSkills: Test your skills
+RetakeThisExam: Retake this exam
 NoQuestionsForTheTest: There are no questions for the test
 SelectATestForTheExam: Select a test for the exam
 LoginToSeeYourExamsPlease: Please log in to see your exams

@@ -1,2 +1,19 @@
 
-window.scroll(0,#{scrollY})
+Array.from(
+  document.querySelectorAll('time.full-datetime[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'short',
+      weekday: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }
+  );
+});
+
+document.getElementById(#{idButtonTakeNewExam}).addEventListener('click', e => {
+  e.stopPropagation();
+});

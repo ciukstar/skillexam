@@ -4,8 +4,7 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Handler.Exams
-  ( getExamFormR
-  , postExamFormR
+  ( getExamFormR, postExamFormR
   , postExamR
   , getExamTestR
   ) where

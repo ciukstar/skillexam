@@ -1,3 +1,7 @@
+AvailableTests: Доступные тесты
+PassedExams: Сданные экзамены
+TestYourSkills: Проверьте свои навыки
+RetakeThisExam: Пересдать этот экзамен
 NoQuestionsForTheTest: Вопросов для теста нет
 SelectATestForTheExam: Выберите тест для экзамена
 LoginToSeeYourExamsPlease: Пожалуйста, войдите в систему, чтобы увидеть свои экзамены

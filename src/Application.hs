@@ -105,20 +105,6 @@ import Handler.Options
     , postOptionR, postOptionsDeleteR
     )
     
-import Handler.Stems
-    ( getStemsR, getStemCreateFormR
-    , postStemsR, getStemEditFormR
-    , postStemR, postStemsDeleteR
-    , getStemR
-    )
-    
-import Handler.Tests
-    ( getTestsR, getTestCreateFormR, postTestsR
-    , getTestEditFormR, postTestR, getTestR
-    , postTestDeleR, getTestSearchR
-    , postTestPublishR, postTestUnpublishR
-    )
-    
 import Handler.Skills
     ( getSkillsR, postSkillsR, getSkillCreateFormR
     , getSkillsSearchR, postSkillsDeleteR
@@ -127,17 +113,34 @@ import Handler.Skills
 
 import Handler.Docs (getDocsR)
 
-import Handler.Home
-    ( getHomeR, getSearchExamR, getExamInfoR
+import Handler.Tests
+    ( getExamTestsR
+    , getSearchExamR
+    , getExamInfoR
     , getExamSkillsR
     , getSearchExamInfoR
     , getSearchExamSkillsR
     )
+  
+import Handler.Home
+    ( getHomeR
+    )
+    
+import Handler.Data.Stems
+    ( getStemsR, getStemCreateFormR
+    , postStemsR, getStemEditFormR
+    , postStemR, postStemsDeleteR
+    , getStemR
+    )
+    
+import Handler.Data.Tests
+    ( getTestsR, getTestCreateFormR, postTestsR
+    , getTestEditFormR, postTestR, getTestR
+    , postTestDeleR, getTestSearchR
+    , postTestPublishR, postTestUnpublishR
+    )
 
-import Handler.SignIn (getSignInR, postSignInR, postSignOutR)
-
-
-import Handler.Users
+import Handler.Data.Users
     ( getUsersR, postUsersR
     , getUserR, postUserR
     , getUserNewR, getUserEditR, postUserDeleR

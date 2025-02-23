@@ -1,3 +1,7 @@
+AvailableTests: Tests disponibles
+PassedExams: Examens réussis
+TestYourSkills: Testez vos compétences
+RetakeThisExam: Reprendre cet examen
 NoQuestionsForTheTest: Il n'y a pas de questions pour le test
 SelectATestForTheExam: Sélectionnez un test pour l'examen
 LoginToSeeYourExamsPlease: Veuillez vous connecter pour voir vos examens

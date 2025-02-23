@@ -1,8 +1,4 @@
 
-:root
-  --color-pass: #4BB543
-  --color-fail: #FF9494
-
 body
 
     header

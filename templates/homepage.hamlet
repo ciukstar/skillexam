@@ -1,46 +1,34 @@
 
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-icon-button.mdc-top-app-bar__navigation-icon #leftMainMenuOpen>
-        <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title>
-        _{MsgChooseExam}
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+^{widgetMainMenu idOverlay idDialogMainMenu}
 
-      <a.mdc-icon-button.mdc-top-app-bar__action-item.material-symbols-outlined
-        href=# role=button>
-        search
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgAppName}
+
+    ^{widgetAccount}
+
+
+<main.responsive.center-align>
+
+  <h2.large-margin>_{MsgTestYourSkills}
+
+  <nav.center-align.middle-align.vertical.large-space>
+    <a.button.fill href=@{ExamTestsR} role=button>
+      _{MsgAvailableTests}
+      <div.badge.primary.none>#{tests}
+
+    $maybe Entity uid _ <- user
+      <a.button.fill href=@{MyExamsR uid}>
+        _{MsgMyExams}
+        <div.badge.primary.none>#{exams}
+    $nothing
+      <a.button.fill href=@{LoginMyExamsR}>
+        _{MsgMyExams}
         
-      $maybe cid <- mcid
-        $maybe Entity _ (Candidate fname name aname _) <- candidate
-          <div.mdc-top-app-bar__action-item.mdc-icon-button.mdc-menu-surface--anchor>
-            <img.photo.profile src=@{CandidatePhotoR cid} alt=_{MsgPhoto} width=24 height=24
-              onerror="this.src = '@{PhotoPlaceholderR}'" title="#{fname} #{name} #{fromMaybe "" aname}">
-            <div.mdc-menu.mdc-menu-surface.profile data-mdc-auto-init=MDCMenuSurface>
-              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list 
-                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
 
-                <form method=post action=@{SignOutR} #formLogout>
-                  <li.mdc-deprecated-list-item role=menuitem onclick="formLogout.submit()">
-                    <span.mdc-deprecated-list-item__ripple>
-                    <i.material-symbols-outlined style="margin-right:1rem">logout
-                    <span.mdc-deprecated-list-item__text>_{MsgLogout}
-      $nothing
-        <a.mdc-icon-button.mdc-top-app-bar__action-item.material-symbols-outlined
-          href=@{SignInR} role=button aria-label=_{MsgLogin}>
-          login
 
-<main.mdc-top-app-bar--fixed-adjust>
-
-  <ul.mdc-list>
-    $forall Entity _ (Exam code name _ _ _) <- tests
-      <li.mdc-list-item.mdc-list-item--with-two-lines>
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start>
-        <span.mdc-list-item__content>
-          <span.mdc-list-item__primary-text>
-            #{name}
-          <span.mdc-list-item__secondary-text>
-            #{code}
-      <li.mdc-list-divider role=separator>
+^{widgetSnackbar msgs}

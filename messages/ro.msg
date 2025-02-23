@@ -1,3 +1,7 @@
+AvailableTests: Teste disponibile
+PassedExams: Examenele promovate
+TestYourSkills: Testează-ți abilitățile
+RetakeThisExam: Reluați acest examen
 NoQuestionsForTheTest: Nu există întrebări pentru test
 SelectATestForTheExam: Selectați un test pentru examen
 LoginToSeeYourExamsPlease: Vă rugăm să vă conectați pentru a vă vedea examenele

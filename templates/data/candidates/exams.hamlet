@@ -15,10 +15,10 @@ $else
       <a.row.padding.wave href=@?{(DataR $ CandidateExamR cid rid,[("location",l)])} :pure rid == mrid:.active>
 
         $if score >= pass
-          <i.large.circle.small-padding style="background-color:var(--color-pass)">
+          <i.large.circle.small-padding.green4>
             thumb_up
         $else
-          <i.large.circle.small-padding style="background-color:var(--color-fail)">
+          <i.large.circle.small-padding.red4>
             thumb_down
 
         <div.max>

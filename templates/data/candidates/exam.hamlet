@@ -13,10 +13,10 @@
 
     <div.row.padding>
       $if score >= testPass test
-        <i.extra.circle.padding style="background-color:var(--color-pass)">
+        <i.extra.circle.padding.green4>
           thumb_up
       $else
-        <i.extra.circle.padding style="background-color:var(--color-fail)">
+        <i.extra.circle.padding.red4>
           thumb_down
 
       <div.max>

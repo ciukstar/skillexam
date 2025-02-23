@@ -25,10 +25,10 @@
 /exams/#TestId/skills    ExamSkillsR    GET
 /exams/#TestId           ExamInfoR      GET
 /search                  SearchExamR    GET
-/                        HomeR          GET
+/tests                   ExamTestsR     GET
 
-/sign-out SignOutR POST
-/sign-in  SignInR  GET POST
+
+/                        HomeR          GET
 
 /static StaticR Static appStatic
 /auth   AuthR   Auth   getAuth

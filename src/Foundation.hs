@@ -150,9 +150,9 @@ instance Yesod App where
       master <- getYesod
       
       pc <- widgetToPageContent $ do
-          addStylesheet $ StaticR css_outlined_css
-          addStylesheet $ StaticR material_components_web_min_css
-          addScript $ StaticR material_components_web_min_js
+          -- addStylesheet $ StaticR css_outlined_css
+          -- addStylesheet $ StaticR material_components_web_min_css
+          -- addScript $ StaticR material_components_web_min_js
           $(widgetFile "default-layout")
       
       langs <- languages
@@ -183,9 +183,6 @@ instance Yesod App where
     
     isAuthorized r@(ExamFormR uid) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(ExamR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-
-    isAuthorized SignInR _ = return Authorized
-    isAuthorized SignOutR _ = return Authorized
     
     isAuthorized CompleteR {} _ = return Authorized
     isAuthorized SummaryR {} _ = return Authorized
@@ -201,6 +198,8 @@ instance Yesod App where
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
     isAuthorized (ExamSkillsR _) _ = return Authorized
+    isAuthorized ExamTestsR _ = return Authorized
+    
     
     isAuthorized (SearchExamInfoR _) _ = return Authorized
     isAuthorized (SearchExamSkillsR _) _ = return Authorized

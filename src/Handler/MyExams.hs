@@ -38,8 +38,8 @@ import Database.Persist.Sql (toSqlKey, fromSqlKey)
 import Foundation
   ( App, Handler, Form, widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
-    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR, ExamFormR
-    , MyExamsSearchR, AuthR, HomeR, ExamEnrollFormR, ExamTestR
+    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR
+    , MyExamsSearchR, AuthR, HomeR, ExamEnrollFormR
     , CandidateEnrollFormR, StepR, StaticR
     )
   , DataR (CandidatePhotoR)
@@ -49,10 +49,10 @@ import Foundation
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
     , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgNoExamsFoundFor
     , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment, MsgCancel
-    , MsgExamInfo, MsgStartExam, MsgSelectATestForTheExam, MsgInvalidFormData
+    , MsgStartExam, MsgSelectATestForTheExam, MsgInvalidFormData, MsgBirthday
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
-    , MsgGivenName, MsgAdditionalName, MsgBirthday, MsgUploadPhoto
+    , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     )
   )
 
@@ -200,7 +200,6 @@ getLoginMyExamsR = defaultLayout $ do
 
 getMyExamsSearchR :: UserId -> HandlerFor App Html
 getMyExamsSearchR uid = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "id")
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     mq <- runInputGet $ iopt (searchField True) "q"
     mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
@@ -211,39 +210,40 @@ getMyExamsSearchR uid = do
           
     setUltDestCurrent
     (fw,et) <- generateFormPost formTests
-    idDialogTests <- newIdent
-    let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgSearch
+        idButtonTakeNewExam <- newIdent
+        idDialogTests <- newIdent
+        let list = $(widgetFile "my-exams/list")
         $(widgetFile "my-exams/search")
 
 
 getMyExamR :: UserId -> ExamId -> HandlerFor App Html
-getMyExamR uid rid = do
-    test <- runDB $ selectOne $ do
-        (x :& c :& e) <- from $ table @Exam
+getMyExamR uid eid = do 
+    exam <- runDB $ selectOne $ do
+        (x :& c :& t) <- from $ table @Exam
             `innerJoin` table @Candidate `on` (\(x :& c) -> x ^. ExamCandidate ==. c ^. CandidateId)
             `innerJoin` table @Test `on` (\(x :& _ :& e) -> x ^. ExamTest ==. e ^. TestId)
-        where_ $ x ^. ExamId ==. val rid
-        return (x,c,e)
+        where_ $ x ^. ExamId ==. val eid
+        return (x,c,t)
 
-    total <- fromMaybe 0 . (unValue =<<) <$> case test of
-      Just (_,_,Entity eid _) -> runDB $ selectOne $ do
+    total <- fromMaybe 0 . (unValue =<<) <$> case exam of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
           x :& q <- from $ table @Option
              `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
-          where_ $ q ^. StemTest ==. val eid
+          where_ $ q ^. StemTest ==. val tid
           return $ sum_ $ x ^. OptionPoints
       Nothing -> return $ pure $ Value $ pure (0 :: Double)
 
-    score <- fromMaybe 0 . (unValue =<<) <$> case test of
-      Just (_,_,Entity eid _) -> runDB $ selectOne $ do
+    score <- fromMaybe 0 . (unValue =<<) <$> case exam of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
           x :& q <- from $ table @Option
              `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
-          where_ $ q ^. StemTest ==. val eid
+          where_ $ q ^. StemTest ==. val tid
           where_ $ x ^. OptionId `in_` subSelectList
              ( from $ selectQuery $ do
                    y <- from $ table @Answer
-                   where_ $ y ^. AnswerExam ==. val rid
+                   where_ $ y ^. AnswerExam ==. val eid
                    return $ y ^. AnswerOption
              )
           return $ sum_ $ x ^. OptionPoints
@@ -312,7 +312,6 @@ formCandidate uid candidate extra = do
 
 postMyExamsR :: UserId -> Handler Html
 postMyExamsR uid = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "id")
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
@@ -322,7 +321,6 @@ postMyExamsR uid = do
           
     setUltDestCurrent
     msgs <- getMessages
-    idDialogTests <- newIdent
     ((fr,fw),et) <- runFormPost formTests
     case fr of
       FormSuccess tid -> do
@@ -335,17 +333,18 @@ postMyExamsR uid = do
             Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
             Nothing -> return []
             
-          let list = $(widgetFile "my-exams/list")
           defaultLayout $ do
               setTitleI MsgMyExams
               idOverlay <- newIdent
               idDialogMainMenu <- newIdent
+              idButtonTakeNewExam <- newIdent
+              idDialogTests <- newIdent
+              let list = $(widgetFile "my-exams/list")
               $(widgetFile "my-exams/my-exams")
     
 
 getMyExamsR :: UserId -> HandlerFor App Html
 getMyExamsR uid = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "id")
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
@@ -359,13 +358,14 @@ getMyExamsR uid = do
           
     setUltDestCurrent
     msgs <- getMessages
-    idDialogTests <- newIdent
     (fw,et) <- generateFormPost formTests
-    let list = $(widgetFile "my-exams/list")
     defaultLayout $ do
         setTitleI MsgMyExams
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
+        idButtonTakeNewExam <- newIdent
+        idDialogTests <- newIdent
+        let list = $(widgetFile "my-exams/list")
         $(widgetFile "my-exams/my-exams")
 
 

@@ -1,4 +1,4 @@
-header.mdc-top-app-bar
-  img.photo
-    border-radius: 50%
 
+main
+    h2
+        font-size: 2rem
