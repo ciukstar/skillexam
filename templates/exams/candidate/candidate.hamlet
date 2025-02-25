@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{MyExamsR uid} role=button>
+    <a.button.circle.transparent href=@{ExamsR uid} role=button>
       <i>arrow_back
 
     <h1.title.max>
@@ -12,7 +12,7 @@
   <form method=post action=@{CandidateEnrollFormR uid tid} enctype=#{enctype} novalidate>
     ^{widget}
     <nav.right-align>
-      <a.button.transparent href=@{MyExamsR uid} role=button>
+      <a.button.transparent href=@{ExamsR uid} role=button>
         _{MsgCancel}
       <button type=submit>
         _{MsgSave}

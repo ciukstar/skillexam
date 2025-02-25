@@ -4,7 +4,7 @@ module Handler.Docs (getDocsR) where
 
 import Foundation
     ( Handler, widgetAccount, widgetMainMenu
-    , Route (DataR, HomeR, MyExamsR, StaticR, AuthR)
+    , Route (DataR, HomeR, ExamsR, ExamsLoginR, StaticR)
     , DataR (SkillsR, TestsR, CandidatesR)
     , AppMessage
       ( MsgAppName, MsgDocs, MsgCandidate, MsgSkill, MsgBasicEntities
@@ -23,7 +23,7 @@ import Settings.StaticFiles (img_SkillExam_ERD_svg)
 
 import Text.Hamlet (Html)
 
-import Yesod.Auth (Route (LoginR), YesodAuth(maybeAuthId))
+import Yesod.Auth (YesodAuth(maybeAuthId))
 import Yesod.Core
     ( Yesod(defaultLayout), getUrlRender, preEscapedToMarkup
     , RenderMessage (renderMessage), getYesod, languages, newIdent

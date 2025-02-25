@@ -1,29 +1,75 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=#{ult} role=button>
+    <a.button.circle.transparent href=@{ExamsR uid} role=button>
       <i>arrow_back
 
     <h1.title.max>
-      _{MsgExam}
+      _{MsgEnrollment}
 
 <main.responsive>
 
-  <form method=post action=@{ExamFormR uid} enctype=#{enctype} novalidate ##{idForm}>
-    ^{widget}
+  $maybe (((Entity _ (Test code name duration pass descr _),Value nq),Value maxScore),Value attempt) <- info
+    <table>
+      <tbody>
+        <tr.wave>
+          <td.bold>_{MsgCode}
+          <td>#{code}
+        <tr.wave>
+          <td.bold>_{MsgName}
+          <td>#{name}
+        <tr.wave>
+          <td.bold>_{MsgDescr}
+          <td>
+            $maybe descr <- descr
+              #{descr}
+        <tr.wave>
+          <td.bold>_{MsgNumberOfQuestions}
+          <td>
+            $maybe nq <- nq
+              #{nq}
+        <tr.wave>
+          <td.bold>_{MsgDuration}
+          <td>
+            <span>#{printf "%.0f" duration}
+            <span style="text-transform:lowercase">_{MsgMinutes}
+        <tr.wave>
+          <td.bold>_{MsgMaxScore}
+          <td>
+            $maybe maxScore <- maxScore
+              <span>#{printf "%.0f" maxScore}
+              <span style="text-transform:lowercase">_{MsgPoints}
+        <tr.wave>
+          <td.bold>_{MsgPassScore}
+          <td>
+            <span>#{printf "%.0f" pass}
+            <span style="text-transform:lowercase">_{MsgPoints}
+        <tr.wave>
+          <td.bold>_{MsgCandidate}
+          <td>
+            $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
+              <figure.row>
+                <img.circle.small src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+                  onerror="this.src = '@{PhotoPlaceholderR}'">
+                <figcaption>
+                  #{fname} #{gname}
+                  $maybe aname <- aname
+                    \ #{aname}
+        <tr.wave>
+          <td.bold>_{MsgAttempt}
+          <td>
+            $maybe attempt <- attempt
+              #{attempt}
 
-    <nav.right-align.no-space>
-      <a.button.transparent.link href=#{ult} role=button>
+  <form method=post action=@{ExamEnrollFormR uid cid tid} enctype=#{et} novalidate ##{idForm}>
+    ^{fw}
+
+    <nav.right-align>
+      <a.button.transparent.link href=@{ExamsR uid} role=button>
         _{MsgCancel}
         
-      <button.primary type=submit formaction=@{ExamR uid}>
+      <button.primary type=submit>
         _{MsgStartExam}
 
-
-  $maybe (eid,cid) <- info
-    <a.row.padding.wave.margin-top href=@{ExamTestR eid uid cid}>
-      <div.max>
-        <h6.headline.large-text>
-          _{MsgExamInfo}
-          
-      <i.secondary-text>arrow_forward_ios
+  
+^{widgetSnackbar msgs}

@@ -22,11 +22,11 @@
       <span>_{MsgExamList}
 
     $maybe Entity uid _ <- user
-      <a href=@{MyExamsR uid} :curr == Just (MyExamsR uid):.active>
+      <a href=@{ExamsR uid} :curr == Just (ExamsR uid):.active>
         <i>school
         <span>_{MsgMyExams}
     $nothing
-      <a href=@{LoginMyExamsR}>
+      <a href=@{ExamsLoginR}>
         <i>school
         <span>_{MsgMyExams}
        

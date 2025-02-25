@@ -1,6 +1,0 @@
-
-[#{fvId candidateV},#{fvId testV}].map(x => document.getElementById(x)).forEach(x => {
-  x.addEventListener('change', e => {
-    document.getElementById(#{idForm}).submit();
-  });
-});

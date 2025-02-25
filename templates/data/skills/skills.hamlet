@@ -9,11 +9,12 @@
         
   $else            
     $forall Entity sid (Skill code name _) <- skills
-      <a.row.wave.padding :Just sid == activated:.active
-        href=@?{(DataR $ SkillR sid,[("location",rndr (DataR $ SkillR sid) [("id",pack $ show $ fromSqlKey sid)])])}>
+      <a.row.wave.padding href=@{DataR $ SkillR sid} :Just sid == activated:.active>
         
         <div.max>
-          <div.headline.large-text>#{name}
+          <div.headline.large-text>
+            #{name}
+            
           <div.supproting-text.secondary-text>
             #{code}
 

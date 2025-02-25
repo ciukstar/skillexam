@@ -5,13 +5,14 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Handler.MyExams
-  ( getMyExamsR
-  , getMyExamR
-  , getMyExamsSearchR
-  , getLoginMyExamsR
+module Handler.Exams
+  ( getExamsR
+  , getExamR
+  , getExamsSearchR
+  , getExamsLoginR
+  , getExamsAfterLoginR
   , getExamEnrollFormR, postExamEnrollFormR
-  , postMyExamsR
+  , postExamsR
   , getCandidateEnrollFormR
   ) where
 
@@ -38,9 +39,9 @@ import Database.Persist.Sql (toSqlKey, fromSqlKey)
 import Foundation
   ( App, Handler, Form, widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
-    ( DataR, MyExamsR, MyExamR, PhotoPlaceholderR
-    , MyExamsSearchR, AuthR, HomeR, ExamEnrollFormR
-    , CandidateEnrollFormR, StepR, StaticR
+    ( DataR, ExamsR, ExamR, PhotoPlaceholderR, ExamsAfterLoginR
+    , ExamsSearchR, AuthR, HomeR, ExamEnrollFormR
+    , CandidateEnrollFormR, StepR, StaticR, ExamsLoginR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
@@ -53,6 +54,7 @@ import Foundation
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
+    , MsgLoginRequired
     )
   )
 
@@ -84,11 +86,11 @@ import Settings.StaticFiles
 import Text.Cassius (cassius)
 import qualified Text.Printf as Printf (printf)
 
-import Yesod.Auth (Route(LoginR))
+import Yesod.Auth (Route(LoginR), YesodAuth (maybeAuthId))
 import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, getMessages, whamlet, redirect
     , SomeMessage (SomeMessage), MonadHandler (liftHandler), ToWidget (toWidget)
-    , addMessageI, FileInfo
+    , addMessageI, FileInfo, setUltDest
     )
 import Yesod.Core.Handler
     ( HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, newIdent
@@ -172,11 +174,12 @@ getExamEnrollFormR uid cid tid = do
           return (((x,nq),maxScore),nt) )
     
     (fw,et) <- generateFormPost $ formEnrollment cid tid
+    msgs <- getMessages
     defaultLayout $ do
         setUltDestCurrent
         setTitleI MsgEnrollment
         idForm <- newIdent
-        $(widgetFile "my-exams/enrollment")
+        $(widgetFile "exams/enrollment")
 
 
 formEnrollment :: CandidateId -> TestId -> Form (CandidateId, TestId, Int)
@@ -188,18 +191,29 @@ formEnrollment cid tid extra = do
           return $ max_ $ x ^. ExamAttempt )
       
     return (pure (cid,tid,attempt), [whamlet|^{extra}|])
-    
 
 
-getLoginMyExamsR :: Handler Html
-getLoginMyExamsR = defaultLayout $ do
-    setUltDestCurrent
-    setTitleI MsgAuthenticate
-    $(widgetFile "my-exams/login")
+getExamsAfterLoginR :: Handler Html
+getExamsAfterLoginR = do
+    uid <- maybeAuthId
+    case uid of
+      Just uid' -> redirect $ ExamsR uid'
+      Nothing -> do
+          addMessageI msgError MsgLoginRequired
+          redirect ExamsLoginR
 
 
-getMyExamsSearchR :: UserId -> HandlerFor App Html
-getMyExamsSearchR uid = do
+getExamsLoginR :: Handler Html
+getExamsLoginR = do
+    setUltDest ExamsAfterLoginR
+    msgs <- getMessages 
+    defaultLayout $ do
+        setTitleI MsgAuthenticate
+        $(widgetFile "exams/login")
+
+
+getExamsSearchR :: UserId -> HandlerFor App Html
+getExamsSearchR uid = do
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     mq <- runInputGet $ iopt (searchField True) "q"
     mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
@@ -214,12 +228,12 @@ getMyExamsSearchR uid = do
         setTitleI MsgSearch
         idButtonTakeNewExam <- newIdent
         idDialogTests <- newIdent
-        let list = $(widgetFile "my-exams/list")
-        $(widgetFile "my-exams/search")
+        let list = $(widgetFile "exams/list")
+        $(widgetFile "exams/search")
 
 
-getMyExamR :: UserId -> ExamId -> HandlerFor App Html
-getMyExamR uid eid = do 
+getExamR :: UserId -> ExamId -> HandlerFor App Html
+getExamR uid eid = do 
     exam <- runDB $ selectOne $ do
         (x :& c :& t) <- from $ table @Exam
             `innerJoin` table @Candidate `on` (\(x :& c) -> x ^. ExamCandidate ==. c ^. CandidateId)
@@ -249,10 +263,10 @@ getMyExamR uid eid = do
           return $ sum_ $ x ^. OptionPoints
       Nothing -> return $ pure $ Value $ pure (0 :: Double)
 
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr (MyExamsR uid)) <$> runInputGet (iopt urlField "location")
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr (ExamsR uid)) <$> runInputGet (iopt urlField "location")
     defaultLayout $ do
         setTitleI MsgExam
-        $(widgetFile "my-exams/my-exam")
+        $(widgetFile "exams/exam")
 
 
 getCandidateEnrollFormR :: UserId -> TestId -> Handler Html
@@ -260,7 +274,7 @@ getCandidateEnrollFormR uid tid = do
     (widget,enctype) <- generateFormPost $ formCandidate uid Nothing
     defaultLayout $ do
         setTitleI MsgCandidate
-        $(widgetFile "my-exams/candidate/candidate")
+        $(widgetFile "exams/candidate/candidate")
 
 
 formCandidate :: UserId -> Maybe (Entity Candidate) -> Form (Candidate,Maybe FileInfo)
@@ -306,12 +320,12 @@ formCandidate uid candidate extra = do
     idButtonCapture <- newIdent
     
     return ( r
-           , $(widgetFile "my-exams/candidate/form")
+           , $(widgetFile "exams/candidate/form")
            )
     
 
-postMyExamsR :: UserId -> Handler Html
-postMyExamsR uid = do
+postExamsR :: UserId -> Handler Html
+postExamsR uid = do
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
@@ -339,12 +353,12 @@ postMyExamsR uid = do
               idDialogMainMenu <- newIdent
               idButtonTakeNewExam <- newIdent
               idDialogTests <- newIdent
-              let list = $(widgetFile "my-exams/list")
-              $(widgetFile "my-exams/my-exams")
+              let list = $(widgetFile "exams/list")
+              $(widgetFile "exams/exams")
     
 
-getMyExamsR :: UserId -> HandlerFor App Html
-getMyExamsR uid = do
+getExamsR :: UserId -> HandlerFor App Html
+getExamsR uid = do
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
@@ -365,8 +379,8 @@ getMyExamsR uid = do
         idDialogMainMenu <- newIdent
         idButtonTakeNewExam <- newIdent
         idDialogTests <- newIdent
-        let list = $(widgetFile "my-exams/list")
-        $(widgetFile "my-exams/my-exams")
+        let list = $(widgetFile "exams/list")
+        $(widgetFile "exams/exams")
 
 
 formTests :: Form TestId

@@ -19,20 +19,20 @@
 
       <nav.right-align>
         $maybe Entity uid _ <- user
-          <form method=get action=@{ExamFormR uid}>
-            <button type=submit name=eid value=#{fromSqlKey tid}>
-              <i>add
-              <span>_{MsgTakeThisExam}
+          <a.button href=@{TestExamUserEnrollmentR tid uid} role=button>
+            <i>add
+            <span>_{MsgTakeThisExam}
+            
         $nothing
-          <a.button href=@{TestExamLoginR tid} role=button>
+          <a.button href=@{TestExamEnrollmentR tid} role=button>
             <i>add
             <span>_{MsgTakeThisExam}
 
     <div.tabs>
-      <a href=@?{(ExamInfoR tid,[("location",location)])} :Just (ExamInfoR tid) == curr:.active>
+      <a href=@{ExamInfoR tid} :Just (ExamInfoR tid) == curr:.active>
         _{MsgDetails}
         
-      <a href=@?{(TestSkillsR tid,[("location",location)])} :Just (TestSkillsR tid) == curr:.active>
+      <a href=@{TestSkillsR tid} :Just (TestSkillsR tid) == curr:.active>
         _{MsgSkills}
       
     <div.page.no-padding.active>

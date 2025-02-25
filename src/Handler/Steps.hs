@@ -26,24 +26,29 @@ import qualified Data.List.Safe as LS
 import Data.Maybe (fromMaybe)
 import Data.Text (unpack, pack, Text)
 import Data.Text.ICU.Calendar
-    (calendar, CalendarType (TraditionalCalendarType), setDay, setHour, setMinute, setSecond)
+    ( calendar, CalendarType (TraditionalCalendarType), setDay, setHour
+    , setMinute, setSecond
+    )
 import Data.Text.ICU.Types (LocaleName(Locale))
 import Data.Text.ICU.DateFormatter
-    (standardDateFormatter, FormatStyle (ShortFormatStyle, DefaultFormatStyle), formatCalendar)
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDayTime, UTCTime), secondsToDiffTime)
+    ( standardDateFormatter, FormatStyle (ShortFormatStyle, DefaultFormatStyle)
+    , formatCalendar
+    )
+import Data.Time.Clock
+    (getCurrentTime, UTCTime (utctDayTime, UTCTime), secondsToDiffTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
 import Data.Time.LocalTime (TimeOfDay(TimeOfDay), timeToTimeOfDay)
 
-import Database.Persist
-    ( Entity (Entity), entityVal, insertMany_
-    )
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
     ( selectOne, select, from, table, where_, val, min_, max_
     , (^.), (==.), (>.), (<.), (=.), (:&) ((:&))
     , Value (unValue, Value), orderBy, asc, just, selectQuery, subSelectMaybe
     , delete, update, set, innerJoin, on, sum_, coalesceDefault
     )
+import Database.Persist
+    ( Entity (Entity), entityVal, insertMany_
+    )
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( App, Form, Handler
@@ -77,13 +82,12 @@ import Graphics.PDF
     )
 
 import Model
-    ( keyUtlDest
-    , ExamId, Exam
+    ( ExamId, Exam
     , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
     , TestId, Test
     , OptionId, Option (Option)
     , Answer (Answer)
-    , Candidate (Candidate)
+    , Candidate (Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName)
     , EntityField
       ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
       , AnswerExam, AnswerStem, AnswerOption, ExamEnd
@@ -101,7 +105,7 @@ import qualified Text.Printf as Printf
 
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI
-    , MonadHandler (liftHandler), getUrlRender, lookupSession
+    , MonadHandler (liftHandler)
     , redirectUltDest, preEscapedToMarkup, lookupPostParams
     , TypedContent (TypedContent), selectRep, provideRep
     , provideJson, invalidArgsI, ContentType
@@ -201,11 +205,11 @@ getSummaryR tid eid = do
                   addHeader "Content-Disposition"
                       ("inline; name=" <> name <> "; filename=" <> name <> ".pdf")
                   return $ pdf app langs tfmt c result (PDFRect 0 0 612 792) f fb
-              _ -> invalidArgsI [MsgInvalidData]
+                  
+              _otherwise -> invalidArgsI [MsgInvalidData]
 
 
         provideRep $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
           defaultLayout $ do
               setTitleI MsgFinish
               $(widgetFile "steps/summary")
@@ -214,7 +218,7 @@ getSummaryR tid eid = do
 pdf :: App -> [Lang] -> (UTCTime -> Text) -> Candidate
     -> (Text,Text,Int,UTCTime,Maybe UTCTime,Double,Double)
     -> PDFRect -> AnyFont -> AnyFont -> PDF ()
-pdf app langs tfmt (Candidate fname gname aname _ _) (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
+pdf app langs tfmt candidate (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
 
     let hfont = PDFFont fontb 18
     let rfont = PDFFont fontr 16
@@ -303,7 +307,9 @@ pdf app langs tfmt (Candidate fname gname aname _ _) (code,name,attempt,start,en
     let (_,d51) = drawTextBox col1x (y6 - 10) cw1 30 NE NormalParagraph (Font rfont black black) $ do
           setJustification LeftJustification
           paragraph $ do
-            txt $ fname <> " " <> gname <> " " <> fromMaybe "" aname
+            txt $ candidateFamilyName candidate
+                <> " " <> candidateGivenName candidate
+                <> maybe "" (" " <>) (candidateAdditionalName candidate)
 
     -- row
     let (Rectangle (x8 :+ y8) _,d60) = drawTextBox x7 (y7 - 10) cw0 30 NE NormalParagraph (Font bfont black black) $ do

@@ -3,49 +3,46 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Tests
-  ( getExamFormR, postExamFormR
-  , postExamR
-  , getExamTestR
-  , getCandiateExamTestEnrollFormR
-  , getCandiateExamTestEnrollR
-  
-  , getExamTestsR
+  ( getExamTestsR
   , getSearchExamR
   , getExamInfoR
   , getTestSkillsR
   , getSearchTestInfoR
   , getSearchExamSkillsR
   , getTestExamLoginR
+  
+  , getTestExamEnrollmentR
+  , getTestExamUserEnrollmentR
+  , getTestExamEnrollmentFormR, postTestExamEnrollmentFormR
   ) where
 
-import Control.Applicative ((<|>))
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(second))
-import Data.Maybe (fromMaybe)
-import Data.Text (Text, pack, unpack)
+import Data.Text (pack)
 import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, selectOne, from, table, where_, val, like
-    , (^.), (?.), (==.), (:&) ((:&)), (%), (++.), (||.)
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
     , select, orderBy, desc, on, innerJoin, distinct
     , upper_, countRows, Value (Value), selectQuery, crossJoin
     , countDistinct, just, subSelectMaybe, min_, max_, leftJoin
-    , groupBy, sum_, coalesceDefault, unValue, asc
+    , groupBy, sum_, coalesceDefault, unValue
     )
-import Database.Persist (Entity (Entity), entityKey, insert)
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
+import Database.Persist (Entity (Entity), insert)
+import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
   ( Handler, Form, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
-    ( HomeR, SearchExamR, ExamInfoR, SearchTestInfoR, ExamTestsR, StepR
-    , TestSkillsR, ExamFormR, SearchExamSkillsR, AuthR, TestExamLoginR
-    , DataR, PhotoPlaceholderR, ExamTestR, ExamR, CandiateExamTestEnrollFormR
-    , CandiateExamTestEnrollFormR, CandiateExamTestEnrollR
+    ( SearchExamR, ExamInfoR, SearchTestInfoR, ExamTestsR, StepR
+    , TestSkillsR, SearchExamSkillsR, AuthR, TestExamLoginR
+    , DataR, PhotoPlaceholderR, TestExamEnrollmentFormR
+    , TestExamEnrollmentR, TestExamUserEnrollmentR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
@@ -55,27 +52,25 @@ import Foundation
     , MsgMinutes, MsgDifficulty, MsgDifficultyLow, MsgDetails
     , MsgSkills, MsgNoPublishedExamsYet, MsgDifficultyHigh, MsgMaxScore
     , MsgDifficultyMedium, MsgAuthenticate, MsgYouNeedToLoginForExam
-    , MsgLoginRequired, MsgStartExam, MsgExamInfo, MsgPassScore, MsgPhoto
-    , MsgCandidate, MsgAttempt, MsgInvalidArguments
+    , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto
+    , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
+    , MsgInvalidFormData
     )
   )
 
-import Material3 (md3selectWidget)
-
 import Model
-    ( keyUtlDest, userSessKey
+    ( msgError
     , CandidateId, Candidate (Candidate)
     , Stem
     , Skill (Skill)
     , Exam (Exam), Answer, Option
-    , TestId, Test (Test, testName), TestState (TestStatePublished)
+    , TestId, Test (Test), TestState (TestStatePublished)
     , UserId
     , EntityField
       ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
-      , ExamAttempt, CandidateFamilyName, CandidateGivenName, CandidateUser
-      , CandidateAdditionalName
+      , ExamAttempt, CandidateUser
       )
     )
 
@@ -87,51 +82,76 @@ import Yesod.Auth (maybeAuth, Route (LoginR), YesodAuth (maybeAuthId))
 import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
     , YesodRequest (reqGetParams), getRequest, setUltDestCurrent
-    , redirect, lookupSession, liftHandler, SomeMessage (SomeMessage), setUltDest, invalidArgsI
+    , redirect, liftHandler
+    , setUltDest, invalidArgsI, whamlet, addMessageI
     )
-import Yesod.Core.Handler
-    ( lookupGetParam, getCurrentRoute, getUrlRender
-    )
-import Yesod.Form.Fields
-    ( Textarea (Textarea), textField, selectFieldList, intField )
+import Yesod.Core.Handler (getCurrentRoute)
+import Yesod.Form.Fields (Textarea (Textarea), textField)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Functions (runFormPost, mreq, generateFormPost)
-import Yesod.Form.Types
-    ( FormResult(FormSuccess)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
-    , FieldView (fvId)
-    )
+import Yesod.Form.Functions (runFormPost, generateFormPost)
+import Yesod.Form.Types (FormResult(FormSuccess))
 import Yesod.Persist.Core (YesodPersist(runDB))
 
 
-getCandiateExamTestEnrollFormR  :: TestId -> UserId -> Handler Html
-getCandiateExamTestEnrollFormR tid uid = undefined
-
-
-getCandiateExamTestEnrollR :: TestId -> Handler Html
-getCandiateExamTestEnrollR tid = do
-    uid <- maybeAuthId
+getTestExamUserEnrollmentR  :: TestId -> UserId -> Handler Html
+getTestExamUserEnrollmentR tid uid = do
     
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
-        where_ $ x ^. CandidateUser ==. val uid
+        where_ $ x ^. CandidateUser ==. just (val uid)
         return x
 
     case candidate of
-      Just (Entity cid (Candidate _ _ _ _ (Just uid'))) -> redirect $ ExamTestR tid uid' cid
+      Just (Entity cid (Candidate _ _ _ _ (Just uid'))) -> redirect $ TestExamEnrollmentFormR tid uid' cid
       
       Just (Entity _ (Candidate _ _ _ _ Nothing)) -> invalidArgsI [MsgInvalidArguments]
       
       Nothing -> redirect $ TestExamLoginR tid
+
+
+getTestExamEnrollmentR :: TestId -> Handler Html
+getTestExamEnrollmentR tid = do
+    uid <- maybeAuthId
+    case uid of
+      Just uid' -> redirect $ TestExamUserEnrollmentR tid uid'      
+      Nothing   -> redirect $ TestExamLoginR tid
+
+
+postTestExamEnrollmentFormR :: TestId -> UserId -> CandidateId -> Handler Html
+postTestExamEnrollmentFormR tid uid cid = do
     
+    ((fr,_),_) <- runFormPost $ formEnrollment cid tid
+    case fr of
+      FormSuccess (cid',tid', attempt) -> do
+          now <- liftIO getCurrentTime
+          eid <- runDB $ insert (Exam tid' cid' attempt now Nothing)
+          stem <- runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe ( from $ selectQuery $ do
+                  y <- from $ table @Stem
+                  where_ $ y ^. StemTest ==. x ^. StemTest
+                  return $ min_ $ y ^. StemOrdinal )
+              return x
+          case stem of
+            Just (Entity qid _) -> redirect $ StepR tid eid qid
+            
+            Nothing -> do
+                addMessageI msgError MsgNoQuestionsForTheTest
+                redirect $ TestExamEnrollmentFormR tid uid cid
+      
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect $ TestExamEnrollmentFormR tid uid cid
 
 
-getExamTestR :: TestId -> UserId -> CandidateId -> Handler Html
-getExamTestR tid uid cid = do
+getTestExamEnrollmentFormR :: TestId -> UserId -> CandidateId -> Handler Html
+getTestExamEnrollmentFormR tid uid cid = do
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
         return x
+        
     test <- (second (((+1) <$>) <$>) <$>) <$> runDB ( selectOne $ do
           (x :& (_,nq,maxScore) :& (_,nt)) <- from $ table @Test
             `leftJoin` from ( selectQuery $ do
@@ -161,134 +181,28 @@ getExamTestR tid uid cid = do
               
           where_ $ x ^. TestId ==. val tid
           return (((x,nq),maxScore),nt) )
+
+    (fw,et) <- generateFormPost $ formEnrollment cid tid
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgExam
-        $(widgetFile "exams/exam") 
+        $(widgetFile "tests/exam")
 
 
-postExamR :: UserId -> Handler Html
-postExamR uid = do
-    idForm <- newIdent
-    ((fr,widget),enctype) <- runFormPost $ formExam idForm Nothing Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
-    case fr of
-      FormSuccess (ExamData tid cid attempt) -> do
-          let info = Just (tid,cid)
-          now <- liftIO getCurrentTime
-          rid <- runDB $ insert (Exam tid cid attempt now Nothing)
-          mqid <- runDB $ selectOne $ do
-              x <- from $ table @Stem
-              where_ $ x ^. StemTest ==. val tid
-              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe ( from $ selectQuery $ do
-                  y <- from $ table @Stem
-                  where_ $ y ^. StemTest ==. x ^. StemTest
-                  return $ min_ $ y ^. StemOrdinal )
-              return $ x ^. StemId
-          case mqid of
-            Just (Value qid) -> redirect $ StepR tid rid qid
-            
-            Nothing -> defaultLayout $ do
-                setTitleI MsgExam
-                $(widgetFile "exams/enrollment")
-                
-      _otherwise -> defaultLayout $ do
-          let info = Nothing
-          setTitleI MsgExam
-          $(widgetFile "exams/enrollment")
-
-
-postExamFormR :: UserId -> Handler Html
-postExamFormR uid = do
-    idForm <- newIdent
-    ((fr,widget),enctype) <- runFormPost $ formExam idForm Nothing Nothing
-    let info = case fr of
-          FormSuccess (ExamData tid cid _) -> Just (tid,cid)
-          
-          _otherwise -> Nothing
-          
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
-    defaultLayout $ do
-        setTitleI MsgExam
-        $(widgetFile "exams/enrollment")
-
-
-getExamFormR :: UserId -> Handler Html
-getExamFormR uid = do
-    mcid <- do
-        x <- (toSqlKey <$>) <$> runInputGet (iopt intField "cid")
-        y <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
-        return $ x <|> y
-    meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
-    
-    candidate <- case mcid of
-      Just cid -> runDB $ selectOne $ do
-        x <- from $ table @Candidate
-        where_ $ x ^. CandidateId ==. val cid
-        return x
-        
-      _otherwise -> return Nothing
-      
-    let info = meid >>= \eid -> mcid >>= \cid -> return (eid,cid)
-    idForm <- newIdent
-    (widget,enctype) <- generateFormPost $ formExam idForm candidate meid
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession keyUtlDest
-    defaultLayout $ do
-        setTitleI MsgExam
-        $(widgetFile "exams/enrollment")
-
-
-formExam :: Text -> Maybe (Entity Candidate) -> Maybe TestId -> Form ExamData
-formExam idForm candidate tid extra = do
-
-    candidates <- liftHandler $ runDB $ select $ do
-        x <- from $ table @Candidate
-        orderBy [ asc (x ^. CandidateFamilyName)
-                , asc (x ^. CandidateGivenName)
-                , asc (x ^. CandidateAdditionalName)
-                , asc (x ^. CandidateId)
-                ]
-        return x
-
-    (candidateR,candidateV) <- mreq (selectFieldList ((\(Entity eid e) -> (candidateName e, eid)) <$> candidates)) FieldSettings
-        { fsLabel = SomeMessage MsgCandidate
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } (entityKey <$> candidate)
-
-    tests <- liftHandler $ runDB $ select $ do
-        x <- from $ table @Test
-        orderBy [asc (x ^. TestName), asc (x ^. TestId)]
-        return x
-
-    (testR,testV) <- mreq (selectFieldList ((\(Entity eid e) -> (testName e, eid)) <$> tests)) FieldSettings
-        { fsLabel = SomeMessage MsgExam
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } tid
-            
-    attempt <- maybe 1 (+1) . (unValue =<<) <$> case (testR,candidateR) of
-      (FormSuccess eid', FormSuccess cid) -> liftHandler $ runDB $ selectOne $ do
+formEnrollment :: CandidateId -> TestId -> Form (CandidateId, TestId, Int)
+formEnrollment cid tid extra = do
+    attempt <- liftHandler $ runDB $ maybe 1 (+1) . (unValue =<<) <$> selectOne ( do
           x <- from $ table @Exam
-          where_ $ x ^. ExamTest ==. val eid'
+          where_ $ x ^. ExamTest ==. val tid
           where_ $ x ^. ExamCandidate ==. val cid
-          return $ max_ $ x ^. ExamAttempt
-          
-      _otherwise -> return $ pure $ Value $ pure 0
-
-    let r = ExamData <$> testR <*> candidateR <*> pure attempt
-    let w = $(widgetFile "exams/form")
-            
-    return (r,w)
-
-  where
-      candidateName (Candidate fn gn (Just an) _ _) = gn <> " " <> fn <> " " <> an
-      candidateName (Candidate fn gn Nothing _ _) = gn <> " " <> fn
-
-
-data ExamData = ExamData !TestId !CandidateId !Int
+          return $ max_ $ x ^. ExamAttempt )
+      
+    return (pure (cid,tid,attempt), [whamlet|^{extra}|]) 
 
 
 getTestExamLoginR :: TestId -> Handler Html
 getTestExamLoginR tid = do
-    setUltDest $ CandiateExamTestEnrollR tid
+    setUltDest $ TestExamEnrollmentR tid
     defaultLayout $ do
         setTitleI MsgAuthenticate
         $(widgetFile "tests/login")
@@ -356,7 +270,6 @@ getTestSkillsR :: TestId -> Handler Html
 getTestSkillsR tid = do
     user <- maybeAuth
     curr <- getCurrentRoute
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
@@ -378,7 +291,6 @@ getExamInfoR :: TestId -> Handler Html
 getExamInfoR tid = do
     user <- maybeAuth
     curr <- getCurrentRoute
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupGetParam "location"
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
@@ -436,7 +348,6 @@ getSearchExamR = do
 
 getExamTestsR :: Handler Html
 getExamTestsR = do
-    mq <- runInputGet $ iopt textField "q"
 
     tests <- runDB $ select $ do
         x <- from $ table @Test

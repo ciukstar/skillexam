@@ -18,7 +18,7 @@
     _{MsgWelcome}
     
   <h3.large-margin.secondary-text>
-    _{MsgTestYourSkillsWith} _{MsgAppName}
+    _{MsgTestYourSkillsWith} _{MsgAppName}.
 
   <nav.center-align.middle-align.vertical.large-space>
     <a.button.fill href=@{ExamTestsR} role=button>
@@ -26,11 +26,11 @@
       <div.badge.primary.none>#{tests}
 
     $maybe Entity uid _ <- user
-      <a.button.fill href=@{MyExamsR uid}>
+      <a.button.fill href=@{ExamsR uid}>
         _{MsgMyExams}
         <div.badge.primary.none>#{exams}
     $nothing
-      <a.button.fill href=@{LoginMyExamsR}>
+      <a.button.fill href=@{ExamsLoginR}>
         _{MsgMyExams}
         
 

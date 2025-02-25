@@ -34,6 +34,7 @@
             $with p <- n / total
               <span.as-percentage data-value=#{p}>#{p}
             <span>(#{printf "%.0f" n} / #{printf "%.0f" total})
-        <i>arrow_forward_ios
+            
+        <i.secondary-text>arrow_forward_ios
 
       <hr>

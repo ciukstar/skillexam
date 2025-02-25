@@ -18,8 +18,8 @@
           <p>#{code}
 
       <nav>
-        $maybe Entity uid _ <- user
-          <form method=get action=@{ExamFormR uid}>
+        $maybe Entity _uid _ <- user
+          <form method=get action=#>
             <button type=submit name=tid value=#{fromSqlKey tid}>
               <i>add
               <span>_{MsgTakeThisExam}

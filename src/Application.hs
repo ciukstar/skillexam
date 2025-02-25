@@ -65,11 +65,12 @@ import Handler.Stats
     , getTestSuccessRateR
     )
 
-import Handler.MyExams
-    ( getMyExamsR, postMyExamsR
-    , getMyExamR
-    , getMyExamsSearchR
-    , getLoginMyExamsR
+import Handler.Exams
+    ( getExamsR, postExamsR
+    , getExamR
+    , getExamsSearchR
+    , getExamsLoginR
+    , getExamsAfterLoginR
     , getExamEnrollFormR, postExamEnrollFormR
     , getCandidateEnrollFormR
     )
@@ -97,29 +98,21 @@ import Handler.Options
     , postOptionsR, getOptionR, getOptionEditFormR
     , postOptionR, postOptionsDeleteR
     )
-    
-import Handler.Skills
-    ( getSkillsR, postSkillsR, getSkillCreateFormR
-    , getSkillsSearchR, postSkillsDeleteR
-    , getSkillR, getSkillEditFormR, postSkillR
-    )
 
 import Handler.Docs (getDocsR)
 
 import Handler.Tests
-    ( getExamFormR, postExamFormR
-    , postExamR
-    , getExamTestR
-    , getExamTestsR
-    , getCandiateExamTestEnrollFormR
-    , getCandiateExamTestEnrollR
-  
-    , getSearchExamR
+    ( getSearchExamR
     , getExamInfoR
     , getTestSkillsR
     , getSearchTestInfoR
     , getSearchExamSkillsR
     , getTestExamLoginR
+
+    , getExamTestsR
+    , getTestExamEnrollmentR
+    , getTestExamUserEnrollmentR
+    , getTestExamEnrollmentFormR, postTestExamEnrollmentFormR
     )
   
 import Handler.Home
@@ -146,6 +139,12 @@ import Handler.Data.Users
     , getUserNewR, getUserEditR, postUserDeleR
     , getUserPhotoR
     , getUserResetPasswordR, postUserResetPasswordR
+    )
+    
+import Handler.Data.Skills
+    ( getSkillsR, postSkillsR, getSkillCreateFormR
+    , getSkillsSearchR, postSkillsDeleteR
+    , getSkillR, getSkillEditFormR, postSkillR
     )
 
 import Handler.Common ( getFaviconR, getRobotsR, getPhotoPlaceholderR )

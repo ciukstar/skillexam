@@ -11,10 +11,10 @@
 
     <div.row>
       $maybe rid <- mrid
-        <a.button.circle.tansparent.no-elevate href=@?{(MyExamsSearchR uid,[("id",pack $ show $ fromSqlKey rid)])} role=button>
+        <a.button.circle.tansparent.no-elevate href=@?{(ExamsSearchR uid,[("id",pack $ show $ fromSqlKey rid)])} role=button>
           <i>search
       $nothing
-        <a.button.circle.tansparent.no-elevate href=@{MyExamsSearchR uid} role=button>
+        <a.button.circle.tansparent.no-elevate href=@{ExamsSearchR uid} role=button>
           <i>search
         
       ^{widgetAccount}

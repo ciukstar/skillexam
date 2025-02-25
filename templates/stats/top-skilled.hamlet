@@ -18,6 +18,7 @@
       <i.extra>folder_open
       <figcaption>
         _{MsgNoExamsYet}.
+        
   $else
     <button.responsive.margin.border type=button data-ui=##{idDialogSkills}>
       $if null skills
@@ -47,7 +48,7 @@
           <div.supporting-text.secondary-text>
             _{MsgRating}: #{printf "%.0f" score}
             
-        <i.material-symbols-outlined>arrow_forward_ios
+        <i.secondary-text>arrow_forward_ios
         
       <hr>
 

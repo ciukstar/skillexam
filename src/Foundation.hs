@@ -181,19 +181,17 @@ instance Yesod App where
     isAuthorized StepR {} _ = return Authorized
     isAuthorized DocsR _ = return Authorized
     
-    isAuthorized r@(ExamFormR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(ExamR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    
     isAuthorized CompleteR {} _ = return Authorized
     isAuthorized SummaryR {} _ = return Authorized
 
     
     isAuthorized r@(ExamEnrollFormR uid _ _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(CandidateEnrollFormR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(MyExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(MyExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(MyExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized LoginMyExamsR _ = return Authorized
+    isAuthorized r@(ExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized ExamsAfterLoginR _ = return Authorized
+    isAuthorized ExamsLoginR _ = return Authorized
 
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
@@ -203,9 +201,9 @@ instance Yesod App where
     
     isAuthorized (SearchTestInfoR _) _ = return Authorized
     
-    isAuthorized r@(CandiateExamTestEnrollFormR _ uid) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized (CandiateExamTestEnrollR _) _ = return Authorized
-    isAuthorized r@(ExamTestR _ uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(TestExamUserEnrollmentR _ uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized (TestExamEnrollmentR _) _ = return Authorized
+    isAuthorized r@(TestExamEnrollmentFormR _ uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized (TestExamLoginR _) _ = return Authorized
     isAuthorized (SearchExamSkillsR _) _ = return Authorized
     
@@ -406,13 +404,7 @@ instance YesodAuth App where
             return x
             
         case user of
-          Just (Entity uid _) -> do
-              rndr <- getUrlRender
-              r <- (Just (rndr LoginMyExamsR) ==) <$> lookupSession keyUtlDest
-              when r $ setUltDest $ MyExamsR uid
-              
-              return $ Authenticated uid
-              
+          Just (Entity uid _) -> return $ Authenticated uid              
           Nothing -> return $ UserError InvalidLogin
 
     -- You can add other plugins like Google Email, email or OAuth here

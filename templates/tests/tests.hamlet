@@ -25,32 +25,17 @@
         _{MsgNoPublishedExamsYet}.
       
   $else
-    $forall Entity eid (Test code name _ _ _ _) <- tests
-      $with ident <- pack $ show $ fromSqlKey eid
-        $maybe q <- mq
-          <a.row.padding.wave href=@?{(ExamInfoR eid,[("eid",ident),("q",q)])}>
-            <div.max>
-              <div.headline.large-text>
-                #{name}
-              <div.supporting-text.secondary-text>
-                #{code}
+    $forall Entity tid (Test code name _ _ _ _) <- tests
+      <a.row.padding.wave href=@{ExamInfoR tid}>
+        <div.max>
+          <div.headline.large-text>
+            #{name}
+          <div.supporting-text.secondary-text>
+            #{code}
 
-            <i.secondary-text>arrow_forward_ios
+        <i.secondary-text>arrow_forward_ios
 
-          <hr>
-
-        $nothing
-          <a.row.padding.wave href=@?{(ExamInfoR eid,[("eid",ident)])}>
-
-            <div.max>
-              <div.headline.large-text>
-                #{name}
-              <div.supporting-text.secondary-text>
-                #{code}
-
-            <i.secondary-text>arrow_forward_ios
-
-          <hr>
+      <hr>
 
 
 ^{widgetSnackbar msgs}

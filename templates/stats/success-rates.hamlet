@@ -29,11 +29,13 @@
           #{index}
    
         <div.max>
-          <div.headline.large-text>#{name}
+          <div.headline.large-text>
+            #{name}
+          
           <div.supporting-text.secondary-text>
             <span.as-percentage data-rate=#{rate}>#{printf "%.3f" rate}
             <span>&nbsp;&nbsp;&nbsp;(#{printf "%.0f" passed} / #{printf "%.0f" total})
      
-        <i>arrow_forward_ios
+        <i.secondary-text>arrow_forward_ios
    
       <hr>

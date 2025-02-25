@@ -7,18 +7,17 @@
 
 /users/#UserId/candidates/#CandidateId/tests/#TestId/enrollment ExamEnrollFormR      GET POST
 /users/#UserId/tests/#TestId/enrollment                         CandidateEnrollFormR GET
-/users/#UserId/search/exams                                     MyExamsSearchR       GET
-/users/#UserId/exams/#ExamId                                    MyExamR              GET
-/users/#UserId/exams                                            MyExamsR             GET POST
-/my-exams                                                       LoginMyExamsR        GET
+/users/#UserId/search/exams                                     ExamsSearchR         GET
+/users/#UserId/exams/#ExamId                                    ExamR                GET
+/users/#UserId/exams                                            ExamsR               GET POST
+/exams/login/hook                                               ExamsAfterLoginR     GET
+/exams/login                                                    ExamsLoginR          GET
 
-/tests/#TestId/users/#UserId/exam/candidates/#CandidateId ExamTestR GET
-/users/#UserId/exam                                       ExamR     POST
-/users/#UserId/enrollment                                 ExamFormR GET POST
 
-/tests/#TestId/users/#UserId/enrollment CandiateExamTestEnrollFormR GET
-/tests/#TestId/candidates               CandiateExamTestEnrollR     GET
-/tests/#TestId/exams                    TestExamLoginR              GET
+/tests/#TestId/users/#UserId/candidates/#CandidateId/enrollment TestExamEnrollmentFormR GET POST
+/tests/#TestId/users/#UserId/enrollment                         TestExamUserEnrollmentR GET
+/tests/#TestId/enrollment                                       TestExamEnrollmentR     GET
+/tests/#TestId/exams/login                                      TestExamLoginR          GET
 
 /search/tests/#TestId/skills SearchExamSkillsR GET
 /search/tests/#TestId        SearchTestInfoR   GET
@@ -31,7 +30,7 @@
 
 /docs DocsR GET
 
-/                        HomeR          GET
+/     HomeR GET
 
 /static StaticR Static appStatic
 /auth   AuthR   Auth   getAuth

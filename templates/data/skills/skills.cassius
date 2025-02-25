@@ -1,26 +1,11 @@
 
 main
-  div.no-content
-    margin: 2rem
-    display: flex
-    flex-direction: column
-    justify-content: center
-    align-items: center
-    gap: 2rem
-    i.material-symbols-outlined
-      font-size: 5rem
 
-  ul.mdc-list
-    button.mdc-list-item
-      margin: 0
-      border: 0
-      width: 100%
-      text-align: start
-      background-color: transparent
-
-  #wrapperFabAdd
-    position: fixed
-    bottom: 1rem
-    right: 1rem
-    #fabAdd
-      transition: visibility 0.3s linear,opacity 0.3s linear
+    a.row
+        div.max
+            min-width: 0
+            
+            div.headline
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis

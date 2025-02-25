@@ -2,7 +2,7 @@
 <form method=get #formGetMyExam>
 
 $forall (Entity rid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- tests
-  <a.row.padding.wave href=@?{(MyExamR uid rid,[("id",pack $ show $ fromSqlKey rid)])} :Just rid == mrid:.activated>
+  <a.row.padding.wave href=@?{(ExamR uid rid,[("id",pack $ show $ fromSqlKey rid)])} :Just rid == mrid:.activated>
 
     $if score >= pass
       <i.extra.circle.small-padding.green4>
@@ -44,10 +44,10 @@ $forall (Entity rid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),V
   <div.row>
     <h6.large-text.bold.max>
       _{MsgSelectATestForTheExam}
-    <button.circle.transparent type=button data-ui=##{idDialogTests}>
-      <i.secondary-text>_{MsgClose}
+    <button.circle.transparent type=button data-ui=##{idDialogTests} title=_{MsgClose}>
+      <i.secondary-text>close
 
-  <form method=post action=@{MyExamsR uid} enctype=#{et}>
+  <form method=post action=@{ExamsR uid} enctype=#{et}>
     ^{fw}
     <nav.right-align>
       <button.transparent type=button data-ui=##{idDialogTests}>

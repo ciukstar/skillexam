@@ -28,9 +28,9 @@
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc005 (rndr HomeR))}
   <p>
     $maybe uid <- uid
-      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ MyExamsR uid))}
+      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ ExamsR uid))}
     $nothing
-      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ AuthR LoginR))}
+      #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr ExamsLoginR))}
     
   <h2>_{MsgBasicEntities}
 

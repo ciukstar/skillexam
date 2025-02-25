@@ -1,7 +1,7 @@
 
 let style = getComputedStyle(document.querySelector(':root'));
-let colorPass = style.getPropertyValue('--color-pass');
-let colorFail = style.getPropertyValue('--color-fail');
+let colorPass = style.getPropertyValue('--color-pass') ? style.getPropertyValue('--color-pass') : '#81c784';
+let colorFail = style.getPropertyValue('--color-fail') ? style.getPropertyValue('--color-fail') : '#e57373';
 
 echarts.init(document.getElementById(#{idPieChart})).setOption({
   title: {

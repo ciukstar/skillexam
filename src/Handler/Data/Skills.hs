@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Handler.Skills
+module Handler.Data.Skills
   ( getSkillsR
   , postSkillsR
   , getSkillCreateFormR
@@ -59,8 +59,7 @@ import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, whamlet
     , SomeMessage (SomeMessage), getMessages, addMessageI
-    , getUrlRender, lookupPostParam, getUrlRenderParams
-    , newIdent
+    , getUrlRender, lookupPostParam, newIdent
     )
 
 import Yesod.Core.Handler
@@ -71,7 +70,7 @@ import Yesod.Form
     , generateFormPost, runFormPost, Textarea (Textarea, unTextarea)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsAttrs, fsName)
     , textField, textareaField, mreq, mopt, unTextarea
-    , checkM, runInputGet, iopt, intField, urlField
+    , checkM, runInputGet, iopt, intField
     )
 import Yesod (YesodPersist(runDB))
 
@@ -88,7 +87,8 @@ postSkillR sid = do
           runDB $ replace sid x
           addMessageI msgSuccess MsgRecordEdited
           redirect $ DataR $ SkillR sid
-      _ -> defaultLayout $ do
+          
+      _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgSkill
@@ -110,17 +110,13 @@ getSkillEditFormR sid = do
 
 getSkillR :: SkillId -> Handler Html
 getSkillR sid = do
-    location <- runInputGet $ iopt urlField "location"
     skill <- runDB $ selectOne $ do
         x <- from $ table @Skill
         where_ $ x ^. SkillId ==. val sid
         return x
 
     (fw0,et0) <- generateFormPost formSkillDelete
-        
-    let params = [("id", pack . show . fromSqlKey $ sid)]
     
-    ult <- getUrlRenderParams >>= \rndr -> return $ fromMaybe (rndr (DataR SkillsR) params) location
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSkill
@@ -166,7 +162,6 @@ getSkillsSearchR = do
         orderBy [desc (x ^. SkillId)]
         return x
         
-    rndr <- getUrlRenderParams
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
@@ -193,7 +188,7 @@ postSkillsR = do
           addMessageI msgSuccess MsgNewRecordAdded
           redirect (DataR SkillsR,[("id", pack . show . fromSqlKey $ sid)])
           
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgSkill
@@ -215,7 +210,6 @@ getSkillsR = do
         orderBy [desc (x ^. SkillId)]
         return x
 
-    rndr <- getUrlRenderParams
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do

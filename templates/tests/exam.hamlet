@@ -1,51 +1,51 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{MyExamsR uid} role=button>
+    <a.button.circle.transparent href=@{ExamInfoR tid} role=button>
       <i>arrow_back
 
     <h1.title.max>
-      _{MsgEnrollment}
+      _{MsgExam}
 
 <main.responsive>
 
-  $maybe (((Entity _ (Test code name duration pass descr _),Value nq),Value maxScore),Value attempt) <- info
+  $maybe (((Entity _ (Test code name duration pass descr _), Value nq), Value maxScore), Value attempt) <- test
     <table>
       <tbody>
         <tr.wave>
-          <td.bold>_{MsgCode}
+          <th scope=row>_{MsgCode}
           <td>#{code}
         <tr.wave>
-          <td.bold>_{MsgName}
+          <th scope=row>_{MsgName}
           <td>#{name}
         <tr.wave>
-          <td.bold>_{MsgDescr}
+          <th scope=row>_{MsgDescr}
           <td>
             $maybe descr <- descr
               #{descr}
         <tr.wave>
-          <td.bold>_{MsgNumberOfQuestions}
+          <th scope=row>_{MsgNumberOfQuestions}
           <td>
             $maybe nq <- nq
               #{nq}
         <tr.wave>
-          <td.bold>_{MsgDuration}
+          <th scope=row>_{MsgDuration}
           <td>
             <span>#{printf "%.0f" duration}
             <span style="text-transform:lowercase">_{MsgMinutes}
         <tr.wave>
-          <td.bold>_{MsgMaxScore}
+          <th scope=row>_{MsgMaxScore}
           <td>
             $maybe maxScore <- maxScore
               <span>#{printf "%.0f" maxScore}
               <span style="text-transform:lowercase">_{MsgPoints}
         <tr.wave>
-          <td.bold>_{MsgPassScore}
+          <th scope=row>_{MsgPassScore}
           <td>
             <span>#{printf "%.0f" pass}
             <span style="text-transform:lowercase">_{MsgPoints}
         <tr.wave>
-          <td.bold>_{MsgCandidate}
+          <th scope=row>_{MsgCandidate}
           <td>
             $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
               <figure.row>
@@ -56,17 +56,20 @@
                   $maybe aname <- aname
                     \ #{aname}
         <tr.wave>
-          <td.bold>_{MsgAttempt}
+          <th scope=row>_{MsgAttempt}
           <td>
             $maybe attempt <- attempt
               #{attempt}
 
-  <form method=post action=@{ExamEnrollFormR uid cid tid} enctype=#{et} novalidate ##{idForm}>
+  <form method=post action=@{TestExamEnrollmentFormR tid uid cid} enctype=#{et} novalidate>
     ^{fw}
 
     <nav.right-align>
-      <a.button.transparent.link href=@{MyExamsR uid} role=button>
+      <a.button.transparent.link href=@{ExamInfoR tid} role=button>
         _{MsgCancel}
         
       <button.primary type=submit>
         _{MsgStartExam}
+
+  
+^{widgetSnackbar msgs}

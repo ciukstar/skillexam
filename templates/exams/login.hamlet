@@ -5,13 +5,17 @@
       <i>arrow_back
 
     <h1.title.max>
-      _{MsgExamResults}
+      _{MsgLoginRequired}
 
 <main.responsive>
 
   <div.center-align>
-    <p>_{MsgLoginToSeeYourExamsPlease}.
+    <p.margin>
+      _{MsgLoginToSeeYourExamsPlease}.
 
     <a.button href=@{AuthR LoginR} role=button>
       _{MsgLogin}
+
+
+^{widgetSnackbar msgs}
   

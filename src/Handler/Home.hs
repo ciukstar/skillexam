@@ -18,7 +18,7 @@ import Database.Persist (Entity (Entity))
 
 import Foundation
   ( Handler, widgetMainMenu, widgetSnackbar, widgetAccount
-  , Route (ExamTestsR, MyExamsR, LoginMyExamsR)
+  , Route (ExamTestsR, ExamsR, ExamsLoginR)
   , AppMessage
     ( MsgAvailableTests, MsgTestYourSkillsWith, MsgAppName, MsgMyExams
     , MsgWelcome
@@ -26,11 +26,11 @@ import Foundation
   )
 
 import Model
-    ( TestState (TestStatePublished)
-    , Test
+    ( Exam, Candidate
+    , Test, TestState (TestStatePublished)
     , EntityField
       (TestState, ExamCandidate, CandidateId, CandidateUser
-      ), Exam (Exam), Candidate (Candidate)
+      )
     )
 
 import Settings ( widgetFile )
