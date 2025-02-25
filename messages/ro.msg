@@ -1,3 +1,7 @@
+LoginRequired: Autentificare necesară
+YouNeedToLoginForExam: Pentru a vă înscrie la un examen trebuie să vă autentificați
+TestYourSkillsWith: Testează-ți abilitățile cu
+Welcome: Bine ați venit
 AvailableTests: Teste disponibile
 PassedExams: Examenele promovate
 TestYourSkills: Testează-ți abilitățile

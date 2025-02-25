@@ -1,3 +1,7 @@
+LoginRequired: Login required
+YouNeedToLoginForExam: To sign up for an exam you need to log in
+TestYourSkillsWith: Test your skills with
+Welcome: Welcome
 AvailableTests: Available tests
 PassedExams: Passed exams
 TestYourSkills: Test your skills

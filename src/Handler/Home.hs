@@ -20,7 +20,8 @@ import Foundation
   ( Handler, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route (ExamTestsR, MyExamsR, LoginMyExamsR)
   , AppMessage
-    ( MsgAvailableTests, MsgTestYourSkills, MsgAppName, MsgMyExams
+    ( MsgAvailableTests, MsgTestYourSkillsWith, MsgAppName, MsgMyExams
+    , MsgWelcome
     )
   )
 

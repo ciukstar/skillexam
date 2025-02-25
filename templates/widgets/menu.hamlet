@@ -14,8 +14,12 @@
   <nav.drawer>
 
     <a href=@{HomeR} :curr == Just HomeR:.active>
+      <i>home
+      <span>_{MsgHome}
+
+    <a href=@{ExamTestsR} :curr == Just ExamTestsR:.active>
       <i>search
-      <span>_{MsgExams}
+      <span>_{MsgExamList}
 
     $maybe Entity uid _ <- user
       <a href=@{MyExamsR uid} :curr == Just (MyExamsR uid):.active>

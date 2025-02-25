@@ -21,7 +21,7 @@
 
 
   $maybe (eid,cid) <- info
-    <a.row.padding.wave.margin-top href=@{ExamTestR uid cid eid}>
+    <a.row.padding.wave.margin-top href=@{ExamTestR eid uid cid}>
       <div.max>
         <h6.headline.large-text>
           _{MsgExamInfo}

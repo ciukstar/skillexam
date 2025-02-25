@@ -1,4 +1,10 @@
 
+/remaining-time/#ExamId           RemainingTimeR GET
+/summary/#TestId/#ExamId          SummaryR       GET
+/complete/#TestId/#ExamId/#StemId CompleteR      POST
+/terminate/#TestId/#ExamId        TerminateR     POST
+/steps/#TestId/#ExamId/#StemId    StepR          GET POST
+
 /users/#UserId/candidates/#CandidateId/tests/#TestId/enrollment ExamEnrollFormR      GET POST
 /users/#UserId/tests/#TestId/enrollment                         CandidateEnrollFormR GET
 /users/#UserId/search/exams                                     MyExamsSearchR       GET
@@ -6,27 +12,24 @@
 /users/#UserId/exams                                            MyExamsR             GET POST
 /my-exams                                                       LoginMyExamsR        GET
 
-/remaining-time/#ExamId           RemainingTimeR GET
-/summary/#TestId/#ExamId          SummaryR       GET
-/complete/#TestId/#ExamId/#StemId CompleteR      POST
-/terminate/#TestId/#ExamId        TerminateR     POST
-/steps/#TestId/#ExamId/#StemId    StepR          GET POST
-
-/users/#UserId/enrollment                                 ExamFormR GET POST
-/users/#UserId/exam/candidates/#CandidateId/tests/#TestId ExamTestR GET
+/tests/#TestId/users/#UserId/exam/candidates/#CandidateId ExamTestR GET
 /users/#UserId/exam                                       ExamR     POST
+/users/#UserId/enrollment                                 ExamFormR GET POST
+
+/tests/#TestId/users/#UserId/enrollment CandiateExamTestEnrollFormR GET
+/tests/#TestId/candidates               CandiateExamTestEnrollR     GET
+/tests/#TestId/exams                    TestExamLoginR              GET
+
+/search/tests/#TestId/skills SearchExamSkillsR GET
+/search/tests/#TestId        SearchTestInfoR   GET
+/search                      SearchExamR       GET
+
+/tests/#TestId/skills    TestSkillsR    GET
+/tests/#TestId           ExamInfoR      GET
+/tests                   ExamTestsR     GET
 
 
 /docs DocsR GET
-
-/search/exams/#TestId/skills    SearchExamSkillsR    GET
-/search/exams/#TestId           SearchExamInfoR      GET
-
-/exams/#TestId/skills    ExamSkillsR    GET
-/exams/#TestId           ExamInfoR      GET
-/search                  SearchExamR    GET
-/tests                   ExamTestsR     GET
-
 
 /                        HomeR          GET
 

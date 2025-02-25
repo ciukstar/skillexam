@@ -1,3 +1,7 @@
+LoginRequired: Connexion requise
+YouNeedToLoginForExam: Pour vous inscrire à un examen, vous devez vous connecter
+TestYourSkillsWith: Testez vos compétences avec
+Welcome: Bienvenu
 AvailableTests: Tests disponibles
 PassedExams: Examens réussis
 TestYourSkills: Testez vos compétences

@@ -4,7 +4,7 @@
 <header.fixed.no-padding>
 
   <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
-    <a.start.transparent.round.circle.wave href=@?{(HomeR,stati)}>
+    <a.start.transparent.round.circle.wave href=@?{(ExamTestsR,stati)}>
       <i>arrow_back    
 
     $maybe q <- mq
@@ -27,7 +27,7 @@
     $forall Entity eid (Test code name _ _ _ _) <- tests
       $with ident <- pack $ show $ fromSqlKey eid
         $maybe q <- mq
-          <a.row.padding.wave href=@?{(SearchExamInfoR eid,[("eid",ident),("q",q)])}>
+          <a.row.padding.wave href=@?{(SearchTestInfoR eid,[("eid",ident),("q",q)])}>
             <div.content.max>
               <div.headline.large-text>
                 #{name}
@@ -39,7 +39,7 @@
           <hr>
 
         $nothing
-          <a.row.padding.wave href=@?{(SearchExamInfoR eid,[("eid",ident)])}>
+          <a.row.padding.wave href=@?{(SearchTestInfoR eid,[("eid",ident)])}>
 
             <div.content.max>
               <div.headline.large-text>

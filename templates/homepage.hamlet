@@ -14,7 +14,11 @@
 
 <main.responsive.center-align>
 
-  <h2.large-margin>_{MsgTestYourSkills}
+  <h2.large-margin>
+    _{MsgWelcome}
+    
+  <h3.large-margin.secondary-text>
+    _{MsgTestYourSkillsWith} _{MsgAppName}
 
   <nav.center-align.middle-align.vertical.large-space>
     <a.button.fill href=@{ExamTestsR} role=button>

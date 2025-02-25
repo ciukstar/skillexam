@@ -197,15 +197,20 @@ instance Yesod App where
 
     isAuthorized SearchExamR _ = return Authorized
     isAuthorized (ExamInfoR _) _ = return Authorized
-    isAuthorized (ExamSkillsR _) _ = return Authorized
+    isAuthorized (TestSkillsR _) _ = return Authorized
     isAuthorized ExamTestsR _ = return Authorized
     
     
-    isAuthorized (SearchExamInfoR _) _ = return Authorized
+    isAuthorized (SearchTestInfoR _) _ = return Authorized
+    
+    isAuthorized r@(CandiateExamTestEnrollFormR _ uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized (CandiateExamTestEnrollR _) _ = return Authorized
+    isAuthorized r@(ExamTestR _ uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized (TestExamLoginR _) _ = return Authorized
     isAuthorized (SearchExamSkillsR _) _ = return Authorized
     
     isAuthorized TerminateR {} _ = return Authorized
-    isAuthorized (ExamTestR {}) _ = return Authorized
+    
     isAuthorized (StatsR TopSkilledR) _ = return Authorized
     isAuthorized (StatsR SkilledR {}) _ = return Authorized
     isAuthorized (StatsR TopExamsR) _ = return Authorized
@@ -303,8 +308,6 @@ instance Yesod App where
     errorHandler NotFound = selectRep $ do
         provideRep $ defaultLayout $ do
             setTitleI MsgPageNotFound
-            idHeader <- newIdent
-            idHeaderStart <- newIdent
             $(widgetFile "error/not-found")
         provideRep $ return $ object ["message" .= ("Page not found." :: Text)]
         provideRep $ return ("Page not found." :: Text)

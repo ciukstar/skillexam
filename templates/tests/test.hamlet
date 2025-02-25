@@ -1,38 +1,38 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{HomeR} role=button>
+    <a.button.circle.transparent href=@{ExamTestsR} role=button>
       <i>arrow_back
 
     <h1.title.max>
       _{MsgExam}
 
 <main.responsive.no-padding>
-  $maybe Entity eid (Test code name _ _ _ _) <- test
+  $maybe Entity tid (Test code name _ _ _ _) <- test
 
     <article.border.margin>
       <div.row>
         <i.large>history_edu
         <div.max>
-          <h2.small>#{name}
-          <p>#{code}
+          <h2>#{name}
+          <p.secondary-text>#{code}
 
-      <nav>
+      <nav.right-align>
         $maybe Entity uid _ <- user
           <form method=get action=@{ExamFormR uid}>
-            <button type=submit name=eid value=#{fromSqlKey eid}>
+            <button type=submit name=eid value=#{fromSqlKey tid}>
               <i>add
               <span>_{MsgTakeThisExam}
         $nothing
-          <a.button href=# role=button>
+          <a.button href=@{TestExamLoginR tid} role=button>
             <i>add
             <span>_{MsgTakeThisExam}
 
     <div.tabs>
-      <a href=@?{(ExamInfoR eid,[("location",location)])} :Just (ExamInfoR eid) == curr:.active>
+      <a href=@?{(ExamInfoR tid,[("location",location)])} :Just (ExamInfoR tid) == curr:.active>
         _{MsgDetails}
         
-      <a href=@?{(ExamSkillsR eid,[("location",location)])} :Just (ExamSkillsR eid) == curr:.active>
+      <a href=@?{(TestSkillsR tid,[("location",location)])} :Just (TestSkillsR tid) == curr:.active>
         _{MsgSkills}
       
     <div.page.no-padding.active>

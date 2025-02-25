@@ -83,13 +83,6 @@ import Handler.Steps
     , getRemainingTimeR
     )
 
-import Handler.Exams
-    ( getExamFormR
-    , postExamFormR
-    , postExamR
-    , getExamTestR
-    )
-
 import Handler.Candidates
     ( getCandidatesR, getCandidateCreateFormR
     , postCandidatesR, getCandidatePhotoR, getCandidateR
@@ -114,12 +107,19 @@ import Handler.Skills
 import Handler.Docs (getDocsR)
 
 import Handler.Tests
-    ( getExamTestsR
+    ( getExamFormR, postExamFormR
+    , postExamR
+    , getExamTestR
+    , getExamTestsR
+    , getCandiateExamTestEnrollFormR
+    , getCandiateExamTestEnrollR
+  
     , getSearchExamR
     , getExamInfoR
-    , getExamSkillsR
-    , getSearchExamInfoR
+    , getTestSkillsR
+    , getSearchTestInfoR
     , getSearchExamSkillsR
+    , getTestExamLoginR
     )
   
 import Handler.Home

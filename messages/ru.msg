@@ -1,3 +1,7 @@
+LoginRequired: Требуется вход
+YouNeedToLoginForExam: Для регистрации на экзамен вам необходимо войти в систему
+TestYourSkillsWith: Проверьте свои навыки с
+Welcome: Добро пожаловать
 AvailableTests: Доступные тесты
 PassedExams: Сданные экзамены
 TestYourSkills: Проверьте свои навыки
