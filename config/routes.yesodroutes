@@ -14,14 +14,15 @@
 /exams/login                                                    ExamsLoginR          GET
 
 
-/tests/#TestId/users/#UserId/candidates/#CandidateId/enrollment TestExamEnrollmentFormR GET POST
-/tests/#TestId/users/#UserId/enrollment                         TestExamUserEnrollmentR GET
-/tests/#TestId/enrollment                                       TestExamEnrollmentR     GET
-/tests/#TestId/exams/login                                      TestExamLoginR          GET
 
 /search/tests/#TestId/skills SearchExamSkillsR GET
 /search/tests/#TestId        SearchTestInfoR   GET
 /search                      SearchExamR       GET
+
+/tests/#TestId/users/#UserId/candidates/#CandidateId/enrollment TestExamEnrollmentFormR GET POST
+/tests/#TestId/users/#UserId/enrollment                         TestExamUserEnrollmentR GET
+/tests/#TestId/enrollment                                       TestExamEnrollmentR     GET
+/tests/#TestId/exams/login                                      TestExamLoginR          GET
 
 /tests/#TestId/skills    TestSkillsR    GET
 /tests/#TestId           ExamInfoR      GET

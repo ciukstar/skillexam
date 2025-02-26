@@ -92,12 +92,6 @@ import Handler.Candidates
     , getCandidateExamsR, getCandidateExamR
     , getCandidateSkillsR, getCandidatePhotosR
     )
-    
-import Handler.Options
-    ( getOptionsR, getOptionCreateFormR
-    , postOptionsR, getOptionR, getOptionEditFormR
-    , postOptionR, postOptionsDeleteR
-    )
 
 import Handler.Docs (getDocsR)
 
@@ -117,6 +111,12 @@ import Handler.Tests
   
 import Handler.Home
     ( getHomeR
+    )
+    
+import Handler.Data.Options
+    ( getOptionsR, getOptionCreateFormR
+    , postOptionsR, getOptionR, getOptionEditFormR
+    , postOptionR, postOptionsDeleteR
     )
     
 import Handler.Data.Stems

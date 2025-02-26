@@ -1,10 +1,10 @@
 
-let timer = document.getElementById(#{idTimer});
-let timerProgress = document.getElementById(#{idProgressTimer});
+const timer = document.getElementById(#{idTimer});
+const timerProgress = document.getElementById(#{idProgressTimer});
 var left, total;
-let xhr = new XMLHttpRequest();
+const xhr = new XMLHttpRequest();
 xhr.onload = function (x) {
-  let data = JSON.parse(this.response);
+  const data = JSON.parse(this.response);
   left = data.left;
   total = data.total;
   timer.textContent = new Date(left * 1000).toISOString().substring(11, 19);

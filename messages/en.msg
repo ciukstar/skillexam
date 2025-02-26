@@ -1,3 +1,5 @@
+NoExamsWereFoundForSearchTerms: No exams were found that matched all of your search terms
+ExamSuccessfullyCancelled: The exam was successfully cancelled
 LoginRequired: Login required
 YouNeedToLoginForExam: To sign up for an exam you need to log in
 TestYourSkillsWith: Test your skills with

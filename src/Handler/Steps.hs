@@ -59,7 +59,7 @@ import Foundation
       , MsgStop, MsgTimeStart, MsgTimeEnd, MsgStopThisExam, MsgPleaseConfirm
       , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
       , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
-      , MsgExamInfo, MsgInvalidFormData
+      , MsgExamInfo, MsgInvalidFormData, MsgExamSuccessfullyCancelled
       )
     )
 
@@ -94,7 +94,7 @@ import Model
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
       , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
       , TestName, OptionId, ExamCandidate
-      )
+      ), msgSuccess
     )
 
 import Settings (widgetFile)
@@ -112,7 +112,7 @@ import Yesod.Core
     , ToContent (toContent), Content, ToTypedContent (toTypedContent)
     , HasContentType (getContentType)
     , RenderMessage (renderMessage)
-    , getYesod, languages, addHeader, newIdent, getMessageRender
+    , getYesod, languages, addHeader, newIdent, getMessageRender, addMessageI
     )
 import Yesod.Core.Widget (whamlet)
 import Yesod.Core.Handler (redirect)
@@ -148,6 +148,8 @@ postTerminateR tid eid = do
         x <- from $ table @Exam
         where_ $ x ^. ExamId ==. val eid
         where_ $ x ^. ExamTest ==. val tid
+
+    addMessageI msgSuccess MsgExamSuccessfullyCancelled
     redirectUltDest HomeR
 
 
@@ -455,15 +457,19 @@ postCompleteR tid eid qid = do
 
 postStepR :: TestId -> ExamId -> StemId -> Handler Html
 postStepR tid eid qid = do
+
     location <- runInputPost $ ireq urlField "location"
+    
     cnt <- (unValue =<<) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
         return $ max_ $ x ^. StemOrdinal )
+        
     stem <- runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemId ==. val qid
         return x
+        
     prev <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
@@ -475,6 +481,7 @@ postStepR tid eid qid = do
                   return $ max_ $ y ^. StemOrdinal
             )
         return $ x ^. StemId )
+        
     next <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
@@ -492,6 +499,7 @@ postStepR tid eid qid = do
         where_ $ x ^. OptionStem ==. val qid
         orderBy [asc (x ^. OptionOrdinal)]
         return x
+        
     ((fr,fw),et) <- runFormPost $ formOptions eid qid options
     case fr of
       FormSuccess rs -> do
@@ -520,6 +528,7 @@ getStepR tid eid qid = do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
         return $ max_ $ x ^. StemOrdinal )
+        
     stem <- runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemId ==. val qid
@@ -536,6 +545,7 @@ getStepR tid eid qid = do
                   return $ max_ $ y ^. StemOrdinal
             )
         return $ x ^. StemId )
+        
     next <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid

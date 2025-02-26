@@ -1,3 +1,5 @@
+NoExamsWereFoundForSearchTerms: Nu au fost găsite examene care să corespundă tuturor termenilor dvs. de căutare
+ExamSuccessfullyCancelled: Examenul a fost anulat cu succes
 LoginRequired: Autentificare necesară
 YouNeedToLoginForExam: Pentru a vă înscrie la un examen trebuie să vă autentificați
 TestYourSkillsWith: Testează-ți abilitățile cu

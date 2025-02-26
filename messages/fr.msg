@@ -1,3 +1,5 @@
+NoExamsWereFoundForSearchTerms: Aucun examen correspondant à tous vos termes de recherche n'a été trouvé
+ExamSuccessfullyCancelled: L'examen a été annulé avec succès
 LoginRequired: Connexion requise
 YouNeedToLoginForExam: Pour vous inscrire à un examen, vous devez vous connecter
 TestYourSkillsWith: Testez vos compétences avec

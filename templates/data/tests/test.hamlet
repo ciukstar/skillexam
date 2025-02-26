@@ -61,23 +61,22 @@
 
       <i.secondary-text>arrow_forward_ios
 
-    <div.actions>
-      $case state
-        $of TestStateUnpublished
-          <form method=post action=@{DataR $ TestPublishR eid} enctype=#{enctype}>
-            ^{widget}
-            <nav>
-              <button.responsive.fill type=submit>
-                <i>publish
-                <span>_{MsgPublish}
-                
-        $of TestStatePublished
-          <form method=post action=@{DataR $ TestUnpublishR eid} enctype=#{enctype}>
-            ^{widget}
-            <nav>
-              <button.responsive.fill>
-                <i>unpublished
-                <span>_{MsgUnpublish}
+    $case state
+      $of TestStateUnpublished
+        <form method=post action=@{DataR $ TestPublishR eid} enctype=#{enctype}>
+          ^{widget}
+          <nav.center-align>
+            <button.fill type=submit>
+              <i>publish
+              <span>_{MsgPublish}
+
+      $of TestStatePublished
+        <form method=post action=@{DataR $ TestUnpublishR eid} enctype=#{enctype}>
+          ^{widget}
+          <nav.center-align>
+            <button.fill type=submit>
+              <i>unpublished
+              <span>_{MsgUnpublish}
 
 ^{widgetSnackbar msgs}
 

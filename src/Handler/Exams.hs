@@ -26,12 +26,11 @@ import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Database.Esqueleto.Experimental
-    ( SqlQuery, SqlExpr, selectOne, from, table, where_, val, select, orderBy
+    ( SqlQuery, SqlExpr, Value (Value, unValue), selectOne, from, table
     , (^.), (==.), (:&) ((:&)), (%), (++.)
-    , innerJoin, sum_, desc, on, in_, like, subSelectList, selectQuery, upper_
-    , Value (Value, unValue)
-    , groupBy, coalesceDefault, just, asc, subSelectMaybe, min_, max_, leftJoin
-    , countRows
+    , where_, val, select, orderBy, innerJoin, sum_, desc, on, in_, like
+    , subSelectList, selectQuery, upper_, groupBy, coalesceDefault, just
+    , asc, subSelectMaybe, min_, max_, leftJoin, countRows
     )
 import Database.Persist (Entity (Entity), entityVal, insert)
 import Database.Persist.Sql (toSqlKey, fromSqlKey)
@@ -40,8 +39,8 @@ import Foundation
   ( App, Handler, Form, widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
     ( DataR, ExamsR, ExamR, PhotoPlaceholderR, ExamsAfterLoginR
-    , ExamsSearchR, AuthR, HomeR, ExamEnrollFormR
-    , CandidateEnrollFormR, StepR, StaticR, ExamsLoginR
+    , ExamsSearchR, AuthR, HomeR, ExamEnrollFormR, StepR
+    , CandidateEnrollFormR, StaticR, ExamsLoginR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
@@ -125,7 +124,9 @@ postExamEnrollFormR uid cid tid = do
                   return $ min_ $ y ^. StemOrdinal )
               return x
           case stem of
-            Just (Entity qid _) -> redirect $ StepR tid eid qid
+            Just (Entity qid _) -> do
+                setUltDest $ ExamsR uid
+                redirect $ StepR tid eid qid
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest

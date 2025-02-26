@@ -54,7 +54,7 @@ import Foundation
     , MsgDifficultyMedium, MsgAuthenticate, MsgYouNeedToLoginForExam
     , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto
     , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
-    , MsgInvalidFormData
+    , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms
     )
   )
 
@@ -71,7 +71,7 @@ import Model
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
       , ExamAttempt, CandidateUser
-      )
+      ), msgSuccess
     )
 
 import Settings ( widgetFile )
@@ -125,6 +125,7 @@ postTestExamEnrollmentFormR tid uid cid = do
       FormSuccess (cid',tid', attempt) -> do
           now <- liftIO getCurrentTime
           eid <- runDB $ insert (Exam tid' cid' attempt now Nothing)
+          
           stem <- runDB $ selectOne $ do
               x <- from $ table @Stem
               where_ $ x ^. StemTest ==. val tid
@@ -133,8 +134,11 @@ postTestExamEnrollmentFormR tid uid cid = do
                   where_ $ y ^. StemTest ==. x ^. StemTest
                   return $ min_ $ y ^. StemOrdinal )
               return x
+              
           case stem of
-            Just (Entity qid _) -> redirect $ StepR tid eid qid
+            Just (Entity qid _) -> do
+                setUltDest ExamTestsR
+                redirect $ StepR tid eid qid
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest
@@ -155,19 +159,19 @@ getTestExamEnrollmentFormR tid uid cid = do
     test <- (second (((+1) <$>) <$>) <$>) <$> runDB ( selectOne $ do
           (x :& (_,nq,maxScore) :& (_,nt)) <- from $ table @Test
             `leftJoin` from ( selectQuery $ do
-                                   q :& (_,maxScore) <- from $ table @Stem
-                                       `leftJoin` from ( selectQuery $ do
-                                                            o <- from $ table @Option
-                                                            groupBy (o ^. OptionStem)
-                                                            return ( o ^. OptionStem
-                                                                   , sum_ (o ^. OptionPoints) :: SqlExpr (Value (Maybe Double))
-                                                                   )
-                                                        ) `on` (\(q :& (qid,_)) -> just (q ^. StemId) ==. qid)
-                                   groupBy (q ^. StemTest)
-                                   return ( q ^. StemTest
-                                          , countRows :: SqlExpr (Value Int)
-                                          , coalesceDefault [sum_ maxScore] (val 0) :: SqlExpr (Value Double)
-                                          )
+                                  q :& (_,maxScore) <- from $ table @Stem
+                                      `leftJoin` from ( selectQuery $ do
+                                                           o <- from $ table @Option
+                                                           groupBy (o ^. OptionStem)
+                                                           return ( o ^. OptionStem
+                                                                  , sum_ (o ^. OptionPoints) :: SqlExpr (Value (Maybe Double))
+                                                                  )
+                                                       ) `on` (\(q :& (qid,_)) -> just (q ^. StemId) ==. qid)
+                                  groupBy (q ^. StemTest)
+                                  return ( q ^. StemTest
+                                         , countRows :: SqlExpr (Value Int)
+                                         , coalesceDefault [sum_ maxScore] (val 0) :: SqlExpr (Value Double)
+                                         )
                              ) `on` (\(x :& (xid,_,_)) -> just (x ^. TestId) ==. xid)
             
             `leftJoin` from ( selectQuery $ do
@@ -336,13 +340,19 @@ getSearchExamR = do
         case mq of
           Just q -> where_ $ (upper_ (x ^. TestName) `like` (%) ++. upper_ (val q) ++. (%))
             ||. (upper_ (x ^. TestCode) `like` (%) ++. upper_ (val q) ++. (%))
+            
           Nothing -> return ()
+          
         orderBy [desc (x ^. TestId)]
         return x
 
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgSearch
+        idFormQuery <- newIdent
+        idButtonBack <- newIdent
+        idInputSearch <- newIdent
+        idButtonSearch <- newIdent
         $(widgetFile "tests/search/tests")
 
 

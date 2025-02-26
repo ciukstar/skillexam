@@ -1,27 +1,29 @@
 
-<form mthod=get action=@{SearchExamR} #formQ>    
+<form mthod=get action=@{SearchExamR} ##{idFormQuery}>
 
 <header.fixed.no-padding>
 
   <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
-    <a.start.transparent.round.circle.wave href=@?{(ExamTestsR,stati)}>
+    <a.button.start.transparent.circle.wave href=@?{(ExamTestsR,stati)} role=button ##{idButtonBack}>
       <i>arrow_back    
 
     $maybe q <- mq
-      <input autofocus placeholder=_{MsgSearch} type=search form=formQ name=q value=#{q}>
+      <input type=search form=#{idFormQuery} name=q value=#{q} placeholder=_{MsgSearch} ##{idInputSearch}
+             autofocus onfocus="this.setSelectionRange(this.value.length,this.value.length);">
     $nothing
-      <input autofocus placeholder=_{MsgSearch} type=search form=formQ name=q>
+      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q ##{idInputSearch}>
     
-    <button.end.transparent.round.circle.wave type=submit form=formQ>
+    <button.end.transparent.circle.wave type=submit form=#{idFormQuery} ##{idButtonSearch}>
       <i>search
 
 
 <main.responsive.no-padding>
 
   $if null tests
-    <div.no-data-banner>
+    <figure.center-align.margin>
       <i>folder_open
-      <div>_{MsgNoPublishedExamsYet}.
+      <figcaption>
+        _{MsgNoExamsWereFoundForSearchTerms}.
       
   $else
     $forall Entity eid (Test code name _ _ _ _) <- tests
@@ -31,10 +33,10 @@
             <div.content.max>
               <div.headline.large-text>
                 #{name}
-              <div.supporting-text.small-text>
+              <div.supporting-text.secondary-text>
                 #{code}
 
-            <i>arrow_forward_ios
+            <i.secondary-text>arrow_forward_ios
 
           <hr>
 
@@ -44,10 +46,10 @@
             <div.content.max>
               <div.headline.large-text>
                 #{name}
-              <div.supporting-text.small-text>
+              <div.supporting-text.secondary-text>
                 #{code}
 
-            <i>arrow_forward_ios
+            <i.secondary-text>arrow_forward_ios
 
           <hr>
 

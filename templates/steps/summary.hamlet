@@ -20,9 +20,11 @@
             <th scope=row>_{MsgStatus}
             <td>
               $if score >= pass
-                _{MsgPass}
+                <span.large-text.bold>_{MsgPass}
+                <i>sentiment_satisfied
               $else
-                _{MsgFail}
+                <span.large-text.bold>_{MsgFail}
+                <i>sentiment_dissatisfied
           <tr.wave>
             <th scope=row>_{MsgScore}
             <td>#{printf "%.0f" score}

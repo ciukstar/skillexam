@@ -17,6 +17,18 @@
           <h2.small>#{name}
           <p>#{code}
 
+
+      <nav.right-align>
+        $maybe Entity uid _ <- user
+          <a.button href=@{TestExamUserEnrollmentR tid uid} role=button>
+            <i>add
+            <span>_{MsgTakeThisExam}
+            
+        $nothing
+          <a.button href=@{TestExamEnrollmentR tid} role=button>
+            <i>add
+            <span>_{MsgTakeThisExam}
+            
       <nav>
         $maybe Entity _uid _ <- user
           <form method=get action=#>

@@ -1,3 +1,5 @@
+NoExamsWereFoundForSearchTerms: Экзаменов, соответствующих всем вашим критериям поиска, не обнаружено
+ExamSuccessfullyCancelled: Экзамен был успешно отменен
 LoginRequired: Требуется вход
 YouNeedToLoginForExam: Для регистрации на экзамен вам необходимо войти в систему
 TestYourSkillsWith: Проверьте свои навыки с

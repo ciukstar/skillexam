@@ -7,7 +7,7 @@
     <h1.title.max>
       _{MsgAnswerOptions}
 
-<main.responsive>
+<main.responsive.no-padding>
 
   $forall Entity oid (Option _ ordinal text key points) <- options
     <a.row.padding.wave href=@{DataR $ OptionR eid qid oid} :Just oid == moid:.active>

@@ -3,13 +3,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Handler.Options
-  ( getOptionsR
+module Handler.Data.Options
+  ( getOptionsR, postOptionsR
+  , getOptionR, postOptionR
   , getOptionCreateFormR
-  , postOptionsR
-  , getOptionR
   , getOptionEditFormR
-  , postOptionR
   , postOptionsDeleteR
   ) where
 
@@ -29,14 +27,16 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Foundation
     ( Handler, Form, widgetSnackbar
     , Route (DataR)
-    , DataR (StemR, OptionCreateFormR, OptionsR, OptionR, OptionEditFormR, OptionsDeleteR)
+    , DataR
+      ( StemR, OptionCreateFormR, OptionsR, OptionR, OptionEditFormR
+      , OptionsDeleteR
+      )
     , AppMessage
       ( MsgOptions, MsgBack, MsgAnswerOptions, MsgAdd, MsgOrdinal, MsgOption
       , MsgCancel, MsgSave, MsgText, MsgCorrectAnswer, MsgAnswerPoints
       , MsgAnswerOption, MsgKey, MsgDistractor, MsgEdit, MsgDelete
       , MsgType, MsgQuestion, MsgExam, MsgSkill, MsgDuplicateValue
-      , MsgInvalidData, MsgClose
-      , MsgRecordDeleted, MsgRecordEdited, MsgNewRecordAdded
+      , MsgInvalidData, MsgRecordDeleted, MsgRecordEdited, MsgNewRecordAdded
       , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
       )
     )
@@ -44,23 +44,30 @@ import Foundation
 import Material3 (md3widget, md3textareaWidget, md3switchWidget)
 
 import Model
-    ( TestId, StemId, Option (Option, optionOrdinal, optionText, optionKey, optionPoints)
+    ( msgSuccess, msgError
+    , TestId, Test
+    , StemId, Stem
+    , Skill
+    , OptionId, Option (Option, optionOrdinal, optionText, optionKey, optionPoints)
     , EntityField
       ( OptionStem, OptionOrdinal, OptionId, StemId, StemTest, StemSkill
       , SkillId, TestId, StemText, TestName, SkillName
       )
-    , OptionId, Stem, Test, Skill, msgSuccess, msgError
     )
 
 import Settings (widgetFile)
 
 import Text.Hamlet (Html)
 
-import Yesod.Core (Yesod(defaultLayout), SomeMessage (SomeMessage), preEscapedToMarkup, newIdent)
+import Yesod.Core
+    ( Yesod(defaultLayout), SomeMessage (SomeMessage), preEscapedToMarkup
+    , newIdent
+    )
 import Yesod.Core.Handler (redirect, getMessages, addMessageI)
 import Yesod.Core.Widget (setTitleI, whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (textField, textareaField, doubleField, checkBoxField, intField, unTextarea)
+import Yesod.Form.Fields
+    ( textField, textareaField, doubleField, checkBoxField, intField, unTextarea )
 import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, checkM)
 import Yesod.Form.Types
     ( FormResult (FormSuccess)
@@ -97,11 +104,12 @@ postOptionR eid qid oid = do
           runDB $ replace oid o
           addMessageI msgSuccess MsgRecordEdited
           redirect $ DataR $ OptionR eid qid oid
-      _ -> defaultLayout $ do
+          
+      _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgAnswerOption
-          $(widgetFile "options/edit")
+          $(widgetFile "data/options/edit")
 
 
 getOptionEditFormR :: TestId -> StemId -> OptionId -> Handler Html
@@ -114,7 +122,7 @@ getOptionEditFormR eid qid oid = do
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgAnswerOption
-        $(widgetFile "options/edit")
+        $(widgetFile "data/options/edit")
 
 
 getOptionR :: TestId -> StemId -> OptionId -> Handler Html
@@ -134,7 +142,7 @@ getOptionR eid qid oid = do
         setTitleI MsgAnswerOption
         idOverlay <- newIdent
         idDialogDelete <- newIdent
-        $(widgetFile "options/option") 
+        $(widgetFile "data/options/option") 
 
 
 formOptionDelete :: Form ()
@@ -150,11 +158,11 @@ postOptionsR eid qid = do
           addMessageI msgSuccess MsgNewRecordAdded
           redirect $ DataR $ OptionsR eid qid
           
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           addMessageI msgError MsgInvalidData
           msgs <- getMessages
           setTitleI MsgOption
-          $(widgetFile "options/create")
+          $(widgetFile "data/options/create")
 
 
 getOptionsR :: TestId -> StemId -> Handler Html
@@ -168,7 +176,7 @@ getOptionsR eid qid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgOptions
-        $(widgetFile "options/options") 
+        $(widgetFile "data/options/options") 
 
 
 getOptionCreateFormR :: TestId -> StemId -> Handler Html
@@ -177,7 +185,7 @@ getOptionCreateFormR eid qid = do
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgOption
-        $(widgetFile "options/create")
+        $(widgetFile "data/options/create")
 
 
 formOption :: TestId -> StemId -> Maybe (Entity Option) -> Form Option
@@ -230,6 +238,7 @@ formOption _ qid option extra = do
                 Nothing -> return ()
                 Just (Entity oid _) -> where_ $ not_ $ x ^. OptionId ==. val oid
               return x
+              
           return $ case mo of
             Nothing -> Right ordinal
-            _ -> Left MsgDuplicateValue
+            Just _  -> Left MsgDuplicateValue
