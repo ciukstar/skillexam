@@ -97,7 +97,7 @@ import Handler.Docs (getDocsR)
 
 import Handler.Tests
     ( getSearchExamR
-    , getExamInfoR
+    , getTestExamR
     , getTestSkillsR
     , getSearchTestInfoR
     , getSearchExamSkillsR

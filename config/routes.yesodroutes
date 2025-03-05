@@ -25,7 +25,7 @@
 /tests/#TestId/exams/login                                      TestExamLoginR          GET
 
 /tests/#TestId/skills    TestSkillsR    GET
-/tests/#TestId           ExamInfoR      GET
+/tests/#TestId           TestExamR      GET
 /tests                   ExamTestsR     GET
 
 

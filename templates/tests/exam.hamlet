@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{ExamInfoR tid} role=button>
+    <a.button.circle.transparent href=@{TestExamR tid} role=button>
       <i>arrow_back
 
     <h1.title.max>
@@ -65,7 +65,7 @@
     ^{fw}
 
     <nav.right-align>
-      <a.button.transparent.link href=@{ExamInfoR tid} role=button>
+      <a.button.transparent.link href=@{TestExamR tid} role=button>
         _{MsgCancel}
         
       <button.primary type=submit>

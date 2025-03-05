@@ -29,7 +29,7 @@
             <span>_{MsgTakeThisExam}
 
     <div.tabs>
-      <a href=@{ExamInfoR tid} :Just (ExamInfoR tid) == curr:.active>
+      <a href=@{TestExamR tid} :Just (TestExamR tid) == curr:.active>
         _{MsgDetails}
         
       <a href=@{TestSkillsR tid} :Just (TestSkillsR tid) == curr:.active>
@@ -38,3 +38,6 @@
     <div.page.no-padding.active>
               
       ^{tab}
+
+
+^{widgetSnackbar msgs}

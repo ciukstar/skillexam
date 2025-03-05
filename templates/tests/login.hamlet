@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{ExamInfoR tid} role=button title=_{MsgBack}>
+    <a.button.circle.transparent href=@{TestExamR tid} role=button title=_{MsgBack}>
       <i>arrow_back
 
     <h1.title.max>

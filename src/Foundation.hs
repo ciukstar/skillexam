@@ -194,7 +194,7 @@ instance Yesod App where
     isAuthorized ExamsLoginR _ = return Authorized
 
     isAuthorized SearchExamR _ = return Authorized
-    isAuthorized (ExamInfoR _) _ = return Authorized
+    isAuthorized (TestExamR _) _ = return Authorized
     isAuthorized (TestSkillsR _) _ = return Authorized
     isAuthorized ExamTestsR _ = return Authorized
     

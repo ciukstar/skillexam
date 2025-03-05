@@ -8,7 +8,7 @@
 module Handler.Tests
   ( getExamTestsR
   , getSearchExamR
-  , getExamInfoR
+  , getTestExamR
   , getTestSkillsR
   , getSearchTestInfoR
   , getSearchExamSkillsR
@@ -39,14 +39,14 @@ import Database.Persist.Sql (fromSqlKey)
 import Foundation
   ( Handler, Form, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
-    ( SearchExamR, ExamInfoR, SearchTestInfoR, ExamTestsR, StepR
+    ( SearchExamR, TestExamR, SearchTestInfoR, ExamTestsR, StepR
     , TestSkillsR, SearchExamSkillsR, AuthR, TestExamLoginR
     , DataR, PhotoPlaceholderR, TestExamEnrollmentFormR
     , TestExamEnrollmentR, TestExamUserEnrollmentR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
-    ( MsgExams, MsgMyExams, MsgDescr, MsgPassMark, MsgNumberOfQuestions
+    ( MsgExams, MsgDescr, MsgPassMark, MsgNumberOfQuestions
     , MsgSearch, MsgExam, MsgDuration, MsgBack, MsgLogin, MsgCancel
     , MsgCode, MsgName, MsgTakeThisExam, MsgPopularity, MsgPoints
     , MsgMinutes, MsgDifficulty, MsgDifficultyLow, MsgDetails
@@ -71,7 +71,7 @@ import Model
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
       , ExamAttempt, CandidateUser
-      ), msgSuccess
+      )
     )
 
 import Settings ( widgetFile )
@@ -274,10 +274,12 @@ getTestSkillsR :: TestId -> Handler Html
 getTestSkillsR tid = do
     user <- maybeAuth
     curr <- getCurrentRoute
+    
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
         return x
+        
     skills <- runDB $ select $ distinct $ do
         x :& q <- from $ table @Skill
             `innerJoin` table @Stem `on` (\(x :& q) -> q ^. StemSkill ==. x ^. SkillId)
@@ -285,14 +287,15 @@ getTestSkillsR tid = do
         return x
 
     setUltDestCurrent
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgExam
         let tab = $(widgetFile "tests/skills")
         $(widgetFile "tests/test")
 
 
-getExamInfoR :: TestId -> Handler Html
-getExamInfoR tid = do
+getTestExamR :: TestId -> Handler Html
+getTestExamR tid = do
     user <- maybeAuth
     curr <- getCurrentRoute
     test <- runDB $ selectOne $ do
@@ -325,6 +328,7 @@ getExamInfoR tid = do
         return (n,t) )
 
     setUltDestCurrent
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgExam
         let tab = $(widgetFile "tests/details")
@@ -365,9 +369,10 @@ getExamTestsR = do
         orderBy [desc (x ^. TestId)]
         return x
 
+    setUltDestCurrent
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgMyExams
+        setTitleI MsgExams
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
         $(widgetFile "tests/tests")
