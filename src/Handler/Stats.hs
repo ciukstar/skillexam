@@ -29,19 +29,19 @@ import Database.Esqueleto.Experimental
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( widgetMainMenu, widgetAccount, Handler
+    ( Handler, widgetMainMenu, widgetAccount, widgetSnackbar
     , Route (StatsR, DataR, PhotoPlaceholderR, StaticR)
     , StatsR
-      ( TopSkilledR, SkilledR, TopExamR, TopExamsR, TestSuccessRateR, ExamSuccessRatesR
+      ( TopSkilledR, SkilledR, TopExamR, TopExamsR, TestSuccessRateR
+      , ExamSuccessRatesR
       )
     , DataR (CandidatePhotoR)
     , AppMessage
       ( MsgTopSkilled, MsgSkills, MsgCancel, MsgSelect
       , MsgPhoto, MsgRating, MsgCandidate, MsgTopExams
       , MsgNumberOfExaminees, MsgExam, MsgPopularity, MsgDescr
-      , MsgSuccessRate, MsgPassRate
+      , MsgSuccessRate, MsgPassRate, MsgNoExamsYet, MsgTotalCandidates
       , MsgExamSuccessRate, MsgPass, MsgFail, MsgPassedFailedExamNumber
-      , MsgNoExamsYet, MsgTotalCandidates
       )
     )
 
@@ -69,7 +69,7 @@ import Text.Hamlet (Html)
 
 import Yesod.Core
     ( Yesod(defaultLayout), lookupGetParams, setUltDestCurrent
-    , RenderMessage (renderMessage), addScript, getYesod, languages, newIdent
+    , RenderMessage (renderMessage), addScript, getYesod, languages, newIdent, getMessages
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Input (runInputGet, iopt)
@@ -161,6 +161,7 @@ getExamSuccessRatesR = do
 
         ) )
 
+    msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgSuccessRate
@@ -204,7 +205,8 @@ getTopExamsR = do
 
     total <- maybe 1 unValue <$> runDB ( selectOne $ do
         from (table @Candidate) >> return (countRows :: SqlExpr (Value Double)) )
-        
+
+    msgs <- getMessages
     meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
     setUltDestCurrent
     defaultLayout $ do
@@ -296,6 +298,8 @@ getTopSkilledR = do
                , c ^. CandidateAdditionalName
                , score
                ) )
+
+    msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgTopSkilled

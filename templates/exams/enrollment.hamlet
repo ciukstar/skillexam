@@ -61,7 +61,7 @@
             $maybe attempt <- attempt
               #{attempt}
 
-  <form method=post action=@{ExamEnrollFormR uid cid tid} enctype=#{et} novalidate ##{idForm}>
+  <form method=post action=@{ExamEnrollmentFormR uid cid tid} enctype=#{et} novalidate ##{idForm}>
     ^{fw}
 
     <nav.right-align>

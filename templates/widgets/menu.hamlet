@@ -14,20 +14,20 @@
   <nav.drawer>
 
     <a href=@{HomeR} :curr == Just HomeR:.active>
-      <i>home
+      <i.no-round>home
       <span>_{MsgHome}
 
     <a href=@{TestExamsR} :curr == Just TestExamsR:.active>
-      <i>search
+      <i.no-round>search
       <span>_{MsgExamList}
 
     $maybe Entity uid _ <- user
       <a href=@{ExamsR uid} :curr == Just (ExamsR uid):.active>
-        <i>school
+        <i.no-round>school
         <span>_{MsgMyExams}
     $nothing
       <a href=@{ExamsLoginR}>
-        <i>school
+        <i.no-round>school
         <span>_{MsgMyExams}
        
 
@@ -36,15 +36,15 @@
       _{MsgAnalytics}
       
     <a href=@{StatsR TopSkilledR} :curr == Just (StatsR TopSkilledR):.active>
-      <i>award_star
+      <i.no-round>award_star
       <span>_{MsgTopSkilled}
       
     <a href=@{StatsR TopExamsR} :curr == Just (StatsR TopExamsR):.active>
-      <i>trending_up
+      <i.no-round>trending_up
       <span>_{MsgTopExams}
       
     <a href=@{StatsR ExamSuccessRatesR} :curr == Just (StatsR ExamSuccessRatesR):.active>
-      <i>multiline_chart
+      <i.no-round>multiline_chart
       <span>_{MsgSuccessRate}
       
     <hr.top-margin>
@@ -52,19 +52,19 @@
       _{MsgData}
       
     <a href=@{DataR CandidatesR} :curr == Just (DataR CandidatesR):.active>
-      <i>group
+      <i.no-round>group
       <span>_{MsgCandidates}
       
     <a href=@{DataR TestsR} :curr == Just (DataR TestsR):.active>
-      <i>playlist_add_check
+      <i.no-round>playlist_add_check
       <span>_{MsgTests}
       
     <a href=@{DataR SkillsR} :curr == Just (DataR SkillsR):.active>
-      <i>engineering
+      <i.no-round>engineering
       <span>_{MsgSkills}
       
     <a href=@{DataR UsersR} :curr == Just (DataR UsersR):.active>
-      <i>settings_account_box
+      <i.no-round>settings_account_box
       <span>_{MsgUsers}
       
     <hr.top-margin>
@@ -72,11 +72,11 @@
       _{MsgResources}
 
     <a href=@{DocsR} :curr == Just (DocsR):.active>
-      <i>quick_reference
+      <i.no-round>quick_reference
       <span>_{MsgDocs}
 
     <a href="https://github.com/ciukstar/skillexam" target=_blank>
-      <i>
+      <i.no-round>
         <img src=@{StaticR img_github_mark_white_svg}>
       <span>_{MsgSourceCode}
     

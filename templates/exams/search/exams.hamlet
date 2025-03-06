@@ -1,5 +1,5 @@
 
-<form method=get action=@{ExamsSearchR uid} ##{idFormQuery}>
+<form method=get action=@{SearchExamsR uid} ##{idFormQuery}>
 
 <header.fixed.no-padding>
 
@@ -27,4 +27,90 @@
         _{MsgNoExamsWereFoundForSearchTerms}.
         
   $else
-    ^{list}
+    <form method=get #formGetMyExam>
+
+    $forall (Entity eid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- exams
+      $maybe q <- query
+        <a.row.padding.wave href=@?{(SearchExamR uid eid,[("q",q)])}>
+
+          $if score >= pass
+            <i.extra.circle.small-padding.green4>
+              thumb_up
+          $else
+            <i.extra.circle.small-padding.red4>
+              thumb_down
+
+          <div.max>
+            <div.headline.large-text>
+              #{name}
+
+            <div.supporting-text.secondary-text.small-text>
+              <span.upper>
+                $if score >= pass
+                  _{MsgPass}
+                $else
+                  _{MsgFail}
+              \ #
+              <span.lower>(_{MsgAttempt}: #{attempt})
+
+            $maybe end <- end
+              <div.supporting-text.secondary-text.small-text>
+                $with dt <- show end
+                  <time.full-datetime datetime=#{dt}>
+                    #{dt}
+
+          <i.secondary-text>arrow_forward_ios
+          
+      $nothing
+        <a.row.padding.wave href=@{SearchExamR uid eid}>
+
+          $if score >= pass
+            <i.extra.circle.small-padding.green4>
+              thumb_up
+          $else
+            <i.extra.circle.small-padding.red4>
+              thumb_down
+
+          <div.max>
+            <div.headline.large-text>
+              #{name}
+
+            <div.supporting-text.secondary-text.small-text>
+              <span.upper>
+                $if score >= pass
+                  _{MsgPass}
+                $else
+                  _{MsgFail}
+              \ #
+              <span.lower>(_{MsgAttempt}: #{attempt})
+
+            $maybe end <- end
+              <div.supporting-text.secondary-text.small-text>
+                $with dt <- show end
+                  <time.full-datetime datetime=#{dt}>
+                    #{dt}
+
+          <i.secondary-text>arrow_forward_ios
+
+      <hr>
+
+  <button.extended.large.elevate data-ui=##{idDialogTests} ##{idButtonTakeNewExam}>
+
+    <i>add
+    <span>_{MsgTakeNewExam}
+
+
+<dialog.max ##{idDialogTests}>
+  <div.row>
+    <h6.large-text.bold.max>
+      _{MsgSelectATestForTheExam}
+    <button.circle.transparent type=button data-ui=##{idDialogTests} title=_{MsgClose}>
+      <i.secondary-text>close
+
+  <form method=post action=@{ExamsR uid} enctype=#{et}>
+    ^{fw}
+    <nav.right-align>
+      <button.transparent type=button data-ui=##{idDialogTests}>
+        _{MsgCancel}
+      <button type=submit>
+        _{MsgSelect}

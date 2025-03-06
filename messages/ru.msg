@@ -1,3 +1,5 @@
+
+UseCaseDiagram: Диаграмма вариантов использования
 NoExamsWereFoundForSearchTerms: Экзаменов, соответствующих всем вашим критериям поиска, не обнаружено
 ExamSuccessfullyCancelled: Экзамен был успешно отменен
 LoginRequired: Требуется вход

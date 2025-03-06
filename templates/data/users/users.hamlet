@@ -18,13 +18,13 @@
       <img.circle src=@{DataR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
         
       <div.content.max>
-        <h6.headline.large-text>
+        <div.headline.large-text>
           $maybe name <- uname
             #{name}
           $nothing
             #{email}
    
-        <div.supporting-text.small-text>
+        <div.supporting-text.secondary-text>
           $if super
             <span.upper>_{MsgSuperuser}
           $elseif admin
@@ -32,7 +32,7 @@
           $else
             <span.lower>_{MsgUser}
         
-      <i>arrow_forward_ios
+      <i.secondary-text>arrow_forward_ios
 
     <hr>
 

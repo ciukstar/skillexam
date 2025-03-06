@@ -9,7 +9,7 @@
 
 <main.responsive>
 
-  <form method=post action=@{CandidateEnrollFormR uid tid} enctype=#{enctype} novalidate>
+  <form method=post action=@{ExamUserEnrollmentR uid tid} enctype=#{enctype} novalidate>
     ^{widget}
     <nav.right-align>
       <a.button.transparent href=@{ExamsR uid} role=button>

@@ -32,6 +32,13 @@
     $nothing
       #{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr ExamsLoginR))}
     
+
+  <figure>
+    <img src=@{StaticR img_SkillExam_UCD_svg} loading=lazy alt=_{MsgUseCaseDiagram}>
+    <figcaption>
+      _{MsgUseCaseDiagram}
+
+      
   <h2>_{MsgBasicEntities}
 
   <h3>_{MsgSkill}
@@ -74,6 +81,7 @@
   <h3>_{MsgAnswer}
   <p>_{MsgDoc026}
 
-  <h2>_{MsgDiagramERD}
-  <p>
-    <img src=@{StaticR img_SkillExam_ERD_svg} alt=_{MsgDiagramERD}>
+  <figure>
+    <img src=@{StaticR img_SkillExam_ERD_svg} loading=lazy alt=_{MsgDiagramERD}>
+    <figcaption>
+      _{MsgDiagramERD}

@@ -2,9 +2,11 @@
 main
 
     a.row
-        .content
-            display: inline-grid
-        .headline
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
+    
+        div.max
+            min-width: 0
+            
+            div.headline, div.supporting-text
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis

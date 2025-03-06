@@ -38,3 +38,6 @@
         <i.secondary-text>arrow_forward_ios
 
       <hr>
+
+
+^{widgetSnackbar msgs}

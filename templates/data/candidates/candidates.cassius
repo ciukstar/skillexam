@@ -1,0 +1,12 @@
+
+main
+
+    a.row
+    
+        div.max
+            min-width: 0
+            
+            div.headline, div.supproting-text
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis

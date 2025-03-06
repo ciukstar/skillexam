@@ -5,19 +5,22 @@
 /terminate/#TestId/#ExamId        TerminateR     POST
 /steps/#TestId/#ExamId/#StemId    StepR          GET POST
 
-/users/#UserId/candidates/#CandidateId/tests/#TestId/enrollment ExamEnrollFormR      GET POST
-/users/#UserId/tests/#TestId/enrollment                         CandidateEnrollFormR GET
-/users/#UserId/search/exams                                     ExamsSearchR         GET
-/users/#UserId/exams/#ExamId                                    ExamR                GET
-/users/#UserId/exams                                            ExamsR               GET POST
-/exams/login/hook                                               ExamsAfterLoginR     GET
-/exams/login                                                    ExamsLoginR          GET
+
+/users/#UserId/search/exams/#ExamId SearchExamR  GET
+/users/#UserId/search/exams         SearchExamsR GET
+
+/users/#UserId/candidates/#CandidateId/tests/#TestId/enrollment ExamEnrollmentFormR GET POST
+/users/#UserId/tests/#TestId/enrollment                         ExamUserEnrollmentR GET
+/users/#UserId/exams/#ExamId                                    ExamR               GET
+/users/#UserId/exams                                            ExamsR              GET POST
+/exams/login/hook                                               ExamsAfterLoginR    GET
+/exams/login                                                    ExamsLoginR         GET
 
 
 
 /search/tests/#TestId/skills SearchTestExamSkillsR GET
 /search/tests/#TestId        SearchTestExamR       GET
-/search                      SearchTestExamsR      GET
+/search/tests                SearchTestExamsR      GET
 
 /tests/#TestId/users/#UserId/candidates/#CandidateId/enrollment TestExamEnrollmentFormR GET POST
 /tests/#TestId/users/#UserId/enrollment                         TestExamUserEnrollmentR GET

@@ -6,14 +6,14 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Exams
-  ( getExamsR
+  ( getExamsR, postExamsR
   , getExamR
-  , getExamsSearchR
   , getExamsLoginR
   , getExamsAfterLoginR
-  , getExamEnrollFormR, postExamEnrollFormR
-  , postExamsR
-  , getCandidateEnrollFormR
+  , getExamEnrollmentFormR, postExamEnrollmentFormR
+  , getExamUserEnrollmentR
+  , getSearchExamsR
+  , getSearchExamR
   ) where
 
 
@@ -21,7 +21,7 @@ import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(bimap, second))
 import Data.Maybe (fromMaybe)
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
@@ -33,22 +33,21 @@ import Database.Esqueleto.Experimental
     , asc, subSelectMaybe, min_, max_, leftJoin, countRows
     )
 import Database.Persist (Entity (Entity), entityVal, insert)
-import Database.Persist.Sql (toSqlKey, fromSqlKey)
 
 import Foundation
   ( App, Handler, Form, widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
     ( DataR, ExamsR, ExamR, PhotoPlaceholderR, ExamsAfterLoginR
-    , ExamsSearchR, AuthR, HomeR, ExamEnrollFormR, StepR
-    , CandidateEnrollFormR, StaticR, ExamsLoginR
+    , SearchExamsR, AuthR, HomeR, ExamEnrollmentFormR, StepR
+    , ExamUserEnrollmentR, StaticR, ExamsLoginR, SearchExamR
     )
   , DataR (CandidatePhotoR)
   , AppMessage
     ( MsgTakeNewExam, MsgMyExams, MsgNoExams, MsgSelect, MsgTests, MsgClose
     , MsgLogin, MsgPhoto, MsgAttempt, MsgExam, MsgBack, MsgTakePhoto
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
-    , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch
-    , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment, MsgCancel
+    , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgCancel
+    , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment
     , MsgStartExam, MsgSelectATestForTheExam, MsgInvalidFormData, MsgBirthday
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
@@ -89,14 +88,14 @@ import Yesod.Auth (Route(LoginR), YesodAuth (maybeAuthId))
 import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, getMessages, whamlet, redirect
     , SomeMessage (SomeMessage), MonadHandler (liftHandler), ToWidget (toWidget)
-    , addMessageI, FileInfo, setUltDest
+    , addMessageI, FileInfo, setUltDest, YesodRequest (reqGetParams), getRequest
     )
 import Yesod.Core.Handler
     ( HandlerFor, setUltDestCurrent, getUrlRender, newIdent
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
-    ( searchField, intField, textField, urlField, optionsPairs, fileField
+    ( searchField, textField, urlField, optionsPairs, fileField
     , dayField
     )
 import Yesod.Form.Functions (generateFormPost, mreq, runFormPost, mopt)
@@ -107,8 +106,8 @@ import Yesod.Form.Types
 import Yesod.Persist.Core (YesodPersist(runDB))
 
 
-postExamEnrollFormR :: UserId -> CandidateId -> TestId -> Handler Html
-postExamEnrollFormR uid cid tid = do
+postExamEnrollmentFormR :: UserId -> CandidateId -> TestId -> Handler Html
+postExamEnrollmentFormR uid cid tid = do
     
     ((fr,_),_) <- runFormPost $ formEnrollment cid tid
     case fr of
@@ -130,15 +129,15 @@ postExamEnrollFormR uid cid tid = do
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest
-                redirect $ ExamEnrollFormR uid cid tid
+                redirect $ ExamEnrollmentFormR uid cid tid
       
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
-          redirect $ ExamEnrollFormR uid cid tid
+          redirect $ ExamEnrollmentFormR uid cid tid
 
 
-getExamEnrollFormR :: UserId -> CandidateId -> TestId -> Handler Html
-getExamEnrollFormR uid cid tid = do
+getExamEnrollmentFormR :: UserId -> CandidateId -> TestId -> Handler Html
+getExamEnrollmentFormR uid cid tid = do
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
@@ -194,6 +193,44 @@ formEnrollment cid tid extra = do
     return (pure (cid,tid,attempt), [whamlet|^{extra}|])
 
 
+getSearchExamR :: UserId -> ExamId -> Handler Html
+getSearchExamR uid eid = do
+    stati <- reqGetParams <$> getRequest
+    
+    exam <- runDB $ selectOne $ do
+        (x :& c :& t) <- from $ table @Exam
+            `innerJoin` table @Candidate `on` (\(x :& c) -> x ^. ExamCandidate ==. c ^. CandidateId)
+            `innerJoin` table @Test `on` (\(x :& _ :& e) -> x ^. ExamTest ==. e ^. TestId)
+        where_ $ x ^. ExamId ==. val eid
+        return (x,c,t)
+
+    total <- fromMaybe 0 . (unValue =<<) <$> case exam of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
+          x :& q <- from $ table @Option
+             `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
+          where_ $ q ^. StemTest ==. val tid
+          return $ sum_ $ x ^. OptionPoints
+      Nothing -> return $ pure $ Value $ pure (0 :: Double)
+
+    score <- fromMaybe 0 . (unValue =<<) <$> case exam of
+      Just (_,_,Entity tid _) -> runDB $ selectOne $ do
+          x :& q <- from $ table @Option
+             `innerJoin` table @Stem `on` (\(x :& q) -> x ^. OptionStem ==. q ^. StemId)
+          where_ $ q ^. StemTest ==. val tid
+          where_ $ x ^. OptionId `in_` subSelectList
+             ( from $ selectQuery $ do
+                   y <- from $ table @Answer
+                   where_ $ y ^. AnswerExam ==. val eid
+                   return $ y ^. AnswerOption
+             )
+          return $ sum_ $ x ^. OptionPoints
+      Nothing -> return $ pure $ Value $ pure (0 :: Double)
+
+    defaultLayout $ do
+        setTitleI MsgExam
+        $(widgetFile "exams/search/exam")
+
+
 getExamsAfterLoginR :: Handler Html
 getExamsAfterLoginR = do
     uid <- maybeAuthId
@@ -213,9 +250,8 @@ getExamsLoginR = do
         $(widgetFile "exams/login")
 
 
-getExamsSearchR :: UserId -> HandlerFor App Html
-getExamsSearchR uid = do
-    mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
+getSearchExamsR :: UserId -> HandlerFor App Html
+getSearchExamsR uid = do
     query <- runInputGet $ iopt (searchField True) "q"
 
     candidate <- runDB $ selectOne $ do
@@ -237,7 +273,6 @@ getExamsSearchR uid = do
         idButtonSearch <- newIdent
         idButtonTakeNewExam <- newIdent
         idDialogTests <- newIdent
-        let list = $(widgetFile "exams/list")
         $(widgetFile "exams/search/exams")
 
 
@@ -278,8 +313,8 @@ getExamR uid eid = do
         $(widgetFile "exams/exam")
 
 
-getCandidateEnrollFormR :: UserId -> TestId -> Handler Html
-getCandidateEnrollFormR uid tid = do
+getExamUserEnrollmentR :: UserId -> TestId -> Handler Html
+getExamUserEnrollmentR uid tid = do
     (widget,enctype) <- generateFormPost $ formCandidate uid Nothing
     defaultLayout $ do
         setTitleI MsgCandidate
@@ -335,7 +370,6 @@ formCandidate uid candidate extra = do
 
 postExamsR :: UserId -> Handler Html
 postExamsR uid = do
-    mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
@@ -348,8 +382,8 @@ postExamsR uid = do
     case fr of
       FormSuccess tid -> do
           case candidate of
-            Just (Entity cid _) -> redirect $ ExamEnrollFormR uid cid tid
-            Nothing -> redirect $ CandidateEnrollFormR uid tid
+            Just (Entity cid _) -> redirect $ ExamEnrollmentFormR uid cid tid
+            Nothing -> redirect $ ExamUserEnrollmentR uid tid
               
       _otherwise -> do
           exams <- case candidate of
@@ -368,7 +402,6 @@ postExamsR uid = do
 
 getExamsR :: UserId -> HandlerFor App Html
 getExamsR uid = do
-    mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
     
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate

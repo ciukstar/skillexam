@@ -185,9 +185,11 @@ instance Yesod App where
     isAuthorized SummaryR {} _ = return Authorized
 
     
-    isAuthorized r@(ExamEnrollFormR uid _ _) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(CandidateEnrollFormR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
-    isAuthorized r@(ExamsSearchR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(SearchExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(SearchExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
+    
+    isAuthorized r@(ExamEnrollmentFormR uid _ _) _ = setUltDest r >> isAuthenticatedSelf uid
+    isAuthorized r@(ExamUserEnrollmentR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(ExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized r@(ExamsR uid) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized ExamsAfterLoginR _ = return Authorized
@@ -209,12 +211,13 @@ instance Yesod App where
     
     isAuthorized TerminateR {} _ = return Authorized
     
-    isAuthorized (StatsR TopSkilledR) _ = return Authorized
-    isAuthorized (StatsR SkilledR {}) _ = return Authorized
-    isAuthorized (StatsR TopExamsR) _ = return Authorized
-    isAuthorized (StatsR (TopExamR _)) _ = return Authorized
-    isAuthorized (StatsR ExamSuccessRatesR) _ = return Authorized
-    isAuthorized (StatsR (TestSuccessRateR _)) _ = return Authorized
+    isAuthorized r@(StatsR TopSkilledR) _ = setUltDest r >> isAdmin
+    isAuthorized (StatsR SkilledR {}) _ = isAdmin
+    isAuthorized r@(StatsR TopExamsR) _ = setUltDest r >> isAdmin
+    isAuthorized (StatsR (TopExamR _)) _ = isAdmin
+    isAuthorized r@(StatsR ExamSuccessRatesR) _ = setUltDest r >> isAdmin
+    isAuthorized (StatsR (TestSuccessRateR _)) _ = isAdmin
+    
     isAuthorized (RemainingTimeR _) _ = return Authorized
 
     isAuthorized (DataR SkillCreateFormR) _ = isAdmin

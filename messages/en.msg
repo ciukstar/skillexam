@@ -1,3 +1,5 @@
+
+UseCaseDiagram: Use Case Diagram
 NoExamsWereFoundForSearchTerms: No exams were found that matched all of your search terms
 ExamSuccessfullyCancelled: The exam was successfully cancelled
 LoginRequired: Login required

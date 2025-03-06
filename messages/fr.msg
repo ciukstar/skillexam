@@ -1,3 +1,5 @@
+
+UseCaseDiagram: Diagramme de cas d'utilisation
 NoExamsWereFoundForSearchTerms: Aucun examen correspondant à tous vos termes de recherche n'a été trouvé
 ExamSuccessfullyCancelled: L'examen a été annulé avec succès
 LoginRequired: Connexion requise

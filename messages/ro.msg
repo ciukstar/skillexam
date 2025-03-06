@@ -1,3 +1,4 @@
+UseCaseDiagram: Diagrama cazurilor de utilizare
 NoExamsWereFoundForSearchTerms: Nu au fost găsite examene care să corespundă tuturor termenilor dvs. de căutare
 ExamSuccessfullyCancelled: Examenul a fost anulat cu succes
 LoginRequired: Autentificare necesară
