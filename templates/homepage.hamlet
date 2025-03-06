@@ -21,7 +21,7 @@
     _{MsgTestYourSkillsWith} _{MsgAppName}.
 
   <nav.center-align.middle-align.vertical.large-space>
-    <a.button.fill href=@{ExamTestsR} role=button>
+    <a.button.fill href=@{TestExamsR} role=button>
       _{MsgAvailableTests}
       <div.badge.primary.none>#{tests}
 

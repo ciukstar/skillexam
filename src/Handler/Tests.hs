@@ -6,12 +6,12 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Tests
-  ( getExamTestsR
-  , getSearchExamR
+  ( getTestExamsR
+  , getSearchTestExamsR
   , getTestExamR
   , getTestSkillsR
-  , getSearchTestInfoR
-  , getSearchExamSkillsR
+  , getSearchTestExamR
+  , getSearchTestExamSkillsR
   , getTestExamLoginR
   
   , getTestExamEnrollmentR
@@ -22,7 +22,6 @@ module Handler.Tests
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(second))
-import Data.Text (pack)
 import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
@@ -34,13 +33,12 @@ import Database.Esqueleto.Experimental
     , groupBy, sum_, coalesceDefault, unValue
     )
 import Database.Persist (Entity (Entity), insert)
-import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
   ( Handler, Form, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
-    ( SearchExamR, TestExamR, SearchTestInfoR, ExamTestsR, StepR
-    , TestSkillsR, SearchExamSkillsR, AuthR, TestExamLoginR
+    ( SearchTestExamsR, TestExamR, SearchTestExamR, TestExamsR, StepR
+    , TestSkillsR, SearchTestExamSkillsR, AuthR, TestExamLoginR
     , DataR, PhotoPlaceholderR, TestExamEnrollmentFormR
     , TestExamEnrollmentR, TestExamUserEnrollmentR
     )
@@ -137,7 +135,7 @@ postTestExamEnrollmentFormR tid uid cid = do
               
           case stem of
             Just (Entity qid _) -> do
-                setUltDest ExamTestsR
+                setUltDest TestExamsR
                 redirect $ StepR tid eid qid
             
             Nothing -> do
@@ -212,29 +210,35 @@ getTestExamLoginR tid = do
         $(widgetFile "tests/login")
 
 
-getSearchExamSkillsR :: TestId -> Handler Html
-getSearchExamSkillsR eid = do
+getSearchTestExamSkillsR :: TestId -> Handler Html
+getSearchTestExamSkillsR eid = do
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     curr <- getCurrentRoute
+    
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val eid
         return x
+
     skills <- runDB $ select $ distinct $ do
         x :& q <- from $ table @Skill
             `innerJoin` table @Stem `on` (\(x :& q) -> q ^. StemSkill ==. x ^. SkillId)
         where_ $ q ^. StemTest ==. val eid
         return x
+
     defaultLayout $ do
         setTitleI MsgExam
         let tab = $(widgetFile "tests/skills")
         $(widgetFile "tests/search/test")
 
 
-getSearchTestInfoR :: TestId -> Handler Html
-getSearchTestInfoR tid = do
+getSearchTestExamR :: TestId -> Handler Html
+getSearchTestExamR tid = do
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     curr <- getCurrentRoute
+    
     test <- runDB $ selectOne $ do
         x <- from $ table @Test
         where_ $ x ^. TestId ==. val tid
@@ -335,8 +339,8 @@ getTestExamR tid = do
         $(widgetFile "tests/test")
 
 
-getSearchExamR :: Handler Html
-getSearchExamR = do
+getSearchTestExamsR :: Handler Html
+getSearchTestExamsR = do
     stati <- reqGetParams <$> getRequest 
     mq <- runInputGet $ iopt textField "q"
     tests <- runDB $ select $ do
@@ -360,8 +364,8 @@ getSearchExamR = do
         $(widgetFile "tests/search/tests")
 
 
-getExamTestsR :: Handler Html
-getExamTestsR = do
+getTestExamsR :: Handler Html
+getTestExamsR = do
 
     tests <- runDB $ select $ do
         x <- from $ table @Test

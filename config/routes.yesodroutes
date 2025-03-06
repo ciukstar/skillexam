@@ -15,9 +15,9 @@
 
 
 
-/search/tests/#TestId/skills SearchExamSkillsR GET
-/search/tests/#TestId        SearchTestInfoR   GET
-/search                      SearchExamR       GET
+/search/tests/#TestId/skills SearchTestExamSkillsR GET
+/search/tests/#TestId        SearchTestExamR       GET
+/search                      SearchTestExamsR      GET
 
 /tests/#TestId/users/#UserId/candidates/#CandidateId/enrollment TestExamEnrollmentFormR GET POST
 /tests/#TestId/users/#UserId/enrollment                         TestExamUserEnrollmentR GET
@@ -26,7 +26,7 @@
 
 /tests/#TestId/skills    TestSkillsR    GET
 /tests/#TestId           TestExamR      GET
-/tests                   ExamTestsR     GET
+/tests                   TestExamsR     GET
 
 
 /docs DocsR GET

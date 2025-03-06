@@ -193,19 +193,19 @@ instance Yesod App where
     isAuthorized ExamsAfterLoginR _ = return Authorized
     isAuthorized ExamsLoginR _ = return Authorized
 
-    isAuthorized SearchExamR _ = return Authorized
+    isAuthorized SearchTestExamsR _ = return Authorized
     isAuthorized (TestExamR _) _ = return Authorized
     isAuthorized (TestSkillsR _) _ = return Authorized
-    isAuthorized ExamTestsR _ = return Authorized
+    isAuthorized TestExamsR _ = return Authorized
     
     
-    isAuthorized (SearchTestInfoR _) _ = return Authorized
+    isAuthorized (SearchTestExamR _) _ = return Authorized
     
     isAuthorized r@(TestExamUserEnrollmentR _ uid) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized (TestExamEnrollmentR _) _ = return Authorized
     isAuthorized r@(TestExamEnrollmentFormR _ uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized (TestExamLoginR _) _ = return Authorized
-    isAuthorized (SearchExamSkillsR _) _ = return Authorized
+    isAuthorized (SearchTestExamSkillsR _) _ = return Authorized
     
     isAuthorized TerminateR {} _ = return Authorized
     

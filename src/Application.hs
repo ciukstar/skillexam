@@ -96,14 +96,14 @@ import Handler.Candidates
 import Handler.Docs (getDocsR)
 
 import Handler.Tests
-    ( getSearchExamR
+    ( getSearchTestExamsR
     , getTestExamR
     , getTestSkillsR
-    , getSearchTestInfoR
-    , getSearchExamSkillsR
+    , getSearchTestExamR
+    , getSearchTestExamSkillsR
     , getTestExamLoginR
 
-    , getExamTestsR
+    , getTestExamsR
     , getTestExamEnrollmentR
     , getTestExamUserEnrollmentR
     , getTestExamEnrollmentFormR, postTestExamEnrollmentFormR

@@ -1,10 +1,10 @@
 
-<form mthod=get action=@{SearchExamR} ##{idFormQuery}>
+<form mthod=get action=@{SearchTestExamsR} ##{idFormQuery}>
 
 <header.fixed.no-padding>
 
   <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
-    <a.button.start.transparent.circle.wave href=@?{(ExamTestsR,stati)} role=button ##{idButtonBack}>
+    <a.button.start.transparent.circle.wave href=@?{(TestExamsR,stati)} role=button ##{idButtonBack}>
       <i>arrow_back    
 
     $maybe q <- mq
@@ -26,32 +26,31 @@
         _{MsgNoExamsWereFoundForSearchTerms}.
       
   $else
-    $forall Entity eid (Test code name _ _ _ _) <- tests
-      $with ident <- pack $ show $ fromSqlKey eid
-        $maybe q <- mq
-          <a.row.padding.wave href=@?{(SearchTestInfoR eid,[("eid",ident),("q",q)])}>
-            <div.content.max>
-              <div.headline.large-text>
-                #{name}
-              <div.supporting-text.secondary-text>
-                #{code}
+    $forall Entity tid (Test code name _ _ _ _) <- tests
+      $maybe q <- mq
+        <a.row.padding.wave href=@?{(SearchTestExamR tid,[("q",q)])}>
+          <div.content.max>
+            <div.headline.large-text>
+              #{name}
+            <div.supporting-text.secondary-text>
+              #{code}
 
-            <i.secondary-text>arrow_forward_ios
+          <i.secondary-text>arrow_forward_ios
 
-          <hr>
+        <hr>
 
-        $nothing
-          <a.row.padding.wave href=@?{(SearchTestInfoR eid,[("eid",ident)])}>
+      $nothing
+        <a.row.padding.wave href=@{SearchTestExamR tid}>
 
-            <div.content.max>
-              <div.headline.large-text>
-                #{name}
-              <div.supporting-text.secondary-text>
-                #{code}
+          <div.content.max>
+            <div.headline.large-text>
+              #{name}
+            <div.supporting-text.secondary-text>
+              #{code}
 
-            <i.secondary-text>arrow_forward_ios
+          <i.secondary-text>arrow_forward_ios
 
-          <hr>
+        <hr>
 
 
 ^{widgetSnackbar msgs}

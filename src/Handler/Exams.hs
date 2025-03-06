@@ -21,7 +21,7 @@ import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(bimap, second))
 import Data.Maybe (fromMaybe)
-import Data.Text (unpack, Text, pack)
+import Data.Text (Text, pack)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
 
@@ -47,20 +47,20 @@ import Foundation
     ( MsgTakeNewExam, MsgMyExams, MsgNoExams, MsgSelect, MsgTests, MsgClose
     , MsgLogin, MsgPhoto, MsgAttempt, MsgExam, MsgBack, MsgTakePhoto
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
-    , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgNoExamsFoundFor
+    , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch
     , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment, MsgCancel
     , MsgStartExam, MsgSelectATestForTheExam, MsgInvalidFormData, MsgBirthday
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
-    , MsgLoginRequired
+    , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms
     )
   )
 
 import Material3 (md3radioField, md3widget)
 
 import Model
-    ( userSessKey, msgError
+    ( msgError
     , CandidateId
     , Candidate
       ( Candidate, candidateAdditionalName, candidateGivenName, candidateBday
@@ -92,7 +92,7 @@ import Yesod.Core
     , addMessageI, FileInfo, setUltDest
     )
 import Yesod.Core.Handler
-    ( HandlerFor, lookupSession, setUltDestCurrent, getUrlRender, newIdent
+    ( HandlerFor, setUltDestCurrent, getUrlRender, newIdent
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
@@ -216,21 +216,29 @@ getExamsLoginR = do
 getExamsSearchR :: UserId -> HandlerFor App Html
 getExamsSearchR uid = do
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
-    mq <- runInputGet $ iopt (searchField True) "q"
-    mcid <- (toSqlKey . read . unpack <$>) <$> lookupSession userSessKey
+    query <- runInputGet $ iopt (searchField True) "q"
 
-    tests <- case mcid of
-      Just cid -> runDB $ select $ queryScores cid mq
+    candidate <- runDB $ selectOne $ do
+        x <- from $ table @Candidate
+        where_ $ x ^. CandidateUser ==. just (val uid)
+        return x
+
+    exams <- case candidate of
+      Just (Entity cid _) -> runDB $ select $ queryScores cid query
       Nothing -> return []
           
     setUltDestCurrent
     (fw,et) <- generateFormPost formTests
     defaultLayout $ do
         setTitleI MsgSearch
+        idFormQuery <- newIdent
+        idButtonBack <- newIdent
+        idInputSearch <- newIdent
+        idButtonSearch <- newIdent
         idButtonTakeNewExam <- newIdent
         idDialogTests <- newIdent
         let list = $(widgetFile "exams/list")
-        $(widgetFile "exams/search")
+        $(widgetFile "exams/search/exams")
 
 
 getExamR :: UserId -> ExamId -> HandlerFor App Html
@@ -344,7 +352,7 @@ postExamsR uid = do
             Nothing -> redirect $ CandidateEnrollFormR uid tid
               
       _otherwise -> do
-          tests <- case candidate of
+          exams <- case candidate of
             Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
             Nothing -> return []
             
@@ -367,7 +375,7 @@ getExamsR uid = do
         where_ $ x ^. CandidateUser ==. just (val uid)
         return x
 
-    tests <- case candidate of
+    exams <- case candidate of
       Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
       Nothing -> return []
           
@@ -414,7 +422,7 @@ queryScores :: CandidateId -> Maybe Text
                         , SqlExpr (Entity Test)
                         , SqlExpr (Value Double)
                         )
-queryScores cid mq = do
+queryScores cid query = do
     r :& e :& (_,s) <- from $ table @Exam
        `innerJoin` table @Test `on` (\(r :& e) -> r ^. ExamTest ==. e ^. TestId)
        `innerJoin` ( do
@@ -424,7 +432,7 @@ queryScores cid mq = do
           return (a ^. AnswerExam, coalesceDefault [sum_ (o ^. OptionPoints)] (val 0))
         ) `on` (\(r :& _ :& (a, _)) -> a ==. r ^. ExamId)
     where_ $ r ^. ExamCandidate ==. val cid
-    case mq of
+    case query of
       Just q -> where_ $ upper_ (e ^. TestName) `like` (%) ++. upper_ (val q) ++. (%)
       Nothing -> return ()
     orderBy [desc (r ^. ExamStart), desc (r ^. ExamAttempt)]

@@ -1,0 +1,30 @@
+
+<form method=get action=@{ExamsSearchR uid} ##{idFormQuery}>
+
+<header.fixed.no-padding>
+
+  <div.search.field.large.prefix.suffix.round.fill.active.max.margin>
+  
+    <a.button.start.transparent.circle.wave href=@{ExamsR uid} role=button ##{idButtonBack}>
+      <i>arrow_back
+
+    $maybe q <- query
+      <input type=search form=#{idFormQuery} name=q value=#{q} placeholder=_{MsgSearch} ##{idInputSearch}
+             autofocus onfocus="this.setSelectionRange(this.value.length,this.value.length);">
+    $nothing
+      <input autofocus type=search form=#{idFormQuery} name=q placeholder=_{MsgSearch} ##{idInputSearch}>
+    
+    <button.end.transparent.circle.wave type=submit form=#{idFormQuery} ##{idButtonSearch}>
+      <i>search
+
+
+<main.responsive.no-padding>
+
+  $if null exams
+    <figure.center-align.margin>
+      <i>folder_open
+      <figcaption>
+        _{MsgNoExamsWereFoundForSearchTerms}.
+        
+  $else
+    ^{list}

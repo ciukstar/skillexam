@@ -1,7 +1,7 @@
 
 <form method=get #formGetMyExam>
 
-$forall (Entity rid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- tests
+$forall (Entity rid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- exams
   <a.row.padding.wave href=@?{(ExamR uid rid,[("id",pack $ show $ fromSqlKey rid)])} :Just rid == mrid:.activated>
 
     $if score >= pass

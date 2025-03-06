@@ -10,7 +10,7 @@
       _{MsgExams}
 
     <div.row>
-      <a.button.circle.tansparent.no-elevate href=@{SearchExamR} role=button>
+      <a.button.circle.tansparent.no-elevate href=@{SearchTestExamsR} role=button>
         <i>search
         
       ^{widgetAccount}

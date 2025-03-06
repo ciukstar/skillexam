@@ -17,7 +17,7 @@
       <i>home
       <span>_{MsgHome}
 
-    <a href=@{ExamTestsR} :curr == Just ExamTestsR:.active>
+    <a href=@{TestExamsR} :curr == Just TestExamsR:.active>
       <i>search
       <span>_{MsgExamList}
 

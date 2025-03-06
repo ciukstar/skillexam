@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@{SearchExamR} role=button>
+    <a.button.circle.transparent href=@?{(SearchTestExamsR,stati)} role=button>
       <i>arrow_back
 
     <h1.title.max>
@@ -28,23 +28,12 @@
           <a.button href=@{TestExamEnrollmentR tid} role=button>
             <i>add
             <span>_{MsgTakeThisExam}
-            
-      <nav>
-        $maybe Entity _uid _ <- user
-          <form method=get action=#>
-            <button type=submit name=tid value=#{fromSqlKey tid}>
-              <i>add
-              <span>_{MsgTakeThisExam}
-       $nothing
-          <a.button href=# role=button>
-            <i>add
-            <span>_{MsgTakeThisExam}
 
     <div.tabs>
-      <a href=@{SearchTestInfoR tid} :Just (SearchTestInfoR tid) == curr:.active>
+      <a href=@?{(SearchTestExamR tid,stati)} :Just (SearchTestExamR tid) == curr:.active>
         _{MsgDetails}
         
-      <a href=@{SearchExamSkillsR tid} :Just (SearchExamSkillsR tid) == curr:.active>
+      <a href=@?{(SearchTestExamSkillsR tid,stati)} :Just (SearchTestExamSkillsR tid) == curr:.active>
         _{MsgSkills}
       
     <div.page.no-padding.active>
