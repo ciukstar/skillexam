@@ -52,7 +52,8 @@ import Foundation
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
-    , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms
+    , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
+    , MsgTimeout, MsgTimeCompleted
     )
   )
 
@@ -65,7 +66,8 @@ import Model
       ( Candidate, candidateAdditionalName, candidateGivenName, candidateBday
       , candidateFamilyName
       )
-    , ExamId, Exam (Exam, examEnd)
+    , ExamId, Exam (Exam, examEnd, examStatus)
+    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout)
     , TestId, Test (Test, testPass, testName)
     , Option, Stem, Answer, UserId
     , EntityField
@@ -113,7 +115,7 @@ postExamEnrollmentFormR uid cid tid = do
     case fr of
       FormSuccess (cid',tid', attempt) -> do
           now <- liftIO getCurrentTime
-          eid <- runDB $ insert (Exam tid' cid' attempt now Nothing)
+          eid <- runDB $ insert (Exam tid' cid' ExamStatusOngoing attempt now Nothing)
           stem <- runDB $ selectOne $ do
               x <- from $ table @Stem
               where_ $ x ^. StemTest ==. val tid

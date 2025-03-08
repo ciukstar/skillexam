@@ -2,7 +2,9 @@
 const timer = document.getElementById(#{idTimer});
 const timerProgress = document.getElementById(#{idProgressTimer});
 var left, total;
+
 const xhr = new XMLHttpRequest();
+
 xhr.onload = function (x) {
   const data = JSON.parse(this.response);
   left = data.left;
@@ -20,3 +22,10 @@ setInterval(function () {
   timer.textContent = new Date(left * 1000).toISOString().substring(11, 19);
   timerProgress.value = left / total;  
 }, 1000);
+
+
+const ws = new WebSocket('@{WebSocketTimeoutR eid}'.replace("http:", "ws:").replace("https:", "wss:"))
+
+ws.onmessage = async (e) => {
+  console.log(e);
+};

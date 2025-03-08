@@ -13,6 +13,7 @@ module Handler.Steps
   , getSummaryR
   , postTerminateR
   , getRemainingTimeR
+  , getWebSocketTimeoutR
   ) where
 
 
@@ -52,7 +53,10 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
     ( App, Form, Handler
-    , Route (HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR)
+    , Route
+      ( HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR
+      , WebSocketTimeoutR
+      )
     , AppMessage
       ( MsgQuestion, MsgPrevious, MsgNext, MsgComplete, MsgFinish
       , MsgExam, MsgSummary, MsgCandidate, MsgAttempt, MsgCancel
@@ -82,19 +86,21 @@ import Graphics.PDF
     )
 
 import Model
-    ( ExamId, Exam
+    ( msgSuccess, ExamId, Exam
     , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
     , TestId, Test
     , OptionId, Option (Option)
     , Answer (Answer)
-    , Candidate (Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName)
+    , Candidate
+      ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
+      )
     , EntityField
       ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
       , AnswerExam, AnswerStem, AnswerOption, ExamEnd
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
       , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
       , TestName, OptionId, ExamCandidate
-      ), msgSuccess
+      )
     )
 
 import Settings (widgetFile)
@@ -102,6 +108,8 @@ import Settings (widgetFile)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (Lang)
 import qualified Text.Printf as Printf
+
+import UnliftIO.Exception (try, SomeException)
 
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI
@@ -121,6 +129,14 @@ import Yesod.Form.Fields (Textarea (unTextarea), urlField, textField)
 import Yesod.Form.Input (ireq, runInputPost, runInputGet, iopt)
 import Yesod.Form.Types ( FormResult (FormSuccess, FormFailure) )
 import Yesod.Persist.Core (YesodPersist(runDB))
+import Yesod.WebSockets
+    ( WebSocketsT, sendTextData, race_, sourceWS, webSockets)
+
+
+getWebSocketTimeoutR :: ExamId -> Handler ()
+getWebSocketTimeoutR eid = webSockets $ do
+    -- try $ race_ 
+    sendTextData ("Hello. This is it" :: Text)
 
 
 getRemainingTimeR :: ExamId -> Handler TypedContent

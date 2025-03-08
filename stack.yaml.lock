@@ -3,11 +3,25 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/topics/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: time-out-0.2@sha256:b9a6b4dee64f030ecb2a25dca0faff39b3cb3b5fefbb8af3cdec4142bfd291f2,3010
+    pantry-tree:
+      sha256: dcedaba4d5a1dcfbef65ede20f25b1465ca5d211178fbff5ed6cd8cf75bed1cf
+      size: 923
+  original:
+    hackage: time-out-0.2@sha256:b9a6b4dee64f030ecb2a25dca0faff39b3cb3b5fefbb8af3cdec4142bfd291f2,3010
+- completed:
+    hackage: time-interval-0.1.1@sha256:7bfd3601853d1af7caa18248ec10b01701d035ac274a93bb4670fea52a14d4e8,2567
+    pantry-tree:
+      sha256: 7e259a34960b881f67a47e677eb77906922661c1036c8a5c62bcfc394cc655b7
+      size: 456
+  original:
+    hackage: time-interval-0.1.1@sha256:7bfd3601853d1af7caa18248ec10b01701d035ac274a93bb4670fea52a14d4e8,2567
 snapshots:
 - completed:
-    sha256: ecb944087cba3b8e85ff75d279bbb878615127e44d1b0485c511834c56ee6929
-    size: 680789
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/8.yaml
+    sha256: f51b4cbfe8a6df42815e203f842085528698989ea81f7c82667451ad955b1819
+    size: 680576
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/11.yaml
   original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/8.yaml
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/23/11.yaml

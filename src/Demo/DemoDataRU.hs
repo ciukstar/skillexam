@@ -26,14 +26,14 @@ import Model
     , Stem (Stem, stemTest, stemSkill, stemOrdinal, stemText, stemType, stemInstruc)
     , Option (Option, optionStem, optionOrdinal, optionText, optionKey, optionPoints)
     , StemType (SingleRespose, MultiResponse)
-    , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd)
+    , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd, examStatus)
     , Answer (Answer, answerExam, answerStem, answerOption, answerTime)
     , User
       ( User, userEmail, userPassword, userName, userAdmin, userSuper, userAuthType
       , userVerkey, userVerified
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution)
-    , AuthenticationType (UserAuthTypePassword)
+    , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
     )
 
 import Text.Hamlet (shamlet)
@@ -838,6 +838,7 @@ public class Test {
     r101 <- insert $ Exam
         { examTest = e101
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1112) now
         , examEnd = pure $ addUTCTime (-1100) now
@@ -864,6 +865,7 @@ public class Test {
     r102 <- insert $ Exam
         { examTest = e101
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2112) now
         , examEnd = pure $ addUTCTime (-2100) now
@@ -890,6 +892,7 @@ public class Test {
     r103 <- insert $ Exam
         { examTest = e101
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3112) now
         , examEnd = pure $ addUTCTime (-3101) now
@@ -916,6 +919,7 @@ public class Test {
     r104 <- insert $ Exam
         { examTest = e101
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4113) now
         , examEnd = pure $ addUTCTime (-3100) now
@@ -942,6 +946,7 @@ public class Test {
     r105 <- insert $ Exam
         { examTest = e101
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5024) now
         , examEnd = pure $ addUTCTime (-5005) now
@@ -968,6 +973,7 @@ public class Test {
     r106 <- insert $ Exam
         { examTest = e101
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6024) now
         , examEnd = pure $ addUTCTime (-6006) now
@@ -994,6 +1000,7 @@ public class Test {
     r107 <- insert $ Exam
         { examTest = e101
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5026) now
         , examEnd = pure $ addUTCTime (-5008) now
@@ -1020,6 +1027,7 @@ public class Test {
     r108 <- insert $ Exam
         { examTest = e101
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7026) now
         , examEnd = pure $ addUTCTime (-7008) now
@@ -1046,6 +1054,7 @@ public class Test {
     r109 <- insert $ Exam
         { examTest = e101
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-8020) now
         , examEnd = pure $ addUTCTime (-8000) now
@@ -1072,6 +1081,7 @@ public class Test {
     r110 <- insert $ Exam
         { examTest = e101
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4020) now
         , examEnd = pure $ addUTCTime (-4001) now
@@ -1098,6 +1108,7 @@ public class Test {
     r111 <- insert $ Exam
         { examTest = e101
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4120) now
         , examEnd = pure $ addUTCTime (-4101) now
@@ -1661,6 +1672,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r201 <- insert $ Exam
         { examTest = e201
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4120) now
         , examEnd = pure $ addUTCTime (-4101) now
@@ -1687,6 +1699,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r202 <- insert $ Exam
         { examTest = e201
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4124) now
         , examEnd = pure $ addUTCTime (-4105) now
@@ -1713,6 +1726,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r203 <- insert $ Exam
         { examTest = e201
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5124) now
         , examEnd = pure $ addUTCTime (-5106) now
@@ -1739,6 +1753,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r204 <- insert $ Exam
         { examTest = e201
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6124) now
         , examEnd = pure $ addUTCTime (-6106) now
@@ -1765,6 +1780,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r205 <- insert $ Exam
         { examTest = e201
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5024) now
         , examEnd = pure $ addUTCTime (-5007) now
@@ -1791,6 +1807,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r206 <- insert $ Exam
         { examTest = e201
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5624) now
         , examEnd = pure $ addUTCTime (-5607) now
@@ -1817,6 +1834,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r207 <- insert $ Exam
         { examTest = e201
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5724) now
         , examEnd = pure $ addUTCTime (-5708) now
@@ -1843,6 +1861,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r208 <- insert $ Exam
         { examTest = e201
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5824) now
         , examEnd = pure $ addUTCTime (-5808) now
@@ -1869,6 +1888,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r209 <- insert $ Exam
         { examTest = e201
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6824) now
         , examEnd = pure $ addUTCTime (-6808) now
@@ -1895,6 +1915,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r210 <- insert $ Exam
         { examTest = e201
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7824) now
         , examEnd = pure $ addUTCTime (-7808) now
@@ -1921,6 +1942,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r211 <- insert $ Exam
         { examTest = e201
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7924) now
         , examEnd = pure $ addUTCTime (-7908) now
@@ -2577,6 +2599,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r301 <- insert $ Exam
         { examTest = e301
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7924) now
         , examEnd = pure $ addUTCTime (-7908) now
@@ -2606,6 +2629,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r302 <- insert $ Exam
         { examTest = e301
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7030) now
         , examEnd = pure $ addUTCTime (-7001) now
@@ -2635,6 +2659,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r303 <- insert $ Exam
         { examTest = e301
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6035) now
         , examEnd = pure $ addUTCTime (-6007) now
@@ -2664,6 +2689,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r304 <- insert $ Exam
         { examTest = e301
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6025) now
         , examEnd = pure $ addUTCTime (-6004) now
@@ -2693,6 +2719,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r305 <- insert $ Exam
         { examTest = e301
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-7025) now
         , examEnd = pure $ addUTCTime (-7003) now
@@ -2722,6 +2749,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r306 <- insert $ Exam
         { examTest = e301
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-8020) now
         , examEnd = pure $ addUTCTime (-8000) now
@@ -2751,6 +2779,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r307 <- insert $ Exam
         { examTest = e301
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-9027) now
         , examEnd = pure $ addUTCTime (-9000) now
@@ -2780,6 +2809,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r308 <- insert $ Exam
         { examTest = e301
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5028) now
         , examEnd = pure $ addUTCTime (-5000) now
@@ -2809,6 +2839,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r309 <- insert $ Exam
         { examTest = e301
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4029) now
         , examEnd = pure $ addUTCTime (-4003) now
@@ -2838,6 +2869,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r310 <- insert $ Exam
         { examTest = e301
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3028) now
         , examEnd = pure $ addUTCTime (-3002) now
@@ -2867,6 +2899,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r311 <- insert $ Exam
         { examTest = e301
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2027) now
         , examEnd = pure $ addUTCTime (-2003) now
@@ -3403,6 +3436,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r401 <- insert $ Exam
         { examTest = e401
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2027) now
         , examEnd = pure $ addUTCTime (-2003) now
@@ -3429,6 +3463,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r402 <- insert $ Exam
         { examTest = e401
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3027) now
         , examEnd = pure $ addUTCTime (-3003) now
@@ -3455,6 +3490,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r404 <- insert $ Exam
         { examTest = e401
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4027) now
         , examEnd = pure $ addUTCTime (-4003) now
@@ -3481,6 +3517,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r406 <- insert $ Exam
         { examTest = e401
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5027) now
         , examEnd = pure $ addUTCTime (-5003) now
@@ -3507,6 +3544,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r408 <- insert $ Exam
         { examTest = e401
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3027) now
         , examEnd = pure $ addUTCTime (-3003) now
@@ -3533,6 +3571,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r409 <- insert $ Exam
         { examTest = e401
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-9027) now
         , examEnd = pure $ addUTCTime (-9003) now
@@ -3559,6 +3598,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     r411 <- insert $ Exam
         { examTest = e401
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-11027) now
         , examEnd = pure $ addUTCTime (-11003) now
@@ -4092,6 +4132,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     e502 <- insert $ Exam
         { examTest = t501
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4015) now
         , examEnd = pure $ addUTCTime (-4005) now
@@ -4118,6 +4159,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     e503 <- insert $ Exam
         { examTest = t501
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2015) now
         , examEnd = pure $ addUTCTime (-2005) now
@@ -4144,6 +4186,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     e504 <- insert $ Exam
         { examTest = t501
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1013) now
         , examEnd = pure $ addUTCTime (-1003) now
@@ -4170,6 +4213,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     e505 <- insert $ Exam
         { examTest = t501
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1003) now
@@ -4196,6 +4240,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
     e506 <- insert $ Exam
         { examTest = t501
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2021) now
         , examEnd = pure $ addUTCTime (-2002) now

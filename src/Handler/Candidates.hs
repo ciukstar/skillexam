@@ -71,7 +71,8 @@ import Foundation
       , MsgNoExamsYet, MsgPassExamInvite, MsgTakePhoto, MsgUploadPhoto
       , MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
       , MsgExam, MsgCompleted, MsgExamResults, MsgMaxScore, MsgPassScore
-      , MsgScore, MsgStatus, MsgUser
+      , MsgScore, MsgStatus, MsgUser, MsgTimeCompleted, MsgStatus, MsgOngoing
+      , MsgCompleted, MsgTimeout
       )
     )
 
@@ -84,7 +85,8 @@ import Model
       , candidateAdditionalName, candidateBday, candidateUser
       )
     , CandidateId, Photo (Photo)
-    , ExamId, Exam (Exam, examEnd)
+    , ExamId, Exam (Exam, examEnd, examStatus)
+    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout)
     , Test (Test, testName, testPass), Stem, Answer, Option, Skill (Skill)
     , User
     , EntityField

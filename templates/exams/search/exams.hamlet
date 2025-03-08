@@ -29,7 +29,7 @@
   $else
     <form method=get #formGetMyExam>
 
-    $forall (Entity eid (Exam _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- exams
+    $forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- exams
       $maybe q <- query
         <a.row.padding.wave href=@?{(SearchExamR uid eid,[("q",q)])}>
 

@@ -1,3 +1,7 @@
+Timeout: Timp expirat
+Completed: Finalizat
+Ongoing: În desfășurare 
+Started: Început
 UseCaseDiagram: Diagrama cazurilor de utilizare
 NoExamsWereFoundForSearchTerms: Nu au fost găsite examene care să corespundă tuturor termenilor dvs. de căutare
 ExamSuccessfullyCancelled: Examenul a fost anulat cu succes
@@ -100,7 +104,7 @@ SingleResponse: Răspuns unic
 MultiResponse: Răspuns multiplu
 Instruction: Instrucțiune
 Submitted: Depus
-Completed: Finalizat
+TimeCompleted: Finalizat
 Analytics: Analiza
 MaxScore: Scorul maxim
 PassScore: Scorul de promovare

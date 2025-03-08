@@ -1,5 +1,7 @@
 
-/remaining-time/#ExamId           RemainingTimeR GET
+/timeout/#ExamId        WebSocketTimeoutR GET
+/remaining-time/#ExamId RemainingTimeR    GET
+
 /summary/#TestId/#ExamId          SummaryR       GET
 /complete/#TestId/#ExamId/#StemId CompleteR      POST
 /terminate/#TestId/#ExamId        TerminateR     POST

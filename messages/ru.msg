@@ -1,4 +1,7 @@
-
+Timeout: Время истекло
+Completed: Завершен
+Ongoing: В процессе 
+Started: Начат
 UseCaseDiagram: Диаграмма вариантов использования
 NoExamsWereFoundForSearchTerms: Экзаменов, соответствующих всем вашим критериям поиска, не обнаружено
 ExamSuccessfullyCancelled: Экзамен был успешно отменен
@@ -101,7 +104,7 @@ SingleResponse: Единичный ответ
 MultiResponse: Множественный ответ
 Instruction: Инструкция
 Submitted: Представлен
-Completed: Сдача
+TimeCompleted: Сдача
 Analytics: Аналитика
 MaxScore: Всего баллов
 PassScore: Проходной балл

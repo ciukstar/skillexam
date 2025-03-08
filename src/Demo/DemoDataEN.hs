@@ -25,7 +25,7 @@ import Model
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , StemType (SingleRespose, MultiResponse)
-    , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd)
+    , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd, examStatus)
     , Answer (Answer, answerExam, answerStem, answerOption, answerTime)
     , TestState (TestStatePublished)
     , User
@@ -35,7 +35,7 @@ import Model
     , UserPhoto
       ( UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution
       )
-    , AuthenticationType (UserAuthTypePassword)
+    , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
     )
 
 import Text.Hamlet (shamlet)
@@ -1161,6 +1161,7 @@ Find the value of <code>value[i]</code>?|]
     e001 <- insert $ Exam
         { examTest = t001
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-20) now
         , examEnd = pure $ addUTCTime (-10) now
@@ -1195,6 +1196,7 @@ Find the value of <code>value[i]</code>?|]
     e002 <- insert $ Exam
         { examTest = t001
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-40) now
         , examEnd = pure $ addUTCTime (-10) now
@@ -1230,6 +1232,7 @@ Find the value of <code>value[i]</code>?|]
     e003 <- insert $ Exam
         { examTest = t001
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-10) now
@@ -1265,6 +1268,7 @@ Find the value of <code>value[i]</code>?|]
     e004 <- insert $ Exam
         { examTest = t001
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-15) now
@@ -1300,6 +1304,7 @@ Find the value of <code>value[i]</code>?|]
     e005 <- insert $ Exam
         { examTest = t001
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-50) now
         , examEnd = pure $ addUTCTime (-15) now
@@ -1335,6 +1340,7 @@ Find the value of <code>value[i]</code>?|]
     e006 <- insert $ Exam
         { examTest = t001
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3000) now
         , examEnd = pure $ addUTCTime (-2955) now
@@ -1370,6 +1376,7 @@ Find the value of <code>value[i]</code>?|]
     e007 <- insert $ Exam
         { examTest = t001
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4000) now
         , examEnd = pure $ addUTCTime (-3950) now
@@ -1405,6 +1412,7 @@ Find the value of <code>value[i]</code>?|]
     e008 <- insert $ Exam
         { examTest = t001
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5000) now
         , examEnd = pure $ addUTCTime (-4965) now
@@ -1440,6 +1448,7 @@ Find the value of <code>value[i]</code>?|]
     e009 <- insert $ Exam
         { examTest = t001
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6000) now
         , examEnd = pure $ addUTCTime (-5960) now
@@ -1475,6 +1484,7 @@ Find the value of <code>value[i]</code>?|]
     e010 <- insert $ Exam
         { examTest = t001
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-6040) now
         , examEnd = pure $ addUTCTime (-6000) now
@@ -1510,6 +1520,7 @@ Find the value of <code>value[i]</code>?|]
     e011 <- insert $ Exam
         { examTest = t001
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
@@ -2069,6 +2080,7 @@ Find the value of <code>value[i]</code>?|]
     e101 <- insert $ Exam
         { examTest = t101
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
@@ -2097,6 +2109,7 @@ Find the value of <code>value[i]</code>?|]
     e102 <- insert $ Exam
         { examTest = t101
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-35) now
@@ -2125,6 +2138,7 @@ Find the value of <code>value[i]</code>?|]
     e103 <- insert $ Exam
         { examTest = t101
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-47) now
@@ -2153,6 +2167,7 @@ Find the value of <code>value[i]</code>?|]
     e104 <- insert $ Exam
         { examTest = t101
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-65) now
         , examEnd = pure $ addUTCTime (-56) now
@@ -2181,6 +2196,7 @@ Find the value of <code>value[i]</code>?|]
     e105 <- insert $ Exam
         { examTest = t101
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-80) now
         , examEnd = pure $ addUTCTime (-50) now
@@ -2209,6 +2225,7 @@ Find the value of <code>value[i]</code>?|]
     e106 <- insert $ Exam
         { examTest = t101
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-90) now
         , examEnd = pure $ addUTCTime (-80) now
@@ -2237,6 +2254,7 @@ Find the value of <code>value[i]</code>?|]
     e107 <- insert $ Exam
         { examTest = t101
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-100) now
         , examEnd = pure $ addUTCTime (-95) now
@@ -2265,6 +2283,7 @@ Find the value of <code>value[i]</code>?|]
     e108 <- insert $ Exam
         { examTest = t101
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-103) now
         , examEnd = pure $ addUTCTime (-96) now
@@ -2293,6 +2312,7 @@ Find the value of <code>value[i]</code>?|]
     e109 <- insert $ Exam
         { examTest = t101
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-203) now
         , examEnd = pure $ addUTCTime (-194) now
@@ -2321,6 +2341,7 @@ Find the value of <code>value[i]</code>?|]
     e110 <- insert $ Exam
         { examTest = t101
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-302) now
         , examEnd = pure $ addUTCTime (-296) now
@@ -2348,6 +2369,7 @@ Find the value of <code>value[i]</code>?|]
     e111 <- insert $ Exam
         { examTest = t101
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-312) now
         , examEnd = pure $ addUTCTime (-302) now
@@ -2884,6 +2906,7 @@ Find the value of <code>value[i]</code>?|]
     e201 <- insert $ Exam
         { examTest = t201
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3012) now
         , examEnd = pure $ addUTCTime (-3002) now
@@ -2910,6 +2933,7 @@ Find the value of <code>value[i]</code>?|]
     e202 <- insert $ Exam
         { examTest = t201
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4015) now
         , examEnd = pure $ addUTCTime (-4005) now
@@ -2936,6 +2960,7 @@ Find the value of <code>value[i]</code>?|]
     e203 <- insert $ Exam
         { examTest = t201
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2015) now
         , examEnd = pure $ addUTCTime (-2005) now
@@ -2962,6 +2987,7 @@ Find the value of <code>value[i]</code>?|]
     e204 <- insert $ Exam
         { examTest = t201
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1013) now
         , examEnd = pure $ addUTCTime (-1003) now
@@ -2988,6 +3014,7 @@ Find the value of <code>value[i]</code>?|]
     e205 <- insert $ Exam
         { examTest = t201
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1003) now
@@ -3014,6 +3041,7 @@ Find the value of <code>value[i]</code>?|]
     e206 <- insert $ Exam
         { examTest = t201
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2021) now
         , examEnd = pure $ addUTCTime (-2002) now
@@ -3040,6 +3068,7 @@ Find the value of <code>value[i]</code>?|]
     e207 <- insert $ Exam
         { examTest = t201
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-5021) now
         , examEnd = pure $ addUTCTime (-5001) now
@@ -3573,6 +3602,7 @@ Find the value of <code>value[i]</code>?|]
     e301 <- insert $ Exam
         { examTest = t301
         , examCandidate = c001
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-4024) now
         , examEnd = pure $ addUTCTime (-4001) now
@@ -3599,6 +3629,7 @@ Find the value of <code>value[i]</code>?|]
     e302 <- insert $ Exam
         { examTest = t301
         , examCandidate = c002
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-3024) now
         , examEnd = pure $ addUTCTime (-3001) now
@@ -3625,6 +3656,7 @@ Find the value of <code>value[i]</code>?|]
     e303 <- insert $ Exam
         { examTest = t301
         , examCandidate = c003
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-2024) now
         , examEnd = pure $ addUTCTime (-2001) now
@@ -3651,6 +3683,7 @@ Find the value of <code>value[i]</code>?|]
     e304 <- insert $ Exam
         { examTest = t301
         , examCandidate = c004
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1026) now
         , examEnd = pure $ addUTCTime (-1002) now
@@ -3677,6 +3710,7 @@ Find the value of <code>value[i]</code>?|]
     e305 <- insert $ Exam
         { examTest = t301
         , examCandidate = c005
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-926) now
         , examEnd = pure $ addUTCTime (-900) now
@@ -3703,6 +3737,7 @@ Find the value of <code>value[i]</code>?|]
     e306 <- insert $ Exam
         { examTest = t301
         , examCandidate = c006
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-823) now
         , examEnd = pure $ addUTCTime (-800) now
@@ -3729,6 +3764,7 @@ Find the value of <code>value[i]</code>?|]
     e307 <- insert $ Exam
         { examTest = t301
         , examCandidate = c007
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-720) now
         , examEnd = pure $ addUTCTime (-700) now
@@ -3755,6 +3791,7 @@ Find the value of <code>value[i]</code>?|]
     e308 <- insert $ Exam
         { examTest = t301
         , examCandidate = c008
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-820) now
         , examEnd = pure $ addUTCTime (-803) now
@@ -3781,6 +3818,7 @@ Find the value of <code>value[i]</code>?|]
     e309 <- insert $ Exam
         { examTest = t301
         , examCandidate = c009
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-920) now
         , examEnd = pure $ addUTCTime (-904) now
@@ -3807,6 +3845,7 @@ Find the value of <code>value[i]</code>?|]
     e310 <- insert $ Exam
         { examTest = t301
         , examCandidate = c010
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1005) now
@@ -3833,6 +3872,7 @@ Find the value of <code>value[i]</code>?|]
     e311 <- insert $ Exam
         { examTest = t301
         , examCandidate = c011
+        , examStatus = ExamStatusCompleted
         , examAttempt = 1
         , examStart = addUTCTime (-1112) now
         , examEnd = pure $ addUTCTime (-1100) now

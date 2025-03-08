@@ -48,8 +48,22 @@
                 #{candidateFamilyName candidate} #{candidateGivenName candidate}
                 $maybe aname <- candidateAdditionalName candidate
                   \ #{aname}
+                  
         <tr.wave>
-          <th scope=row>_{MsgCompleted}
+          <th scope=row>_{MsgStatus}
+          <td>
+            $case examStatus exam
+              $of ExamStatusOngoing
+                _{MsgOngoing}
+  
+              $of ExamStatusCompleted
+                _{MsgCompleted}
+  
+              $of ExamStatusTimeout
+                _{MsgTimeout}
+                
+        <tr.wave>
+          <th scope=row>_{MsgTimeCompleted}
           $maybe end <- examEnd exam
             <td>
               $with dt <- iso8601Show end
@@ -57,6 +71,7 @@
                   #{dt}
           $nothing
             <td>
+            
         <tr.wave>
           <th scope=row>_{MsgScore}
           <td>#{printf "%.0f" score}

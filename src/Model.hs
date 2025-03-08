@@ -17,8 +17,8 @@
 module Model where
 
 import ClassyPrelude.Yesod
-    ( Typeable, Bool, Double, Int, Textarea, Text, mkMigrate
-    , mkPersist, persistFileWith, share, sqlSettings, Show, Read, Eq
+    ( Typeable, Bool, Double, Int, Textarea, Read, Eq, mkMigrate
+    , mkPersist, persistFileWith, share, sqlSettings
     , (<$>), (.)
     )
     
@@ -26,7 +26,7 @@ import Control.Monad (mapM)
 
 import Data.Maybe (Maybe (Just))
 import Data.Ord (Ord)
-import Data.Text (pack, unpack)
+import Data.Text (Text, pack, unpack)
 import Data.Time (Day, UTCTime)
 import Data.ByteString (ByteString)
 
@@ -36,7 +36,7 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Persist.TH (derivePersistField)
 
 import Text.Hamlet (Html)
-import Text.Show (show)
+import Text.Show (Show, show)
 import Text.Read (readMaybe)
 
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
@@ -60,6 +60,15 @@ derivePersistField "TestState"
 data StemType = SingleRespose | MultiResponse
     deriving (Show, Read, Eq)
 derivePersistField "StemType"
+
+
+data ExamStatus = ExamStatusOngoing
+                | ExamStatusCompleted
+                | ExamStatusTimeout
+    deriving (Show, Read, Eq)
+derivePersistField "ExamStatus"
+
+
 
 
 -- You can define all of your database entities in the entities file.

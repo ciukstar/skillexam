@@ -69,7 +69,7 @@ import Model
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
       , ExamAttempt, CandidateUser
-      )
+      ), ExamStatus (ExamStatusOngoing)
     )
 
 import Settings ( widgetFile )
@@ -122,7 +122,7 @@ postTestExamEnrollmentFormR tid uid cid = do
     case fr of
       FormSuccess (cid',tid', attempt) -> do
           now <- liftIO getCurrentTime
-          eid <- runDB $ insert (Exam tid' cid' attempt now Nothing)
+          eid <- runDB $ insert (Exam tid' cid' ExamStatusOngoing attempt now Nothing)
           
           stem <- runDB $ selectOne $ do
               x <- from $ table @Stem

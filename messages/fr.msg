@@ -1,4 +1,7 @@
-
+Timeout: Délai expiré
+Completed: Terminé
+Ongoing: En cours 
+Started: Commencé
 UseCaseDiagram: Diagramme de cas d'utilisation
 NoExamsWereFoundForSearchTerms: Aucun examen correspondant à tous vos termes de recherche n'a été trouvé
 ExamSuccessfullyCancelled: L'examen a été annulé avec succès
@@ -101,7 +104,7 @@ SingleResponse: Réponse unique
 MultiResponse: Réponse multiple
 Instruction: Instruction
 Submitted: Soumis
-Completed: Terminé
+TimeCompleted: Terminé
 Analytics: Analytique
 MaxScore: Note maximale
 PassScore: Note de réussite

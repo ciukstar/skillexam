@@ -83,6 +83,7 @@ import Handler.Steps
     , getSummaryR
     , postTerminateR
     , getRemainingTimeR
+    , getWebSocketTimeoutR
     )
 
 import Handler.Candidates

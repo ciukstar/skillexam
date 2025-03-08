@@ -58,6 +58,9 @@ dependencies:
 - yesod-auth-hashdb
 - email-validate
 - mime-mail
+- time-out
+- yesod-websockets
+- unliftio
 
 
 # The library contains all of our application code. The executable

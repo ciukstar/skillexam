@@ -9,6 +9,7 @@ Answer
 Exam
   test TestId OnDeleteCascade
   candidate CandidateId OnDeleteCascade
+  status ExamStatus
   attempt Int
   start UTCTime
   end UTCTime Maybe

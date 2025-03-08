@@ -1,4 +1,7 @@
-
+Timeout: Timeout
+Completed: Completed
+Ongoing: Ongoing
+Started: Started
 UseCaseDiagram: Use Case Diagram
 NoExamsWereFoundForSearchTerms: No exams were found that matched all of your search terms
 ExamSuccessfullyCancelled: The exam was successfully cancelled
@@ -101,7 +104,7 @@ SingleResponse: Single response
 MultiResponse: Multiple response
 Instruction: Instruction
 Submitted: Submitted
-Completed: Completed
+TimeCompleted: Completed
 Analytics: Analytics
 MaxScore: Max score
 PassScore: Pass score

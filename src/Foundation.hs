@@ -217,7 +217,9 @@ instance Yesod App where
     isAuthorized (StatsR (TopExamR _)) _ = isAdmin
     isAuthorized r@(StatsR ExamSuccessRatesR) _ = setUltDest r >> isAdmin
     isAuthorized (StatsR (TestSuccessRateR _)) _ = isAdmin
+
     
+    isAuthorized (WebSocketTimeoutR _) _ = return Authorized
     isAuthorized (RemainingTimeR _) _ = return Authorized
 
     isAuthorized (DataR SkillCreateFormR) _ = isAdmin
