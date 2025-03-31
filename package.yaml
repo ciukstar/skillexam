@@ -61,6 +61,8 @@ dependencies:
 - time-out
 - yesod-websockets
 - unliftio
+- transformers
+- time-units
 
 
 # The library contains all of our application code. The executable

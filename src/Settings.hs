@@ -23,7 +23,11 @@ import Data.Time.LocalTime (TimeZone, utc)
 import Data.Yaml (decodeEither')
 
 import Database.Persist.Sqlite
-    ( SqliteConf, ConnectionPoolConfig (ConnectionPoolConfig, connectionPoolConfigStripes, connectionPoolConfigIdleTimeout, connectionPoolConfigSize)
+    ( SqliteConf
+    , ConnectionPoolConfig
+      ( ConnectionPoolConfig, connectionPoolConfigStripes
+      , connectionPoolConfigIdleTimeout, connectionPoolConfigSize
+      )
     )
 
 import Language.Haskell.TH.Syntax (Exp, Name, Q)

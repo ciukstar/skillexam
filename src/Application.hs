@@ -1,7 +1,7 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE RecordWildCards #-}
@@ -21,42 +21,64 @@ module Application
     , db
     ) where
 
-import Control.Monad (void)
+import Control.Monad (void, when)
+import Control.Monad.Logger (liftLoc, runLoggingT, LogLevel (LevelError))
+import Control.Monad.Trans.Reader (ReaderT)
 
-import Data.Bool (Bool (False))
-import Data.Maybe (Maybe (Nothing))
+import Data.Default (def)
 
-import Import
-
-
-import Network.Wai.Middleware.Gzip
-    ( gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress)
-    )
-import Control.Monad.Logger (liftLoc, runLoggingT)
-
+import Database.Esqueleto.Experimental (table, from, where_, delete, (^.))
 import Database.Persist (insert_)
-import Database.Persist.Sql ( runMigrationSilent )
+import Database.Persist.Sql ( runMigrationSilent, SqlBackend )
 import Database.Persist.Sqlite
     ( createSqlitePoolWithConfig, runSqlPool, sqlDatabase
     )
+
+import Foundation
+    ( App (..), Handler, resourcesApp, unsafeHandler
+    , Route (..)
+    , DataR (..)
+    , StatsR (..)
+    )
+
 import Language.Haskell.TH.Syntax (qLocation)
 
+import Model
+    ( migrateAll
+    , AuthenticationType (UserAuthTypePassword), EntityField (UserSuper)
+    , User
+      ( User, userEmail, userPassword, userName, userSuper, userAdmin
+      , userAuthType, userVerkey, userVerified
+      )
+    )
+
 import Network.HTTP.Client.TLS (getGlobalManager)
-import Network.Wai (Middleware)
+import Network.Wai (Middleware, Application)
 import Network.Wai.Handler.Warp
-    ( Settings, defaultSettings, defaultShouldDisplayException,
-      runSettings, setHost, setOnException, setPort, getPort
+    ( Settings, defaultSettings, defaultShouldDisplayException
+    , runSettings, setHost, setOnException, setPort, getPort
+    )
+import Network.Wai.Middleware.Gzip
+    ( gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress)
     )
 import Network.Wai.Middleware.RequestLogger
     ( Destination (Logger), IPAddrSource (..), OutputFormat (..)
     , destination, mkRequestLogger, outputFormat
     )
-       
+
+import Settings
+    ( AppSettings
+      ( appSuperuser, appConnectionPoolConfig, appDatabaseConf, appMutableStatic
+      , appStaticDir, appHost, appPort, appIpFromHeader, appDetailedRequestLogging
+      )
+    , Superuser (superuserUsername, superuserPassword)
+    , configSettingsYmlValue
+    )
+    
 import System.Environment.Blank (getEnv)
 import System.Log.FastLogger
     ( defaultBufSize, newStdoutLoggerSet, toLogStr
     )
-
 
 import Handler.Stats
     ( getTopSkilledR, getSkilledR
@@ -155,8 +177,20 @@ import Demo.DemoDataFR (populateFR)
 import Demo.DemoDataRO (populateRO)
 import Demo.DemoDataRU (populateRU)
 import Demo.DemoDataEN (populateEN)
-
+    
+import Yesod.Auth (getAuth)
 import Yesod.Auth.Email (saltPass)
+import Yesod.Core (Yesod(messageLoggerSource))
+import Yesod.Core.Dispatch (mkYesodDispatch, defaultMiddlewaresNoLogging, toWaiAppPlain)
+import Yesod.Core.Types (Logger(loggerSet))
+import Control.Monad.IO.Class (MonadIO(liftIO))
+import Yesod.Default.Config2
+    ( makeYesodLogger, getDevSettings, useEnv, loadYamlSettingsArgs
+    , develMainHelper, loadYamlSettings, configSettingsYml
+    )
+import Yesod.Persist.Core (runDB)
+import Yesod.Static (staticDevel, static)
+
 
 
 -- This line actually creates our YesodDispatch instance. It is the second half
@@ -178,7 +212,7 @@ makeFoundation appSettings = do
     appStatic <-
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
-
+    
     -- We need a log function to create a connection pool. We need a connection
     -- pool to create our foundation. And we need our foundation to get a
     -- logging function. To get out of this loop, we initially create a
@@ -199,6 +233,10 @@ makeFoundation appSettings = do
     -- Perform database migration using our application's logging settings.
     flip runLoggingT logFunc $ flip runSqlPool pool $ do
         void $ runMigrationSilent migrateAll
+
+        delete $ do
+            x <- from $ table @User
+            where_ $ x ^. UserSuper
     
         superpass <- liftIO $ saltPass (superuserPassword . appSuperuser $ appSettings)
         insert_ User { userEmail = superuserUsername . appSuperuser $ appSettings

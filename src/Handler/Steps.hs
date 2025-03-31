@@ -19,7 +19,10 @@ module Handler.Steps
 
 import ClassyPrelude (readMay)
 
+import Control.Concurrent (threadDelay, forkIO)
+import Control.Monad (void, liftM)
 import Control.Monad.IO.Class (MonadIO (liftIO))
+import Control.Monad.Trans.Class (lift)
 
 import Data.Aeson (object, (.=))
 import Data.Complex (Complex ((:+)))
@@ -86,9 +89,9 @@ import Graphics.PDF
     )
 
 import Model
-    ( msgSuccess, ExamId, Exam
+    ( msgSuccess, ExamId, Exam (Exam)
     , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
-    , TestId, Test
+    , TestId, Test (Test)
     , OptionId, Option (Option)
     , Answer (Answer)
     , Candidate
@@ -99,8 +102,8 @@ import Model
       , AnswerExam, AnswerStem, AnswerOption, ExamEnd
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
       , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
-      , TestName, OptionId, ExamCandidate
-      )
+      , TestName, OptionId, ExamCandidate, ExamStatus
+      ), ExamStatus (ExamStatusTimeout)
     )
 
 import Settings (widgetFile)
@@ -108,8 +111,6 @@ import Settings (widgetFile)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (Lang)
 import qualified Text.Printf as Printf
-
-import UnliftIO.Exception (try, SomeException)
 
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI
@@ -130,13 +131,34 @@ import Yesod.Form.Input (ireq, runInputPost, runInputGet, iopt)
 import Yesod.Form.Types ( FormResult (FormSuccess, FormFailure) )
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.WebSockets
-    ( WebSocketsT, sendTextData, race_, sourceWS, webSockets)
+    ( WebSocketsT, sendTextData, webSockets)
+
+
+timeoutApp :: ExamId -> Int -> WebSocketsT Handler ()
+timeoutApp eid t = do
+    
+    liftIO $ threadDelay t
+    
+    {--
+    liftHandler $ runDB $ update $ \x -> do
+        set x [ ExamStatus =. val ExamStatusTimeout]
+        where_ $ x ^. ExamId ==. val eid
+    --}
+    
+    sendTextData ("TIME IS OUT" :: Text)
 
 
 getWebSocketTimeoutR :: ExamId -> Handler ()
-getWebSocketTimeoutR eid = webSockets $ do
-    -- try $ race_ 
-    sendTextData ("Hello. This is it" :: Text)
+getWebSocketTimeoutR eid = do
+    exam <- runDB $ selectOne $ do
+        x :& t <- from $ table @Exam
+            `innerJoin` table @Test `on` (\(x :& t) -> x ^. ExamTest ==. t ^. TestId)
+        where_ $ x ^. ExamId ==. val eid
+        return (x,t)
+
+    let interval = (\(Entity _ (Exam _ _ _ _ start _),Entity _ (Test _ _ duration _ _ _)) -> (start, duration)) <$> exam
+
+    webSockets $ timeoutApp eid (10 * 1000000)
 
 
 getRemainingTimeR :: ExamId -> Handler TypedContent
