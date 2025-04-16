@@ -62,6 +62,10 @@ import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import Yesod.Form.Types (MForm, FormResult)
 
+import Control.Concurrent.STM.TChan (TChan)
+import Control.Concurrent.STM.TVar (TVar)
+import Data.Map (Map)
+
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -73,6 +77,7 @@ data App = App
     , appConnPool    :: ConnectionPool -- ^ Database connection pool.
     , appHttpManager :: Manager
     , appLogger      :: Logger
+    , exams          :: TVar (Map ExamId (TChan ExamStatus))
     }
 
 

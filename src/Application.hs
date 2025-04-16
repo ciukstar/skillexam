@@ -21,11 +21,13 @@ module Application
     , db
     ) where
 
+import Control.Concurrent.STM.TVar (newTVarIO)
 import Control.Monad (void, when)
 import Control.Monad.Logger (liftLoc, runLoggingT, LogLevel (LevelError))
 import Control.Monad.Trans.Reader (ReaderT)
 
 import Data.Default (def)
+import qualified Data.Map as M (empty)
 
 import Database.Esqueleto.Experimental (table, from, where_, delete, (^.))
 import Database.Persist (insert_)
@@ -212,6 +214,8 @@ makeFoundation appSettings = do
     appStatic <-
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
+
+    exams <- newTVarIO M.empty
     
     -- We need a log function to create a connection pool. We need a connection
     -- pool to create our foundation. And we need our foundation to get a
@@ -219,9 +223,6 @@ makeFoundation appSettings = do
     -- temporary foundation without a real connection pool, get a log function
     -- from there, and then create the real foundation.
     let mkFoundation appConnPool = App {..}
-        -- The App {..} syntax is an example of record wild cards. For more
-        -- information, see:
-        -- https://ocharles.org.uk/blog/posts/2014-12-04-record-wildcards.html
         tempFoundation = mkFoundation $ error "connPool forced in tempFoundation"
         logFunc = messageLoggerSource tempFoundation appLogger
 

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 RUN mkdir -p /opt/skillexam \
         && apt-get update \
         && apt-get install -y --no-install-recommends build-essential zlib1g-dev libpq-dev libicu-dev \

@@ -19,7 +19,6 @@
 /exams/login                                                    ExamsLoginR         GET
 
 
-
 /search/tests/#TestId/skills SearchTestExamSkillsR GET
 /search/tests/#TestId        SearchTestExamR       GET
 /search/tests                SearchTestExamsR      GET

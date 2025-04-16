@@ -1,3 +1,5 @@
+TimeIsUp: Le temps s'est écoulé
+ExamTimeHasExpired: Le temps alloué à l'examen est expiré
 Timeout: Délai expiré
 Completed: Terminé
 Ongoing: En cours 

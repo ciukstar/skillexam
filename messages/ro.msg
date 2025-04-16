@@ -1,3 +1,5 @@
+TimeIsUp: Timpul a expirat
+ExamTimeHasExpired: Timpul alocat examenului a expirat
 Timeout: Timp expirat
 Completed: Finalizat
 Ongoing: În desfășurare 

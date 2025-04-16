@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Handler.Steps
@@ -16,17 +17,16 @@ module Handler.Steps
   , getWebSocketTimeoutR
   ) where
 
+import ClassyPrelude as CP (readMay)
 
-import ClassyPrelude (readMay)
-
-import Control.Concurrent (threadDelay, forkIO)
-import Control.Monad (void, liftM)
+import Control.Concurrent.STM.TVar (readTVar)
+import Control.Concurrent.STM (atomically, readTChan, dupTChan)
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import Control.Monad.Trans.Class (lift)
 
 import Data.Aeson (object, (.=))
 import Data.Complex (Complex ((:+)))
 import qualified Data.List.Safe as LS
+import qualified Data.Map as M (lookup)
 import Data.Maybe (fromMaybe)
 import Data.Text (unpack, pack, Text)
 import Data.Text.ICU.Calendar
@@ -55,7 +55,7 @@ import Database.Persist
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( App, Form, Handler
+    ( App (exams), Form, Handler, widgetSnackbar
     , Route
       ( HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR
       , WebSocketTimeoutR
@@ -66,7 +66,7 @@ import Foundation
       , MsgStop, MsgTimeStart, MsgTimeEnd, MsgStopThisExam, MsgPleaseConfirm
       , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
       , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
-      , MsgExamInfo, MsgInvalidFormData, MsgExamSuccessfullyCancelled
+      , MsgExamInfo, MsgInvalidFormData, MsgExamSuccessfullyCancelled, MsgExamTimeHasExpired, MsgTimeIsUp
       )
     )
 
@@ -89,11 +89,12 @@ import Graphics.PDF
     )
 
 import Model
-    ( msgSuccess, ExamId, Exam (Exam)
+    ( msgSuccess, ExamId, Exam
     , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
-    , TestId, Test (Test)
+    , TestId, Test
     , OptionId, Option (Option)
     , Answer (Answer)
+    , ExamStatus (ExamStatusTimeout)
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
       )
@@ -103,7 +104,7 @@ import Model
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
       , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
       , TestName, OptionId, ExamCandidate, ExamStatus
-      ), ExamStatus (ExamStatusTimeout)
+      )
     )
 
 import Settings (widgetFile)
@@ -113,15 +114,13 @@ import Text.Shakespeare.I18N (Lang)
 import qualified Text.Printf as Printf
 
 import Yesod.Core
-    ( Yesod(defaultLayout), setTitleI
-    , MonadHandler (liftHandler)
-    , redirectUltDest, preEscapedToMarkup, lookupPostParams
-    , TypedContent (TypedContent), selectRep, provideRep
-    , provideJson, invalidArgsI, ContentType
+    ( ContentType, Yesod(defaultLayout), MonadHandler (liftHandler)
+    , redirectUltDest, preEscapedToMarkup, lookupPostParams, setTitleI
+    , TypedContent (TypedContent), selectRep, provideRep, provideJson
     , ToContent (toContent), Content, ToTypedContent (toTypedContent)
-    , HasContentType (getContentType)
-    , RenderMessage (renderMessage)
-    , getYesod, languages, addHeader, newIdent, getMessageRender, addMessageI
+    , HasContentType (getContentType), RenderMessage (renderMessage)
+    , getYesod, languages, addHeader, newIdent, getMessageRender
+    , addMessageI, getMessages, invalidArgsI
     )
 import Yesod.Core.Widget (whamlet)
 import Yesod.Core.Handler (redirect)
@@ -130,35 +129,31 @@ import Yesod.Form.Fields (Textarea (unTextarea), urlField, textField)
 import Yesod.Form.Input (ireq, runInputPost, runInputGet, iopt)
 import Yesod.Form.Types ( FormResult (FormSuccess, FormFailure) )
 import Yesod.Persist.Core (YesodPersist(runDB))
-import Yesod.WebSockets
-    ( WebSocketsT, sendTextData, webSockets)
-
-
-timeoutApp :: ExamId -> Int -> WebSocketsT Handler ()
-timeoutApp eid t = do
-    
-    liftIO $ threadDelay t
-    
-    {--
-    liftHandler $ runDB $ update $ \x -> do
-        set x [ ExamStatus =. val ExamStatusTimeout]
-        where_ $ x ^. ExamId ==. val eid
-    --}
-    
-    sendTextData ("TIME IS OUT" :: Text)
+import Yesod.WebSockets ( sendTextData, webSockets)
 
 
 getWebSocketTimeoutR :: ExamId -> Handler ()
-getWebSocketTimeoutR eid = do
-    exam <- runDB $ selectOne $ do
-        x :& t <- from $ table @Exam
-            `innerJoin` table @Test `on` (\(x :& t) -> x ^. ExamTest ==. t ^. TestId)
-        where_ $ x ^. ExamId ==. val eid
-        return (x,t)
+getWebSocketTimeoutR eid = webSockets $ do
+    app <- getYesod
+    chan <- liftIO $ atomically $ do
+        m <- readTVar (exams app)
+        case M.lookup eid m of
+          Nothing -> return Nothing
+          Just chan -> Just <$> dupTChan chan
 
-    let interval = (\(Entity _ (Exam _ _ _ _ start _),Entity _ (Test _ _ duration _ _ _)) -> (start, duration)) <$> exam
-
-    webSockets $ timeoutApp eid (10 * 1000000)
+    case chan of
+      Nothing -> return ()
+      Just c -> do
+          let loop = do
+                  status <- liftIO $ atomically $ readTChan c
+                  case status of
+                    ExamStatusTimeout -> do
+                        liftHandler $ runDB $ update $ \x -> do
+                            set x [ExamStatus =. val ExamStatusTimeout]
+                            where_ $ x ^. ExamId ==. val eid
+                        sendTextData ("TIMEOUT" :: Text)
+                    _otherwise -> return ()
+          loop 
 
 
 getRemainingTimeR :: ExamId -> Handler TypedContent
@@ -484,13 +479,17 @@ postCompleteR tid eid qid = do
                   where_ $ x ^. ExamId ==. val eid
           redirect $ SummaryR tid eid
           
-      _otherwise -> defaultLayout $ do
-          setTitleI MsgQuestion
-          idTimer <- newIdent
-          idProgressTimer <- newIdent
-          idDialogTerminate <- newIdent
-          idFormOptions <- newIdent
-          $(widgetFile "steps/step")
+      _otherwise -> do
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgQuestion
+              idTimer <- newIdent
+              idProgressTimer <- newIdent
+              idDialogTerminate <- newIdent
+              idFormOptions <- newIdent
+              idOverlay <- newIdent
+              idDialogTimeout <- newIdent
+              $(widgetFile "steps/step")
 
 
 postStepR :: TestId -> ExamId -> StemId -> Handler Html
@@ -551,13 +550,17 @@ postStepR tid eid qid = do
 
           redirect location
           
-      _otherwise -> defaultLayout $ do
-          setTitleI MsgQuestion
-          idTimer <- newIdent
-          idProgressTimer <- newIdent
-          idDialogTerminate <- newIdent
-          idFormOptions <- newIdent
-          $(widgetFile "steps/step")
+      _otherwise -> do
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgQuestion
+              idTimer <- newIdent
+              idProgressTimer <- newIdent
+              idDialogTerminate <- newIdent
+              idFormOptions <- newIdent
+              idOverlay <- newIdent
+              idDialogTimeout <- newIdent
+              $(widgetFile "steps/step")
 
 
 getStepR :: TestId -> ExamId -> StemId -> Handler Html
@@ -603,13 +606,16 @@ getStepR tid eid qid = do
         return x
 
     (fw,et) <- generateFormPost $ formOptions eid qid options
-
+    
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgQuestion
         idTimer <- newIdent
         idProgressTimer <- newIdent
         idDialogTerminate <- newIdent
         idFormOptions <- newIdent
+        idOverlay <- newIdent
+        idDialogTimeout <- newIdent
         $(widgetFile "steps/step")
 
 
@@ -633,7 +639,7 @@ formOptions eid qid options extra = do
     msgr <- getMessageRender
     let answer = "answer"
     
-    maybeAnswers <- mapM ((toSqlKey <$>) . readMay) <$> lookupPostParams answer
+    maybeAnswers <- mapM ((toSqlKey <$>) . CP.readMay) <$> lookupPostParams answer
 
     let r = case maybeAnswers of
               Nothing -> FormFailure [msgr MsgInvalidFormData]

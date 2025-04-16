@@ -1,3 +1,5 @@
+TimeIsUp: Время истекло
+ExamTimeHasExpired: Время, отведенное на экзамен, истекло
 Timeout: Время истекло
 Completed: Завершен
 Ongoing: В процессе 

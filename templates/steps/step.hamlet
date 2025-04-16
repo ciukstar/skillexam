@@ -76,4 +76,18 @@
         $nothing
           <button type=submit form=#{idFormOptions} formaction=@{CompleteR tid eid qid}>
             _{MsgComplete}
-            
+        
+
+^{widgetSnackbar msgs}
+
+<div.overlay ##{idOverlay} data-ui=##{idDialogTimeout}>
+
+<dialog ##{idDialogTimeout}>
+  <h6>_{MsgTimeIsUp}
+
+  <p.large-text>
+    _{MsgExamTimeHasExpired}.
+  
+  <nav.right-align.no-space>
+    <a.button.primary href=@{SummaryR tid eid}>
+      _{MsgFinish}

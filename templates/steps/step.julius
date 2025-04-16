@@ -28,4 +28,8 @@ const ws = new WebSocket('@{WebSocketTimeoutR eid}'.replace("http:", "ws:").repl
 
 ws.onmessage = async (e) => {
   console.log(e);
+  [e.data].filter(x => x === "TIMEOUT").forEach(x => {
+    document.getElementById(#{idOverlay}).classList.add('active');
+    document.getElementById(#{idDialogTimeout}).showModal();
+  });
 };

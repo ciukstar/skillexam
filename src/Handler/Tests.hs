@@ -19,18 +19,22 @@ module Handler.Tests
   , getTestExamEnrollmentFormR, postTestExamEnrollmentFormR
   ) where
 
+import Control.Concurrent (threadDelay, forkIO)
+import Control.Concurrent.STM.TVar (readTVar, writeTVar)
+import Control.Concurrent.STM (atomically, newBroadcastTChan, writeTChan)
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(second))
+import qualified Data.Map as M (insert, delete)
 import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, selectOne, from, table, where_, val, like
-    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.), (=.)
     , select, orderBy, desc, on, innerJoin, distinct
     , upper_, countRows, Value (Value), selectQuery, crossJoin
     , countDistinct, just, subSelectMaybe, min_, max_, leftJoin
-    , groupBy, sum_, coalesceDefault, unValue
+    , groupBy, sum_, coalesceDefault, unValue, update, set
     )
 import Database.Persist (Entity (Entity), insert)
 
@@ -53,7 +57,7 @@ import Foundation
     , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto
     , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
     , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms
-    )
+    ), App (exams)
   )
 
 import Model
@@ -68,8 +72,8 @@ import Model
       ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
-      , ExamAttempt, CandidateUser
-      ), ExamStatus (ExamStatusOngoing)
+      , ExamAttempt, CandidateUser, TestDuration, ExamStatus
+      ), ExamStatus (ExamStatusOngoing, ExamStatusTimeout)
     )
 
 import Settings ( widgetFile )
@@ -81,7 +85,7 @@ import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, newIdent, getMessages
     , YesodRequest (reqGetParams), getRequest, setUltDestCurrent
     , redirect, liftHandler
-    , setUltDest, invalidArgsI, whamlet, addMessageI
+    , setUltDest, invalidArgsI, whamlet, addMessageI, getYesod
     )
 import Yesod.Core.Handler (getCurrentRoute)
 import Yesod.Form.Fields (Textarea (Textarea), textField)
@@ -132,9 +136,28 @@ postTestExamEnrollmentFormR tid uid cid = do
                   where_ $ y ^. StemTest ==. x ^. StemTest
                   return $ min_ $ y ^. StemOrdinal )
               return x
+
+          duration <- (maybe 0 unValue <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Test
+              where_ $ x ^. TestId ==. val tid
+              return (x ^. TestDuration)
               
           case stem of
             Just (Entity qid _) -> do
+                ongoing <- exams <$> getYesod
+                chan <- liftIO $ atomically $ do
+                    m <- readTVar ongoing
+                    chan <- newBroadcastTChan
+                    writeTVar ongoing (M.insert eid chan m)
+                    return chan
+
+                _ <- liftIO $ forkIO $ do
+                    threadDelay (round (duration * 60 * 1000000))                        
+                    atomically $ writeTChan chan ExamStatusTimeout
+                    atomically $ do
+                        m <- readTVar ongoing
+                        writeTVar ongoing $ M.delete eid m
+                                        
                 setUltDest TestExamsR
                 redirect $ StepR tid eid qid
             

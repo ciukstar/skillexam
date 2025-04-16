@@ -63,6 +63,7 @@ dependencies:
 - unliftio
 - transformers
 - time-units
+- stm
 
 
 # The library contains all of our application code. The executable
