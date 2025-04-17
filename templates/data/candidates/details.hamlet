@@ -21,5 +21,6 @@ $maybe (Entity _ (Candidate fname gname aname bday _), age) <- candidate
       <tr.wave>
         <th scope=row>_{MsgBirthday}
         <td>
-          $maybe bday <- bday
-            #{formatCalendar fmtDay (setDay cal bday)}
+          $maybe day <- show <$> bday
+            <time.day datetime=#{day}>
+              #{day}

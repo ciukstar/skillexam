@@ -25,23 +25,11 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 
 import Data.Aeson (object, (.=))
 import Data.Complex (Complex ((:+)))
-import qualified Data.List.Safe as LS
 import qualified Data.Map as M (lookup)
-import Data.Maybe (fromMaybe)
-import Data.Text (unpack, pack, Text)
-import Data.Text.ICU.Calendar
-    ( calendar, CalendarType (TraditionalCalendarType), setDay, setHour
-    , setMinute, setSecond
-    )
-import Data.Text.ICU.Types (LocaleName(Locale))
-import Data.Text.ICU.DateFormatter
-    ( standardDateFormatter, FormatStyle (ShortFormatStyle, DefaultFormatStyle)
-    , formatCalendar
-    )
+import Data.Text (pack, Text)
 import Data.Time.Clock
-    (getCurrentTime, UTCTime (utctDayTime, UTCTime), secondsToDiffTime)
+    (getCurrentTime, UTCTime (utctDayTime), secondsToDiffTime)
 import Data.Time.Format.ISO8601 (iso8601Show)
-import Data.Time.LocalTime (TimeOfDay(TimeOfDay), timeToTimeOfDay)
 
 import Database.Esqueleto.Experimental
     ( selectOne, select, from, table, where_, val, min_, max_
@@ -62,11 +50,12 @@ import Foundation
       )
     , AppMessage
       ( MsgQuestion, MsgPrevious, MsgNext, MsgComplete, MsgFinish
-      , MsgExam, MsgSummary, MsgCandidate, MsgAttempt, MsgCancel
+      , MsgExam, MsgSummary, MsgCandidate, MsgAttempt, MsgCancel, MsgTimeIsUp
       , MsgStop, MsgTimeStart, MsgTimeEnd, MsgStopThisExam, MsgPleaseConfirm
       , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
       , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
-      , MsgExamInfo, MsgInvalidFormData, MsgExamSuccessfullyCancelled, MsgExamTimeHasExpired, MsgTimeIsUp
+      , MsgInvalidFormData, MsgExamSuccessfullyCancelled, MsgExamTimeHasExpired
+      , MsgExamInfo
       )
     )
 
@@ -125,8 +114,8 @@ import Yesod.Core
 import Yesod.Core.Widget (whamlet)
 import Yesod.Core.Handler (redirect)
 import Yesod.Form.Functions (generateFormPost, runFormPost)
-import Yesod.Form.Fields (Textarea (unTextarea), urlField, textField)
-import Yesod.Form.Input (ireq, runInputPost, runInputGet, iopt)
+import Yesod.Form.Fields (Textarea (unTextarea), urlField)
+import Yesod.Form.Input (ireq, runInputPost)
 import Yesod.Form.Types ( FormResult (FormSuccess, FormFailure) )
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.WebSockets ( sendTextData, webSockets)
@@ -188,8 +177,6 @@ postTerminateR tid eid = do
 
 getSummaryR :: TestId -> ExamId -> Handler TypedContent
 getSummaryR tid eid = do
-
-    tz <- fromMaybe "GMT+0000" <$> runInputGet (iopt textField "tz")
     
     let unv (Value code,Value name,Value attempt,Value start,Value end,Value score,Value pass) =
             (code,name,attempt,start,end,score,pass)
@@ -223,23 +210,12 @@ getSummaryR tid eid = do
             font <- liftIO $ mkStdFont Times_Roman
             fontb <- liftIO $ mkStdFont Times_Bold
             
-            loc <- Locale . unpack . fromMaybe "en" . LS.head <$> languages
-            cal <- liftIO $ calendar "UTC" loc TraditionalCalendarType
-            fmt <- liftIO $ standardDateFormatter DefaultFormatStyle ShortFormatStyle loc tz
-            
-            let tfmt :: UTCTime -> Text
-                tfmt (UTCTime day time) = case timeToTimeOfDay time of
-                  TimeOfDay h m ps -> formatCalendar fmt
-                    (setSecond (setMinute (setHour (setDay cal day) h) m)
-                      (round (ps * 1e-12)))
-
-            
             case (font, fontb,candidate,res) of
               (Right f, Right fb, Just (Entity _ c), Just result) -> do
                   let name = renderMessage app langs MsgExamResults
                   addHeader "Content-Disposition"
                       ("inline; name=" <> name <> "; filename=" <> name <> ".pdf")
-                  return $ pdf app langs tfmt c result (PDFRect 0 0 612 792) f fb
+                  return $ pdf app langs c result (PDFRect 0 0 612 792) f fb
                   
               _otherwise -> invalidArgsI [MsgInvalidData]
 
@@ -250,10 +226,10 @@ getSummaryR tid eid = do
               $(widgetFile "steps/summary")
 
 
-pdf :: App -> [Lang] -> (UTCTime -> Text) -> Candidate
+pdf :: App -> [Lang] -> Candidate
     -> (Text,Text,Int,UTCTime,Maybe UTCTime,Double,Double)
     -> PDFRect -> AnyFont -> AnyFont -> PDF ()
-pdf app langs tfmt candidate (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
+pdf app langs candidate (code,name,attempt,start,end,score,pass) (PDFRect x _ x' y') fontr fontb = do
 
     let hfont = PDFFont fontb 18
     let rfont = PDFFont fontr 16
@@ -366,7 +342,7 @@ pdf app langs tfmt candidate (code,name,attempt,start,end,score,pass) (PDFRect x
     let (_,d71) = drawTextBox col1x (y8 - 10) cw1 30 NE NormalParagraph (Font rfont black black) $ do
           setJustification LeftJustification
           paragraph $ do
-            txt $ tfmt start
+            txt $ (pack . show) start
 
     -- row
     let (_,d80) = drawTextBox x9 (y9 - 10) cw0 30 NE NormalParagraph (Font bfont black black) $ do
@@ -377,7 +353,7 @@ pdf app langs tfmt candidate (code,name,attempt,start,end,score,pass) (PDFRect x
     let (_,d81) = drawTextBox col1x (y9 - 10) cw1 30 NE NormalParagraph (Font rfont black black) $ do
           setJustification LeftJustification
           paragraph $ do
-            txt $ maybe "" tfmt end
+            txt $ maybe "" (pack . show) end
 
     page <- addPage Nothing
     newSection (renderMessage app langs MsgExamResults) Nothing Nothing $ do

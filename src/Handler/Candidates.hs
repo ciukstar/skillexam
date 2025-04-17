@@ -24,14 +24,7 @@ import Control.Applicative ((<|>))
 
 import Data.Bifunctor (Bifunctor(bimap))
 import Data.Maybe (fromMaybe)
-import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack, pack)
-import Data.Text.ICU.Calendar (setDay)
-import Data.Text.ICU
-    ( LocaleName(Locale), calendar, CalendarType (TraditionalCalendarType)
-    , standardDateFormatter, FormatStyle (NoFormatStyle, ShortFormatStyle)
-    , formatCalendar
-    )
+import Data.Text (pack)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Format.ISO8601 (iso8601Show)
@@ -114,10 +107,9 @@ import Yesod.Core
     , liftIO, getUrlRenderParams, MonadHandler (liftHandler)
     )
 import Yesod.Core.Handler
-    ( redirect, FileInfo, fileSourceByteString, languages
-    , getMessages, addMessageI, setUltDestCurrent
-    , redirectUltDest, lookupSession, getUrlRender, lookupPostParam
-    , getCurrentRoute, newIdent
+    ( redirect, FileInfo, fileSourceByteString, getMessages, addMessageI
+    , setUltDestCurrent, redirectUltDest, lookupSession, getUrlRender
+    , lookupPostParam, getCurrentRoute, newIdent
     )
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
@@ -357,9 +349,6 @@ getCandidateR cid = do
         y <- liftIO $ (\(y,_,_) -> y) . toGregorian .  utctDay <$> getCurrentTime
         return $ candidate >>= \c -> return (c, (y -) . (\(y',_,_) -> y') . toGregorian <$> (candidateBday . entityVal) c)
 
-    loc <- Locale . unpack . fromMaybe "en" . LS.head <$> languages
-    cal <- liftIO $ calendar "GMT+0300" loc TraditionalCalendarType
-    fmtDay <- liftIO $ standardDateFormatter NoFormatStyle ShortFormatStyle loc "GMT+0300"
     let tab = $(widgetFile "data/candidates/details")
     msgs <- getMessages
     (fw0,et0) <- generateFormPost formCandidateDelete
