@@ -1,3 +1,6 @@
+StateMachineDiagram: Diagrama mașinii de stare
+Unit: Unitate
+Hours: Ore
 ExamWasCancelled: Examenul a fost anulat
 ExamCompleted: Examen finalizat
 InvalidExam: Examen nevalid

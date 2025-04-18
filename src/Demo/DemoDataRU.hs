@@ -21,7 +21,10 @@ import Model
       , candidateBday, candidateUser
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
-    , Test (Test, testCode, testName, testDuration, testDescr, testPass, testState)
+    , Test
+      ( Test, testCode, testName, testDuration, testDescr, testPass, testState
+      , testDurationUnit
+      )
     , TestState (TestStatePublished)
     , Stem (Stem, stemTest, stemSkill, stemOrdinal, stemText, stemType, stemInstruc)
     , Option (Option, optionStem, optionOrdinal, optionText, optionKey, optionPoints)
@@ -34,6 +37,7 @@ import Model
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution)
     , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
+    , TimeUnit (TimeUnitMinute)
     )
 
 import Text.Hamlet (shamlet)
@@ -277,6 +281,7 @@ populateRU = do
         { testCode = "Э101"
         , testName = "Основы программирования на Java"
         , testDuration = 20
+        , testDurationUnit = TimeUnitMinute
         , testPass = 10
         , testDescr = Just $ Textarea "Тестирование кандидатов на базовые навыки программирования на Java."
         , testState = TestStatePublished
@@ -1142,6 +1147,7 @@ public class Test {
         { testCode = "Э201"
         , testName = "Системы управления базами данных"
         , testDuration = 30
+        , testDurationUnit = TimeUnitMinute
         , testPass = 9
         , testDescr = Just $ Textarea "Экзамен по системам управления базами данных"
         , testState = TestStatePublished
@@ -1976,6 +1982,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         { testCode = "Э301"
         , testName = "Маркетинг"
         , testDuration = 30
+        , testDurationUnit = TimeUnitMinute
         , testPass = 12
         , testDescr = Just $ Textarea "Экзамен по маркетингу"
         , testState = TestStatePublished
@@ -2936,6 +2943,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         { testCode = "Э401"
         , testName = "Стратегический менеджмент"
         , testDuration = 30
+        , testDurationUnit = TimeUnitMinute
         , testPass = 10
         , testDescr = Just $ Textarea "Экзамен по стратегическому менеджменту"
         , testState = TestStatePublished
@@ -3632,6 +3640,7 @@ WHERE salary <= 90000 AND salary>=100000;</pre></code>|]
         { testCode = "Э502"
         , testName = "Химическая инженерия"
         , testDuration = 20
+        , testDurationUnit = TimeUnitMinute
         , testPass = 8
         , testDescr = Just $ Textarea "Проверяет базовые навыки химической инженерии"
         , testState = TestStatePublished

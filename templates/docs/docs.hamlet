@@ -77,6 +77,12 @@
   <p>_{MsgDoc023}
   <p>_{MsgDoc024}
   <p>_{MsgDoc025}
+    
+
+  <figure>
+    <img src=@{StaticR img_SkillExam_SMD_svg} loading=lazy alt=_{MsgStateMachineDiagram}>
+    <figcaption>
+      _{MsgStateMachineDiagram}
 
   <h3>_{MsgAnswer}
   <p>_{MsgDoc026}

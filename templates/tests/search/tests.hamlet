@@ -26,7 +26,7 @@
         _{MsgNoExamsWereFoundForSearchTerms}.
       
   $else
-    $forall Entity tid (Test code name _ _ _ _) <- tests
+    $forall Entity tid (Test code name _ _ _ _ _) <- tests
       $maybe q <- mq
         <a.row.padding.wave href=@?{(SearchTestExamR tid,[("q",q)])}>
           <div.content.max>

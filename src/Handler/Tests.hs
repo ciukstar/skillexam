@@ -24,7 +24,7 @@ import Control.Concurrent.STM.TVar (readTVar, writeTVar)
 import Control.Concurrent.STM (atomically, newBroadcastTChan, writeTChan)
 import Control.Monad.IO.Class (liftIO)
 
-import Data.Bifunctor (Bifunctor(second))
+import Data.Bifunctor (Bifunctor(second, bimap))
 import qualified Data.Map as M (insert, delete)
 import Data.Time.Clock (getCurrentTime)
 
@@ -48,13 +48,13 @@ import Foundation
     )
   , DataR (CandidatePhotoR)
   , AppMessage
-    ( MsgExams, MsgDescr, MsgPassMark, MsgNumberOfQuestions
+    ( MsgExams, MsgDescr, MsgPassMark, MsgNumberOfQuestions, MsgHours
     , MsgSearch, MsgExam, MsgDuration, MsgBack, MsgLogin, MsgCancel
     , MsgCode, MsgName, MsgTakeThisExam, MsgPopularity, MsgPoints
     , MsgMinutes, MsgDifficulty, MsgDifficultyLow, MsgDetails
     , MsgSkills, MsgNoPublishedExamsYet, MsgDifficultyHigh, MsgMaxScore
     , MsgDifficultyMedium, MsgAuthenticate, MsgYouNeedToLoginForExam
-    , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto
+    , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto, MsgMinutes
     , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
     , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms
     )
@@ -69,11 +69,12 @@ import Model
     , TestId, Test (Test), TestState (TestStatePublished)
     , UserId
     , ExamStatus (ExamStatusOngoing, ExamStatusTimeout)
+    , TimeUnit (TimeUnitMinute, TimeUnitHour)
     , EntityField
       ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
-      , ExamAttempt, CandidateUser, TestDuration
+      , ExamAttempt, CandidateUser, TestDuration, TestDurationUnit
       )
     )
 
@@ -138,10 +139,10 @@ postTestExamEnrollmentFormR tid uid cid = do
                   return $ min_ $ y ^. StemOrdinal )
               return x
 
-          duration <- (maybe 0 unValue <$>) $ runDB $ selectOne $ do
+          (duration, unit) <- (maybe (0,TimeUnitMinute) (bimap unValue unValue) <$>) $ runDB $ selectOne $ do
               x <- from $ table @Test
               where_ $ x ^. TestId ==. val tid
-              return (x ^. TestDuration)
+              return (x ^. TestDuration, x ^. TestDurationUnit)
               
           case stem of
             Just (Entity qid _) -> do
@@ -153,7 +154,7 @@ postTestExamEnrollmentFormR tid uid cid = do
                     return chan
 
                 _ <- liftIO $ forkIO $ do
-                    threadDelay (round (duration * 60 * 1000000))                        
+                    threadDelay (round (duration * toSeconds unit * 1000000))                        
                     atomically $ writeTChan chan ExamStatusTimeout
                     atomically $ do
                         m <- readTVar ongoing
@@ -169,6 +170,11 @@ postTestExamEnrollmentFormR tid uid cid = do
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
           redirect $ TestExamEnrollmentFormR tid uid cid
+
+  where
+      toSeconds unit = case unit of
+        TimeUnitMinute -> 60
+        TimeUnitHour -> 3600
 
 
 getTestExamEnrollmentFormR :: TestId -> UserId -> CandidateId -> Handler Html

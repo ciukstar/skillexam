@@ -8,7 +8,7 @@
       _{MsgExam}
 
 <main.responsive.no-padding>
-  $maybe Entity tid (Test code name _ _ _ _) <- test
+  $maybe Entity tid (Test code name _ _ _ _ _) <- test
 
     <article.border.margin>
       <div.row>

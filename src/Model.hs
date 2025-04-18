@@ -43,7 +43,7 @@ import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
 import Yesod.Core.Dispatch
     ( PathMultiPiece, toPathMultiPiece, fromPathMultiPiece
     )
-
+    
 
 data AuthenticationType = UserAuthTypePassword
                         | UserAuthTypeEmail
@@ -70,6 +70,9 @@ data ExamStatus = ExamStatusOngoing
 derivePersistField "ExamStatus"
 
 
+data TimeUnit = TimeUnitMinute | TimeUnitHour
+    deriving (Show, Read, Eq)
+derivePersistField "TimeUnit"
 
 
 -- You can define all of your database entities in the entities file.

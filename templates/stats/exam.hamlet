@@ -9,7 +9,7 @@
 
 <main.responsive>
 
-  $maybe Entity _ (Test _ name _ _ descr _) <- test
+  $maybe Entity _ (Test _ name _ _ _ descr _) <- test
 
     <div ##{idGauge}>
 

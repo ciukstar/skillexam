@@ -1,5 +1,5 @@
 
-$maybe Entity _ (Test code name duration pass descr _) <- test
+$maybe Entity _ (Test code name duration unit pass descr _) <- test
   <table>
     <tbody>
       <tr.wave>
@@ -16,8 +16,16 @@ $maybe Entity _ (Test code name duration pass descr _) <- test
       <tr.wave>
         <th scope=row>_{MsgDuration}
         <td>
-          <span>#{printf "%.0f" duration}
-          <span style="text-transform:lowercase">_{MsgMinutes}
+          $with dur <- show duration
+            <span.duration data-value=#{dur}>
+              #{dur}
+          <span style="text-transform:lowercase">
+            $case unit
+              $of TimeUnitMinute
+                _{MsgMinutes}
+              $of TimeUnitHour
+                _{MsgHours}
+                  
       <tr.wave>
         <th scope=row>_{MsgPassMark}
         <td>

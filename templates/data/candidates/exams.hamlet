@@ -8,7 +8,7 @@ $if null tests
       
 $else
 
-  $forall (Entity rid (Exam {}), Entity _ (Test _ ename _ pass _ _), Value score) <- tests
+  $forall (Entity rid (Exam {}), Entity _ (Test _ ename _ _ pass _ _), Value score) <- tests
     
     $with l <- rndr (DataR $ CandidateExamsR cid) [("id",pack $ show $ fromSqlKey rid)]
       

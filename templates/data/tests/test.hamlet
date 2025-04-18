@@ -17,7 +17,7 @@
 
 <main.responsive>
 
-  $maybe Entity eid (Test code name duration pass descr state) <- test
+  $maybe Entity eid (Test code name duration unit pass descr state) <- test
     
     <table>
       <tbody>
@@ -30,8 +30,16 @@
         <tr.wave>
           <th>_{MsgDuration}
           <td>
-            <span>#{printf "%.0f" duration}
-            <span style="text-transform:lowercase">_{MsgMinutes}
+            $with dur <- show duration
+              <span.duration data-value=#{dur}>
+                #{dur}
+            <span style="text-transform:lowercase">
+              $case unit
+                $of TimeUnitMinute
+                  _{MsgMinutes}
+                $of TimeUnitHour
+                  _{MsgHours}
+                  
         <tr.wave>
           <th>_{MsgPassMark}
           <td>

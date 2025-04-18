@@ -1,8 +1,16 @@
 
 Array.from(
-  document.querySelectorAll('span.as-percentage')
+  document.querySelectorAll('span.duration[data-value]')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
+    style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2
+  });
+});
+
+Array.from(
+  document.querySelectorAll('span.as-percentage[data-value]')
 ).forEach(function (x) {
   x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
     style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1
-  })
-})
+  });
+});

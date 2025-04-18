@@ -1,7 +1,7 @@
 
 <form method=get #formGetMyExam>
 
-$forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ pass _ _),Value score) <- exams
+$forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ _),Value score) <- exams
   <a.row.padding.wave href=@{ExamR uid eid}>
 
     $if score >= pass

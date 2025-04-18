@@ -55,7 +55,8 @@ import Foundation
       , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
       , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
       , MsgInvalidFormData, MsgExamSuccessfullyCancelled, MsgExamTimeHasExpired
-      , MsgExamInfo, MsgAllottedExamTimeHasExpired, MsgInvalidExam, MsgExamWasCancelled, MsgExamCompleted, MsgHome, MsgClose
+      , MsgExamInfo, MsgAllottedExamTimeHasExpired, MsgExamWasCancelled, MsgHome
+      , MsgClose, MsgInvalidExam, MsgExamCompleted
       )
     )
 
@@ -83,18 +84,22 @@ import Model
     , TestId, Test
     , OptionId, Option (Option)
     , Answer (Answer)
-    , ExamStatus (ExamStatusTimeout, ExamStatusCanceled, ExamStatusOngoing, ExamStatusCompleted)
+    , ExamStatus
+      ( ExamStatusTimeout, ExamStatusCanceled, ExamStatusOngoing
+      , ExamStatusCompleted
+      )
     , Candidate
-      ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
+      ( Candidate, candidateGivenName, candidateAdditionalName
+      , candidateFamilyName
       )
     , UserId
     , EntityField
       ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
-      , AnswerExam, AnswerStem, AnswerOption, ExamEnd
+      , AnswerExam, AnswerStem, AnswerOption, ExamEnd, TestCode
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
-      , OptionKey, OptionPoints, ExamAttempt, TestPass, TestCode
-      , TestName, OptionId, ExamCandidate, ExamStatus
-      )
+      , OptionKey, OptionPoints, ExamAttempt, TestPass, ExamCandidate
+      , TestName, OptionId, ExamStatus, TestDurationUnit
+      ), TimeUnit (TimeUnitMinute, TimeUnitHour)
     )
 
 import Settings (widgetFile)
@@ -160,15 +165,20 @@ getRemainingTimeR eid = do
         e :& t <- from $ table @Exam
             `innerJoin` table @Test `on` (\(e :& t) -> e ^. ExamTest ==. t ^. TestId)
         where_ $ e ^. ExamId ==. val eid
-        return (e ^. ExamStart, t ^. TestDuration) ) )
+        return (e ^. ExamStart, t ^. TestDuration, t ^. TestDurationUnit) ) )
         
     case mx of
-      Just (Value s, Value l) -> selectRep $ provideJson $ object
-          [ "left" .= (utctDayTime s + secondsToDiffTime (round (l * 60)) - utctDayTime now)
-          , "total" .= (round (l * 60) :: Integer)
+      Just (Value s, Value l, Value u) -> selectRep $ provideJson $ object
+          [ "left" .= (utctDayTime s + secondsToDiffTime (round (l * toSeconds u)) - utctDayTime now)
+          , "total" .= (round (l * toSeconds u) :: Integer)
           ]
           
       _otherwise -> invalidArgsI [MsgInvalidData]
+
+  where
+      toSeconds unit = case unit of
+        TimeUnitMinute -> 60
+        TimeUnitHour -> 3600
 
 
 postCancelR :: UserId -> ExamId -> Handler Html

@@ -1,3 +1,6 @@
+StateMachineDiagram: Диаграмма конечного автомата
+Unit: Единица
+Hours: Часы
 ExamWasCancelled: Экзамен был отменен
 ExamCompleted: Экзамен завершен
 InvalidExam: Недействительный экзамен

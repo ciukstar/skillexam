@@ -1,3 +1,6 @@
+StateMachineDiagram: State machine diagram
+Unit: Unit
+Hours: Hours
 ExamWasCancelled: The exam was cancelled
 ExamCompleted: Exam completed
 InvalidExam: Invalid exam

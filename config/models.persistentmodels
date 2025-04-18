@@ -52,6 +52,7 @@ Test
   code Text
   name Text
   duration Double
+  durationUnit TimeUnit
   pass Double
   descr Textarea Maybe
   state TestState

@@ -53,7 +53,7 @@ import Foundation
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
-    , MsgTimeout, MsgTimeCompleted
+    , MsgTimeout, MsgTimeCompleted, MsgHours
     )
   )
 
@@ -70,6 +70,7 @@ import Model
     , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout)
     , TestId, Test (Test, testPass, testName)
     , Option, Stem, Answer, UserId
+    , TimeUnit (TimeUnitMinute, TimeUnitHour)
     , EntityField
       ( CandidateId, ExamCandidate, ExamStart, ExamAttempt, ExamTest, TestId
       , ExamId, StemId, StemTest, OptionStem, OptionPoints, AnswerOption

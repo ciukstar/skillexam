@@ -46,7 +46,7 @@ import Foundation
       , MsgMinutes, MsgPoints, MsgExamQuestions
       , MsgNewRecordAdded, MsgRecordDeleted, MsgRecordEdited, MsgExamState
       , MsgPublished, MsgUnpublished, MsgPublish, MsgUnpublish, MsgNoTestsYet
-      , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
+      , MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData, MsgHours, MsgUnit
       )
     )
 
@@ -55,9 +55,9 @@ import Material3 (md3widget, md3textareaWidget, md3selectWidget)
 import Model
     ( msgSuccess, msgError
     , TestId
-    , Test (testCode, testName, testDescr, Test, testDuration, testPass, testState)
+    , Test (testCode, testName, testDescr, Test, testDuration, testPass, testState, testDurationUnit)
     , EntityField (TestId, TestCode, TestName, TestDescr, TestState)
-    , TestState (TestStatePublished, TestStateUnpublished)
+    , TestState (TestStatePublished, TestStateUnpublished), TimeUnit (TimeUnitMinute, TimeUnitHour)
     )
 
 import Settings (widgetFile)
@@ -279,8 +279,17 @@ formTest test extra = do
         
     (durationR,durationV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgDuration
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","max")]
         } (testDuration . entityVal <$> test)
+
+    let units = [(MsgMinutes, TimeUnitMinute),(MsgHours, TimeUnitHour)]
+        
+    (durationUnitR,durationUnitV) <- mreq (selectFieldList units) FieldSettings
+        { fsLabel = SomeMessage MsgUnit
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","max")]
+        } (testDurationUnit . entityVal <$> test)
         
     (passR,passV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgPassMark
@@ -299,14 +308,36 @@ formTest test extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing , fsAttrs = []
         } ((testState . entityVal <$> test) <|> pure TestStateUnpublished)
 
-    let r = Test <$> codeR <*> nameR <*> durationR <*> passR <*> descrR <*> stateR
+    let r = Test <$> codeR <*> nameR <*> durationR <*> durationUnitR <*> passR <*> descrR <*> stateR
 
     let w = [whamlet|
                     #{extra}
                     $forall v <- [codeV,nameV]
                       ^{md3widget v}
 
-                    $forall (v,h) <- [(durationV,MsgMinutes),(passV,MsgPoints)]
+                    <div.row.wrap>
+                      $with v <- durationV
+                        <div.max.field.label.border.round.small :isJust (fvErrors v):.invalid>
+                          ^{fvInput v}
+                          <label for=#{fvId v}>
+                            #{fvLabel v}
+                            $if fvRequired v
+                              <sup>*
+                          $maybe err <- fvErrors v
+                            <span.error>#{err}
+                          
+                      $with v <- durationUnitV
+                        <div.max.field.label.suffix.border.round.small :isJust (fvErrors v):.invalid>
+                          ^{fvInput v}
+                          <label for=#{fvId v}>
+                            #{fvLabel v}
+                            $if fvRequired v
+                              <sup>*
+                          <i>arrow_drop_down
+                          $maybe err <- fvErrors v
+                            <span.error>#{err}
+
+                    $with (v,h) <- (passV,MsgPoints)
                       <div.field.label.border.round.small :isJust (fvErrors v):.invalid>
 
                         ^{fvInput v}
@@ -319,7 +350,6 @@ formTest test extra = do
                           <span.error>#{err}. _{h}
                         $nothing
                           <span.helper>_{h}
-
 
                     ^{md3textareaWidget descrV}
 

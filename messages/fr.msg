@@ -1,3 +1,6 @@
+StateMachineDiagram: Diagramme de machine d'état
+Unit: Unité 
+Hours: Heures
 ExamWasCancelled: L'examen a été annulé
 ExamCompleted: Examen terminé
 InvalidExam: Examen invalide

@@ -16,7 +16,10 @@ import Database.Persist ( PersistStoreWrite(insert, insert_) )
 
 import Model
     ( Skill(Skill, skillCode, skillName, skillDescr)
-    , Test (Test, testCode, testName, testDescr, testDuration, testPass, testState)
+    , Test
+      ( Test, testCode, testName, testDescr, testDuration, testPass, testState
+      , testDurationUnit
+      )
     , Stem (Stem, stemTest, stemSkill, stemOrdinal, stemText, stemInstruc, stemType)
     , Option (optionStem, Option, optionOrdinal, optionText, optionKey, optionPoints)
     , Candidate
@@ -35,6 +38,7 @@ import Model
     , UserPhoto
       ( UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution)
     , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
+    , TimeUnit (TimeUnitMinute)
     )
 
 import Text.Hamlet (shamlet)
@@ -278,6 +282,7 @@ populateRO = do
         { testCode = "E101"
         , testName = "Bazele programarii Java"
         , testDuration = 120
+        , testDurationUnit = TimeUnitMinute
         , testPass = 25
         , testDescr = Just $ Textarea "Testează abilitățile de bază de programare Java"
         , testState = TestStatePublished
@@ -1555,6 +1560,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         { testCode = "E201"
         , testName = "Introducere în programarea Python"
         , testDuration = 10
+        , testDurationUnit = TimeUnitMinute
         , testPass = 8
         , testDescr = Just $ Textarea "Testați abilitățile de bază de programare Python"
         , testState = TestStatePublished
@@ -2393,6 +2399,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         { testCode = "E202"
         , testName = "Inginerie Chimica"
         , testDuration = 20
+        , testDurationUnit = TimeUnitMinute
         , testPass = 8
         , testDescr = Just $ Textarea "Testează abilitățile de bază de inginerie chimică"
         , testState = TestStatePublished
@@ -3089,6 +3096,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         { testCode = "E301"
         , testName = "SQL"
         , testDuration = 30
+        , testDurationUnit = TimeUnitMinute
         , testPass = 9
         , testDescr = Just $ Textarea "Programare SQL"
         , testState = TestStatePublished

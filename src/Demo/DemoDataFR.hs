@@ -21,7 +21,10 @@ import Model
       , candidateBday, candidateUser
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
-    , Test (Test, testCode, testName, testDuration, testPass, testDescr, testState)
+    , Test
+      ( Test, testCode, testName, testDuration, testPass, testDescr, testState
+      , testDurationUnit
+      )
     , TestState (TestStatePublished)
     , Stem (Stem, stemTest, stemSkill, stemOrdinal, stemText, stemType, stemInstruc)
     , StemType (SingleRespose, MultiResponse)
@@ -35,6 +38,7 @@ import Model
     , UserPhoto
       ( UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution)
     , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
+    , TimeUnit (TimeUnitMinute)
     )
     
 import Text.Hamlet (shamlet)
@@ -278,6 +282,7 @@ populateFR = do
         { testCode = "E101"
         , testName = "Principes de base de la programmation Java"
         , testDuration = 120
+        , testDurationUnit = TimeUnitMinute
         , testPass = 25
         , testDescr = Just $ Textarea "Testez les compétences de base en programmation Java"
         , testState = TestStatePublished
@@ -1556,6 +1561,7 @@ Trouver la valeur de <code>value[i]</code> ?|]
         { testCode = "E201"
         , testName = "Introduction à la programmation Python"
         , testDuration = 10
+        , testDurationUnit = TimeUnitMinute
         , testPass = 8
         , testDescr = Just $ Textarea "Testez les compétences de base en programmation Python"
         , testState = TestStatePublished
@@ -2399,6 +2405,7 @@ Trouver la valeur de <code>value[i]</code> ?|]
         { testCode = "E202"
         , testName = "Ingénieur chimiste"
         , testDuration = 20
+        , testDurationUnit = TimeUnitMinute
         , testPass = 8
         , testDescr = Just $ Textarea "Tester les compétences de base en génie chimique"
         , testState = TestStatePublished
@@ -3095,6 +3102,7 @@ Trouver la valeur de <code>value[i]</code> ?|]
         { testCode = "E301"
         , testName = "SQL"
         , testDuration = 30
+        , testDurationUnit = TimeUnitMinute
         , testPass = 9
         , testDescr = Just $ Textarea "Programmation SQL"
         , testState = TestStatePublished

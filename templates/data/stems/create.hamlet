@@ -10,7 +10,7 @@
 
 <main.responsive>
 
-  $maybe Entity _ (Test _ name _ _ _ _) <- test
+  $maybe Entity _ (Test _ name _ _ _ _ _) <- test
     <h2.large-text.bold>#{name}
 
     <form method=post action=@{DataR $ StemsR eid} enctype=#{enctype} novalidate>
