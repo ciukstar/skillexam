@@ -8,11 +8,11 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Handler.Steps
-  ( getStepR
-  , postStepR
+  ( getStepR, postStepR
+  , getStepInvalidR
   , postCompleteR
   , getSummaryR
-  , postTerminateR
+  , postCancelR
   , getRemainingTimeR
   , getWebSocketTimeoutR
   ) where
@@ -45,8 +45,8 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Foundation
     ( App (exams), Form, Handler, widgetSnackbar
     , Route
-      ( HomeR, StepR, CompleteR, SummaryR, TerminateR, RemainingTimeR
-      , WebSocketTimeoutR
+      ( HomeR, StepR, CompleteR, SummaryR, CancelR, RemainingTimeR
+      , WebSocketTimeoutR, StepInvalidR
       )
     , AppMessage
       ( MsgQuestion, MsgPrevious, MsgNext, MsgComplete, MsgFinish
@@ -55,7 +55,7 @@ import Foundation
       , MsgOfTotal, MsgCode, MsgInvalidData, MsgTimeRemaining, MsgExamResults
       , MsgPass, MsgFail, MsgStatus, MsgPassMark, MsgScore, MsgExamResults
       , MsgInvalidFormData, MsgExamSuccessfullyCancelled, MsgExamTimeHasExpired
-      , MsgExamInfo
+      , MsgExamInfo, MsgAllottedExamTimeHasExpired, MsgInvalidExam, MsgExamWasCancelled, MsgExamCompleted, MsgHome, MsgClose
       )
     )
 
@@ -78,15 +78,16 @@ import Graphics.PDF
     )
 
 import Model
-    ( msgSuccess, ExamId, Exam
+    ( msgSuccess, ExamId, Exam (Exam)
     , StemId, Stem (Stem, stemOrdinal), StemType (MultiResponse)
     , TestId, Test
     , OptionId, Option (Option)
     , Answer (Answer)
-    , ExamStatus (ExamStatusTimeout)
+    , ExamStatus (ExamStatusTimeout, ExamStatusCanceled, ExamStatusOngoing, ExamStatusCompleted)
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
       )
+    , UserId
     , EntityField
       ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
       , AnswerExam, AnswerStem, AnswerOption, ExamEnd
@@ -137,12 +138,18 @@ getWebSocketTimeoutR eid = webSockets $ do
                   status <- liftIO $ atomically $ readTChan c
                   case status of
                     ExamStatusTimeout -> do
+                        now <- liftIO getCurrentTime
                         liftHandler $ runDB $ update $ \x -> do
-                            set x [ExamStatus =. val ExamStatusTimeout]
+                            set x [ ExamStatus =. val ExamStatusTimeout
+                                  , ExamEnd =. just (val now)
+                                  ]
                             where_ $ x ^. ExamId ==. val eid
-                        sendTextData ("TIMEOUT" :: Text)
+                        sendTextData signalTimeout
                     _otherwise -> return ()
-          loop 
+          loop
+          
+signalTimeout :: Text
+signalTimeout = "SIGNAL_TIMEOUT"
 
 
 getRemainingTimeR :: ExamId -> Handler TypedContent
@@ -164,24 +171,26 @@ getRemainingTimeR eid = do
       _otherwise -> invalidArgsI [MsgInvalidData]
 
 
-postTerminateR :: TestId -> ExamId -> Handler Html
-postTerminateR tid eid = do
-    runDB $ delete $ do
-        x <- from $ table @Exam
+postCancelR :: UserId -> ExamId -> Handler Html
+postCancelR _uid eid = do
+    now <- liftIO getCurrentTime
+    runDB $ update $ \x -> do
+        set x [ ExamStatus =. val ExamStatusCanceled
+              , ExamEnd =. just (val now)
+              ]
         where_ $ x ^. ExamId ==. val eid
-        where_ $ x ^. ExamTest ==. val tid
 
     addMessageI msgSuccess MsgExamSuccessfullyCancelled
     redirectUltDest HomeR
 
 
-getSummaryR :: TestId -> ExamId -> Handler TypedContent
-getSummaryR tid eid = do
+getSummaryR :: UserId -> TestId -> ExamId -> Handler TypedContent
+getSummaryR uid tid eid = do
     
     let unv (Value code,Value name,Value attempt,Value start,Value end,Value score,Value pass) =
             (code,name,attempt,start,end,score,pass)
 
-    res <- (unv <$>) <$> runDB ( selectOne $ do
+    res <- ((unv <$>) <$>) $ runDB $ selectOne $ do
         (_,attempt,start,end,code,name,pass) :& (_,score) <- from ( selectQuery ( do
                 x :& t <- from $ table @Exam
                     `innerJoin` table @Test `on` (\(x :& t) -> x ^. ExamTest ==. t ^. TestId)
@@ -195,7 +204,7 @@ getSummaryR tid eid = do
                 where_ $ o ^. OptionKey
                 return (e ^. ExamId, coalesceDefault [sum_ (o ^. OptionPoints)] (val (0 :: Double)))
                 ) `on` (\((eid',_,_,_,_,_,_) :& (eid'',_)) -> eid' ==. eid'') )
-        return (code,name,attempt,start,end,score,pass) )
+        return (code,name,attempt,start,end,score,pass)
 
     candidate <- runDB $ selectOne $ do
         x :& c <- from $ table @Exam
@@ -222,7 +231,7 @@ getSummaryR tid eid = do
 
         provideRep $ do
           defaultLayout $ do
-              setTitleI MsgFinish
+              setTitleI MsgSummary
               $(widgetFile "steps/summary")
 
 
@@ -399,9 +408,8 @@ instance HasContentType (PDF ()) where
     getContentType _ = mimePdf
 
 
-
-postCompleteR :: TestId -> ExamId -> StemId -> Handler Html
-postCompleteR tid eid qid = do
+postCompleteR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
+postCompleteR uid tid eid qid = do
     cnt <- (unValue =<<) <$> runDB ( selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
@@ -453,12 +461,14 @@ postCompleteR tid eid qid = do
               update $ \x -> do
                   set x [ExamEnd =. just (val now)]
                   where_ $ x ^. ExamId ==. val eid
-          redirect $ SummaryR tid eid
+          redirect $ SummaryR uid tid eid
           
       _otherwise -> do
+          msgr <- getMessageRender
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgQuestion
+              idLabelTimer <- newIdent
               idTimer <- newIdent
               idProgressTimer <- newIdent
               idDialogTerminate <- newIdent
@@ -468,131 +478,168 @@ postCompleteR tid eid qid = do
               $(widgetFile "steps/step")
 
 
-postStepR :: TestId -> ExamId -> StemId -> Handler Html
-postStepR tid eid qid = do
-
-    location <- runInputPost $ ireq urlField "location"
+getStepInvalidR :: UserId -> TestId -> ExamId -> Handler Html
+getStepInvalidR uid tid eid = do
     
-    cnt <- (unValue =<<) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        return $ max_ $ x ^. StemOrdinal )
-        
-    stem <- runDB $ selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemId ==. val qid
-        return x
-        
-    prev <- (unValue <$>) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
-            ( from $ selectQuery $ do
-                  y <- from $ table @Stem
-                  where_ $ y ^. StemTest ==. x ^. StemTest
-                  where_ $ just (y ^. StemOrdinal) <. val (stemOrdinal . entityVal <$> stem)
-                  return $ max_ $ y ^. StemOrdinal
-            )
-        return $ x ^. StemId )
-        
-    next <- (unValue <$>) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
-            ( from $ selectQuery $ do
-                  y <- from $ table @Stem
-                  where_ $ y ^. StemTest ==. x ^. StemTest
-                  where_ $ just (y ^. StemOrdinal) >. val (stemOrdinal . entityVal <$> stem)
-                  return $ min_ $ y ^. StemOrdinal
-            )
-        return $ x ^. StemId )
-
-    options <- runDB $ select $ do
-        x <- from $ table @Option
-        where_ $ x ^. OptionStem ==. val qid
-        orderBy [asc (x ^. OptionOrdinal)]
-        return x
-        
-    ((fr,fw),et) <- runFormPost $ formOptions eid qid options
-    case fr of
-      FormSuccess rs -> do
-          runDB $ delete $ do
-              x <- from $ table @Answer
-              where_ $ x ^. AnswerExam ==. val eid
-              where_ $ x ^. AnswerStem ==. val qid
-
-          now <- liftIO getCurrentTime
-          runDB $ insertMany_ ((\(AnswerData e q o) -> Answer e q o now) <$> rs)
-
-          redirect location
-          
-      _otherwise -> do
-          msgs <- getMessages
-          defaultLayout $ do
-              setTitleI MsgQuestion
-              idTimer <- newIdent
-              idProgressTimer <- newIdent
-              idDialogTerminate <- newIdent
-              idFormOptions <- newIdent
-              idOverlay <- newIdent
-              idDialogTimeout <- newIdent
-              $(widgetFile "steps/step")
-
-
-getStepR :: TestId -> ExamId -> StemId -> Handler Html
-getStepR tid eid qid = do
-    cnt <- (unValue =<<) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        return $ max_ $ x ^. StemOrdinal )
-        
-    stem <- runDB $ selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemId ==. val qid
+    exam <- runDB $ selectOne $ do
+        x <- from $ table @Exam
+        where_ $ x ^. ExamId ==. val eid
         return x
 
-    prev <- (unValue <$>) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
-            ( from $ selectQuery $ do
-                  y <- from $ table @Stem
-                  where_ $ y ^. StemTest ==. x ^. StemTest
-                  where_ $ just (y ^. StemOrdinal) <. val (stemOrdinal . entityVal <$> stem)
-                  return $ max_ $ y ^. StemOrdinal
-            )
-        return $ x ^. StemId )
-        
-    next <- (unValue <$>) <$> runDB ( selectOne $ do
-        x <- from $ table @Stem
-        where_ $ x ^. StemTest ==. val tid
-        where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
-            ( from $ selectQuery $ do
-                  y <- from $ table @Stem
-                  where_ $ y ^. StemTest ==. x ^. StemTest
-                  where_ $ just (y ^. StemOrdinal) >. val (stemOrdinal . entityVal <$> stem)
-                  return $ min_ $ y ^. StemOrdinal
-            )
-        return $ x ^. StemId )
-
-    options <- runDB $ select $ do
-        x <- from $ table @Option
-        where_ $ x ^. OptionStem ==. val qid
-        orderBy [asc (x ^. OptionOrdinal)]
-        return x
-
-    (fw,et) <- generateFormPost $ formOptions eid qid options
-    
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgQuestion
-        idTimer <- newIdent
-        idProgressTimer <- newIdent
-        idDialogTerminate <- newIdent
-        idFormOptions <- newIdent
-        idOverlay <- newIdent
-        idDialogTimeout <- newIdent
-        $(widgetFile "steps/step")
+        setTitleI MsgInvalidExam
+        $(widgetFile "steps/invalid")
+
+
+postStepR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
+postStepR uid tid eid qid = do
+    
+    exam <- runDB $ selectOne $ do
+        x <- from $ table @Exam
+        where_ $ x ^. ExamId ==. val eid
+        where_ $ x ^. ExamStatus ==. val ExamStatusOngoing
+        return x
+
+    case exam of
+      Nothing -> redirect $ StepInvalidR uid tid eid
+      Just _ -> do
+          location <- runInputPost $ ireq urlField "location"
+
+          cnt <- (unValue =<<) <$> runDB ( selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              return $ max_ $ x ^. StemOrdinal )
+
+          stem <- runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemId ==. val qid
+              return x
+
+          prev <- (unValue <$>) <$> runDB ( selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
+                  ( from $ selectQuery $ do
+                        y <- from $ table @Stem
+                        where_ $ y ^. StemTest ==. x ^. StemTest
+                        where_ $ just (y ^. StemOrdinal) <. val (stemOrdinal . entityVal <$> stem)
+                        return $ max_ $ y ^. StemOrdinal
+                  )
+              return $ x ^. StemId )
+
+          next <- (unValue <$>) <$> runDB ( selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
+                  ( from $ selectQuery $ do
+                        y <- from $ table @Stem
+                        where_ $ y ^. StemTest ==. x ^. StemTest
+                        where_ $ just (y ^. StemOrdinal) >. val (stemOrdinal . entityVal <$> stem)
+                        return $ min_ $ y ^. StemOrdinal
+                  )
+              return $ x ^. StemId )
+
+          options <- runDB $ select $ do
+              x <- from $ table @Option
+              where_ $ x ^. OptionStem ==. val qid
+              orderBy [asc (x ^. OptionOrdinal)]
+              return x
+
+          ((fr,fw),et) <- runFormPost $ formOptions eid qid options
+          case fr of
+            FormSuccess rs -> do
+                runDB $ delete $ do
+                    x <- from $ table @Answer
+                    where_ $ x ^. AnswerExam ==. val eid
+                    where_ $ x ^. AnswerStem ==. val qid
+
+                now <- liftIO getCurrentTime
+                runDB $ insertMany_ ((\(AnswerData e q o) -> Answer e q o now) <$> rs)
+
+                redirect location
+
+            _otherwise -> do
+                msgr <- getMessageRender
+                msgs <- getMessages
+                defaultLayout $ do
+                    setTitleI MsgQuestion
+                    idLabelTimer <- newIdent
+                    idTimer <- newIdent
+                    idProgressTimer <- newIdent
+                    idDialogTerminate <- newIdent
+                    idFormOptions <- newIdent
+                    idOverlay <- newIdent
+                    idDialogTimeout <- newIdent
+                    $(widgetFile "steps/step")
+
+
+getStepR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
+getStepR uid tid eid qid = do
+    
+    exam <- runDB $ selectOne $ do
+        x <- from $ table @Exam
+        where_ $ x ^. ExamId ==. val eid
+        where_ $ x ^. ExamStatus ==. val ExamStatusOngoing
+        return x
+
+    case exam of
+      Nothing -> redirect $ StepInvalidR uid tid eid
+      Just _ -> do
+          cnt <- ((unValue =<<) <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              return $ max_ $ x ^. StemOrdinal
+
+          stem <- runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemId ==. val qid
+              return x
+
+          prev <- ((unValue <$>) <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
+                  ( from $ selectQuery $ do
+                        y <- from $ table @Stem
+                        where_ $ y ^. StemTest ==. x ^. StemTest
+                        where_ $ just (y ^. StemOrdinal) <. val (stemOrdinal . entityVal <$> stem)
+                        return $ max_ $ y ^. StemOrdinal
+                  )
+              return $ x ^. StemId
+
+          next <- ((unValue <$>) <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
+                  ( from $ selectQuery $ do
+                        y <- from $ table @Stem
+                        where_ $ y ^. StemTest ==. x ^. StemTest
+                        where_ $ just (y ^. StemOrdinal) >. val (stemOrdinal . entityVal <$> stem)
+                        return $ min_ $ y ^. StemOrdinal
+                  )
+              return $ x ^. StemId
+
+          options <- runDB $ select $ do
+              x <- from $ table @Option
+              where_ $ x ^. OptionStem ==. val qid
+              orderBy [asc (x ^. OptionOrdinal)]
+              return x
+
+          (fw,et) <- generateFormPost $ formOptions eid qid options
+
+          msgr <- getMessageRender
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgQuestion
+              idLabelTimer <- newIdent
+              idTimer <- newIdent
+              idProgressTimer <- newIdent
+              idDialogTerminate <- newIdent
+              idFormOptions <- newIdent
+              idOverlay <- newIdent
+              idDialogTimeout <- newIdent
+              $(widgetFile "steps/step")
 
 
 data AnswerData = AnswerData !ExamId !StemId !OptionId

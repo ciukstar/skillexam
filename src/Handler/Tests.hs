@@ -30,16 +30,16 @@ import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, selectOne, from, table, where_, val, like
-    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.), (=.)
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (||.)
     , select, orderBy, desc, on, innerJoin, distinct
     , upper_, countRows, Value (Value), selectQuery, crossJoin
     , countDistinct, just, subSelectMaybe, min_, max_, leftJoin
-    , groupBy, sum_, coalesceDefault, unValue, update, set
+    , groupBy, sum_, coalesceDefault, unValue
     )
 import Database.Persist (Entity (Entity), insert)
 
 import Foundation
-  ( Handler, Form, widgetMainMenu, widgetSnackbar, widgetAccount
+  ( App (exams), Handler, Form, widgetMainMenu, widgetSnackbar, widgetAccount
   , Route
     ( SearchTestExamsR, TestExamR, SearchTestExamR, TestExamsR, StepR
     , TestSkillsR, SearchTestExamSkillsR, AuthR, TestExamLoginR
@@ -57,7 +57,7 @@ import Foundation
     , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto
     , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
     , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms
-    ), App (exams)
+    )
   )
 
 import Model
@@ -68,12 +68,13 @@ import Model
     , Exam (Exam), Answer, Option
     , TestId, Test (Test), TestState (TestStatePublished)
     , UserId
+    , ExamStatus (ExamStatusOngoing, ExamStatusTimeout)
     , EntityField
       ( TestId, StemTest, StemSkill, SkillId, TestName, TestCode, TestState
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
-      , ExamAttempt, CandidateUser, TestDuration, ExamStatus
-      ), ExamStatus (ExamStatusOngoing, ExamStatusTimeout)
+      , ExamAttempt, CandidateUser, TestDuration
+      )
     )
 
 import Settings ( widgetFile )
@@ -159,7 +160,7 @@ postTestExamEnrollmentFormR tid uid cid = do
                         writeTVar ongoing $ M.delete eid m
                                         
                 setUltDest TestExamsR
-                redirect $ StepR tid eid qid
+                redirect $ StepR uid tid eid qid
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest

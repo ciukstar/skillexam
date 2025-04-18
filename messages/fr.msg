@@ -1,5 +1,9 @@
+ExamWasCancelled: L'examen a été annulé
+ExamCompleted: Examen terminé
+InvalidExam: Examen invalide
+ExamTimeHasExpired: Le temps d'examen est expiré
 TimeIsUp: Le temps s'est écoulé
-ExamTimeHasExpired: Le temps alloué à l'examen est expiré
+AllottedExamTimeHasExpired: Le temps alloué à l'examen est expiré
 Timeout: Délai expiré
 Completed: Terminé
 Ongoing: En cours 

@@ -17,7 +17,7 @@ xhr.open("GET","@{RemainingTimeR eid}");
 xhr.setRequestHeader('Accept','application/json');
 xhr.send();
 
-setInterval(function () {
+const intervalId = setInterval(() => {
   left = left - 1;
   timer.textContent = new Date(left * 1000).toISOString().substring(11, 19);
   timerProgress.value = left / total;  
@@ -27,9 +27,12 @@ setInterval(function () {
 const ws = new WebSocket('@{WebSocketTimeoutR eid}'.replace("http:", "ws:").replace("https:", "wss:"))
 
 ws.onmessage = async (e) => {
-  console.log(e);
-  [e.data].filter(x => x === "TIMEOUT").forEach(x => {
+  [e.data].filter(x => x === #{signalTimeout}).forEach(x => {
     document.getElementById(#{idOverlay}).classList.add('active');
     document.getElementById(#{idDialogTimeout}).showModal();
+    clearInterval(intervalId);
+    const labelTimer = document.getElementById(#{idLabelTimer});
+    labelTimer.classList.add('error');
+    labelTimer.textContent = #{msgr MsgExamTimeHasExpired} + '.';
   });
 };

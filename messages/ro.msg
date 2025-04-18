@@ -1,5 +1,9 @@
+ExamWasCancelled: Examenul a fost anulat
+ExamCompleted: Examen finalizat
+InvalidExam: Examen nevalid
+ExamTimeHasExpired: Timpul de examen a expirat
 TimeIsUp: Timpul a expirat
-ExamTimeHasExpired: Timpul alocat examenului a expirat
+AllottedExamTimeHasExpired: Timpul alocat examenului a expirat
 Timeout: Timp expirat
 Completed: Finalizat
 Ongoing: În desfășurare 

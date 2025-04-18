@@ -1,5 +1,9 @@
+ExamWasCancelled: Экзамен был отменен
+ExamCompleted: Экзамен завершен
+InvalidExam: Недействительный экзамен
+ExamTimeHasExpired: Время экзамена истекло
 TimeIsUp: Время истекло
-ExamTimeHasExpired: Время, отведенное на экзамен, истекло
+AllottedExamTimeHasExpired: Время, отведенное на экзамен, истекло
 Timeout: Время истекло
 Completed: Завершен
 Ongoing: В процессе 

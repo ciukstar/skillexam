@@ -182,12 +182,13 @@ instance Yesod App where
     isAuthorized PhotoPlaceholderR _ = return Authorized
     
     isAuthorized HomeR _ = setUltDestCurrent >> return Authorized
-    
-    isAuthorized StepR {} _ = return Authorized
     isAuthorized DocsR _ = return Authorized
     
-    isAuthorized CompleteR {} _ = return Authorized
     isAuthorized SummaryR {} _ = return Authorized
+    isAuthorized (CancelR uid _) _ = isAuthenticatedSelf uid
+    isAuthorized (CompleteR uid _ _ _) _ = isAuthenticatedSelf uid
+    isAuthorized (StepInvalidR uid _ _) _ = isAuthenticatedSelf uid
+    isAuthorized (StepR uid _ _ _) _ = isAuthenticatedSelf uid
 
     
     isAuthorized r@(SearchExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
@@ -213,8 +214,6 @@ instance Yesod App where
     isAuthorized r@(TestExamEnrollmentFormR _ uid _) _ = setUltDest r >> isAuthenticatedSelf uid
     isAuthorized (TestExamLoginR _) _ = return Authorized
     isAuthorized (SearchTestExamSkillsR _) _ = return Authorized
-    
-    isAuthorized TerminateR {} _ = return Authorized
     
     isAuthorized r@(StatsR TopSkilledR) _ = setUltDest r >> isAdmin
     isAuthorized (StatsR SkilledR {}) _ = isAdmin

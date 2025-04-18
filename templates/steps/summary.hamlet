@@ -66,9 +66,9 @@
                 <td>
                   
   <nav.right-align>
-    <a.button.border href=@?{(SummaryR tid eid,[("_accept","application/pdf")])} role=button target=_blank
+    <a.button.border href=@?{(SummaryR uid tid eid,[("_accept","application/pdf")])} role=button target=_blank
       onclick="this.href = `${this.href}&tz=${new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1]}`">
       PDF
       
     <a.button href=@{HomeR} role=button>
-      _{MsgFinish}
+      _{MsgClose}

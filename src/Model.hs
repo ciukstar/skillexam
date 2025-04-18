@@ -65,6 +65,7 @@ derivePersistField "StemType"
 data ExamStatus = ExamStatusOngoing
                 | ExamStatusCompleted
                 | ExamStatusTimeout
+                | ExamStatusCanceled
     deriving (Show, Read, Eq)
 derivePersistField "ExamStatus"
 
@@ -77,6 +78,7 @@ derivePersistField "ExamStatus"
 -- http://www.yesodweb.com/book/persistent/
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
+
 
 newtype Skills = Skills { unSkills :: [SkillId] }
   deriving (Show, Read, Eq)

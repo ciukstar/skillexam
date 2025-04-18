@@ -101,11 +101,11 @@ import Handler.Exams
     )
 
 import Handler.Steps
-    ( getStepR
-    , postStepR
+    ( getStepR, postStepR
+    , getStepInvalidR
     , postCompleteR
     , getSummaryR
-    , postTerminateR
+    , postCancelR
     , getRemainingTimeR
     , getWebSocketTimeoutR
     )

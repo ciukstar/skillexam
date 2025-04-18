@@ -127,7 +127,7 @@ postExamEnrollmentFormR uid cid tid = do
           case stem of
             Just (Entity qid _) -> do
                 setUltDest $ ExamsR uid
-                redirect $ StepR tid eid qid
+                redirect $ StepR uid tid eid qid
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest

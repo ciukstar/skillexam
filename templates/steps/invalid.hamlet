@@ -1,0 +1,57 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{HomeR} role=button>
+      <i>close
+
+    <h1.title.max>
+      _{MsgExam}
+
+<main.responsive>
+
+  $maybe Entity eid (Exam _ _ status _ _ _) <- exam
+
+    <figure.center-align>
+      <i.extra.error-text>block
+      <figcaption>
+        $case status
+          $of ExamStatusCompleted
+            <p.margin.large-text>
+              _{MsgExamCompleted}.
+
+            <div.row.center-align>
+              <a.button.transparent href=@{HomeR} role=button>
+                _{MsgHome}
+
+              <a.button href=@{SummaryR uid tid eid} role=button>
+                _{MsgSummary}
+            
+          $of ExamStatusTimeout
+            <p.margin.large-text>
+              _{MsgExamTimeHasExpired}.
+
+            <div.row.center-align>
+              <a.button.transparent href=@{HomeR} role=button>
+                _{MsgHome}
+
+              <a.button href=@{SummaryR uid tid eid} role=button>
+                _{MsgSummary}
+            
+          $of ExamStatusCanceled
+            <p.margin.large-text>
+              _{MsgExamWasCancelled}.
+
+            <div.row.center-align>
+              <a.button.transparent href=@{HomeR} role=button>
+                _{MsgHome}
+            
+          $of ExamStatusOngoing
+            <p.margin.large-text>
+              ... you really should not be here
+
+            <div.row.center-align>
+              <a.button.transparent href=@{HomeR} role=button>
+                _{MsgHome}
+        
+
+^{widgetSnackbar msgs}

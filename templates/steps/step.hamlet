@@ -4,8 +4,8 @@
     $maybe pid <- prev
       $maybe Entity qid _ <- stem
         <button.circle.transparent rel=prev aria-label=_{MsgPrevious}
-          type=submit form=#{idFormOptions} formaction=@{StepR tid eid qid}
-          name=location value=@{StepR tid eid pid}>
+          type=submit form=#{idFormOptions} formaction=@{StepR uid tid eid qid}
+          name=location value=@{StepR uid tid eid pid}>
           <i>arrow_back
    
     $nothing
@@ -20,30 +20,15 @@
     $maybe nid <- next
       $maybe Entity qid _ <- stem
         <button.circle.transparent aria-label=_{MsgNext} rel=next
-          type=submit form=#{idFormOptions} formaction=@{StepR tid eid qid}
-          name=location value=@{StepR tid eid nid}>
+          type=submit form=#{idFormOptions} formaction=@{StepR uid tid eid qid}
+          name=location value=@{StepR uid tid eid nid}>
           <i>arrow_forward
-
-
-<dialog.terminate ##{idDialogTerminate}>
-  <h4>_{MsgPleaseConfirm}
-  
-  <p>
-    _{MsgStopThisExam}
-    
-  <nav.right-align>
-    <button.transparent type=button data-ui=##{idDialogTerminate}>
-      _{MsgCancel}
-
-    <form method=post action=@{TerminateR tid eid}>
-      <button type=submit>
-        _{MsgStop}
 
 <main.responsive>
 
   $maybe Entity qid (Stem _ _ _ text _ instruc) <- stem
 
-    <div style="display:flex;flex-direction:row;justify-content:flex-end">
+    <div ##{idLabelTimer} style="display:flex;flex-direction:row;justify-content:flex-end">
       <span style="display:flex;flex-direction:column">
         <div.secondary-text>
           <small>_{MsgTimeRemaining}
@@ -61,7 +46,7 @@
       
       <hr.bottom-margin>
       
-      <form method=post action=@{StepR tid eid qid} enctype=#{et} novalidate ##{idFormOptions}>
+      <form method=post action=@{StepR uid tid eid qid} enctype=#{et} novalidate ##{idFormOptions}>
         
         <div.inputs>
           ^{fw}
@@ -70,11 +55,11 @@
 
       <nav.right-align>
         $maybe nid <- next
-          <button.border type=submit form=#{idFormOptions} rel=next name=location value=@{StepR tid eid nid}>
+          <button.border type=submit form=#{idFormOptions} rel=next name=location value=@{StepR uid tid eid nid}>
             <span>_{MsgNext}
             <i>arrow_forward
         $nothing
-          <button type=submit form=#{idFormOptions} formaction=@{CompleteR tid eid qid}>
+          <button type=submit form=#{idFormOptions} formaction=@{CompleteR uid tid eid qid}>
             _{MsgComplete}
         
 
@@ -86,8 +71,23 @@
   <h6>_{MsgTimeIsUp}
 
   <p.large-text>
-    _{MsgExamTimeHasExpired}.
+    _{MsgAllottedExamTimeHasExpired}.
   
   <nav.right-align.no-space>
-    <a.button.primary href=@{SummaryR tid eid}>
+    <a.button.primary href=@{SummaryR uid tid eid}>
       _{MsgFinish}
+
+
+<dialog.terminate ##{idDialogTerminate}>
+  <h4>_{MsgPleaseConfirm}
+  
+  <p>
+    _{MsgStopThisExam}
+    
+  <nav.right-align>
+    <button.transparent type=button data-ui=##{idDialogTerminate}>
+      _{MsgCancel}
+
+    <form method=post action=@{CancelR uid eid}>
+      <button type=submit>
+        _{MsgStop}
