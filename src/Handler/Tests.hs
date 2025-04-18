@@ -56,7 +56,7 @@ import Foundation
     , MsgDifficultyMedium, MsgAuthenticate, MsgYouNeedToLoginForExam
     , MsgLoginRequired, MsgStartExam, MsgPassScore, MsgPhoto, MsgMinutes
     , MsgCandidate, MsgAttempt, MsgInvalidArguments, MsgNoQuestionsForTheTest
-    , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms
+    , MsgInvalidFormData, MsgNoExamsWereFoundForSearchTerms, MsgEnrollment
     )
   )
 

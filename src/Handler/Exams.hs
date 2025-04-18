@@ -17,9 +17,15 @@ module Handler.Exams
   ) where
 
 
+import Control.Concurrent (forkIO, threadDelay)
+import Control.Concurrent.STM
+    ( atomically, readTVar, newBroadcastTChan, writeTVar, writeTChan
+    )
+
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(bimap, second))
+import qualified Data.Map as M (insert, delete)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
@@ -35,7 +41,8 @@ import Database.Esqueleto.Experimental
 import Database.Persist (Entity (Entity), entityVal, insert)
 
 import Foundation
-  ( App, Handler, Form, widgetAccount, widgetMainMenu, widgetSnackbar
+  ( App, Handler, Form
+  , widgetAccount, widgetMainMenu, widgetSnackbar
   , Route
     ( DataR, ExamsR, ExamR, PhotoPlaceholderR, ExamsAfterLoginR
     , SearchExamsR, AuthR, HomeR, ExamEnrollmentFormR, StepR
@@ -53,9 +60,10 @@ import Foundation
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
-    , MsgTimeout, MsgTimeCompleted, MsgHours
+    , MsgTimeout, MsgTimeCompleted, MsgHours, MsgCancelled
     )
   )
+import qualified Foundation as F (App (exams))
 
 import Material3 (md3radioField, md3widget)
 
@@ -67,7 +75,7 @@ import Model
       , candidateFamilyName
       )
     , ExamId, Exam (Exam, examEnd, examStatus)
-    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout)
+    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout, ExamStatusCanceled)
     , TestId, Test (Test, testPass, testName)
     , Option, Stem, Answer, UserId
     , TimeUnit (TimeUnitMinute, TimeUnitHour)
@@ -75,6 +83,7 @@ import Model
       ( CandidateId, ExamCandidate, ExamStart, ExamAttempt, ExamTest, TestId
       , ExamId, StemId, StemTest, OptionStem, OptionPoints, AnswerOption
       , AnswerExam, TestName, CandidateUser, OptionId, StemOrdinal
+      , TestDuration, TestDurationUnit
       )
     )
 
@@ -92,6 +101,7 @@ import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, getMessages, whamlet, redirect
     , SomeMessage (SomeMessage), MonadHandler (liftHandler), ToWidget (toWidget)
     , addMessageI, FileInfo, setUltDest, YesodRequest (reqGetParams), getRequest
+    , getYesod
     )
 import Yesod.Core.Handler
     ( HandlerFor, setUltDestCurrent, getUrlRender, newIdent
@@ -125,8 +135,28 @@ postExamEnrollmentFormR uid cid tid = do
                   where_ $ y ^. StemTest ==. x ^. StemTest
                   return $ min_ $ y ^. StemOrdinal )
               return x
+
+          (duration, unit) <- (maybe (0,TimeUnitMinute) (bimap unValue unValue) <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Test
+              where_ $ x ^. TestId ==. val tid
+              return (x ^. TestDuration, x ^. TestDurationUnit)
+              
           case stem of
             Just (Entity qid _) -> do
+                ongoing <- F.exams <$> getYesod
+                chan <- liftIO $ atomically $ do
+                    m <- readTVar ongoing
+                    chan <- newBroadcastTChan
+                    writeTVar ongoing (M.insert eid chan m)
+                    return chan
+
+                _ <- liftIO $ forkIO $ do
+                    threadDelay (round (duration * toSeconds unit * 1000000))                        
+                    atomically $ writeTChan chan ExamStatusTimeout
+                    atomically $ do
+                        m <- readTVar ongoing
+                        writeTVar ongoing $ M.delete eid m
+                        
                 setUltDest $ ExamsR uid
                 redirect $ StepR uid tid eid qid
             
@@ -137,6 +167,11 @@ postExamEnrollmentFormR uid cid tid = do
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
           redirect $ ExamEnrollmentFormR uid cid tid
+
+  where
+      toSeconds unit = case unit of
+        TimeUnitMinute -> 60
+        TimeUnitHour -> 3600
 
 
 getExamEnrollmentFormR :: UserId -> CandidateId -> TestId -> Handler Html

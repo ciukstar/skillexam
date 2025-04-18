@@ -13,7 +13,7 @@
   <form method=post action=@{DataR SkillsR} enctype=#{enctype} novalidate>
     ^{widget}
     <nav.right-align>
-      <a.button.transparent href=@{DataR SkillsR} role=button>
+      <a.button.transparent.link href=@{DataR SkillsR} role=button>
         _{MsgCancel}
 
       <button type=submit>

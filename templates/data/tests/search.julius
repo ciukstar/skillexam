@@ -1,0 +1,15 @@
+
+const buttonSearch = document.getElementById(#{idButtonSearch});
+document.getElementById(#{idInputSearch}).addEventListener('input', debounce(e => {
+  buttonSearch.classList.add('primary');
+}, 500));
+
+function debounce(f,t) {
+  let timeoutId = null;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      f.apply(null, args);
+    }, t);
+  };
+}

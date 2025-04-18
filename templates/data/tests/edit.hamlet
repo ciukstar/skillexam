@@ -12,7 +12,7 @@
   <form method=post action=@{DataR $ TestR eid} enctype=#{enctype} novalidate>
     ^{widget}
     <nav.right-align>
-      <a.button.transparent href=@{DataR $ TestR eid} role=button>
+      <a.button.transparent.link href=@{DataR $ TestR eid} role=button>
         _{MsgCancel}
 
       <button type=submit>

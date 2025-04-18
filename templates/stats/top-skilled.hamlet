@@ -67,7 +67,7 @@
               #{name}
 
     <nav.right-align>
-      <button.transparent type=button data-ui=##{idDialogSkills}>
+      <button.transparent.link type=button data-ui=##{idDialogSkills}>
         _{MsgCancel}
 
       <button type=submit form=#{idFormSkills}>

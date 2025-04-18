@@ -61,13 +61,16 @@
   
               $of ExamStatusTimeout
                 _{MsgTimeout}
+  
+              $of ExamStatusCanceled
+                _{MsgCancelled}
                 
         <tr.wave>
           <th scope=row>_{MsgTimeCompleted}
           $maybe end <- examEnd exam
             <td>
               $with dt <- iso8601Show end
-                <time.full-datetime datetime=#{dt}>
+                <time.daytime datetime=#{dt}>
                   #{dt}
           $nothing
             <td>

@@ -1,3 +1,4 @@
+Cancelled: Anulat
 StateMachineDiagram: Diagrama mașinii de stare
 Unit: Unitate
 Hours: Ore

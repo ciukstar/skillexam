@@ -22,8 +22,7 @@
     <figure.center-align>
       <i.extra>folder_open
       <figcaption>
-        <div>
-          _{MsgNoExams}.
+        _{MsgNoExams}.
    
   $else
     ^{list}

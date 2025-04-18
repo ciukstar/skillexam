@@ -1,3 +1,4 @@
+Cancelled: Cancelled
 StateMachineDiagram: State machine diagram
 Unit: Unit
 Hours: Hours

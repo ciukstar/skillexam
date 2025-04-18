@@ -60,7 +60,7 @@ import Foundation
       , MsgBirthday, MsgPhoto, MsgSkills , MsgDelete, MsgDetails
       , MsgBack, MsgAge, MsgExams, MsgInvalidData, MsgClose
       , MsgNoCandidatesYet, MsgNewRecordAdded, MsgRecordEdited
-      , MsgRecordDeleted, MsgPass, MsgFail, MsgNoSkillsYet
+      , MsgRecordDeleted, MsgPass, MsgFail, MsgNoSkillsYet, MsgCancelled
       , MsgNoExamsYet, MsgPassExamInvite, MsgTakePhoto, MsgUploadPhoto
       , MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
       , MsgExam, MsgCompleted, MsgExamResults, MsgMaxScore, MsgPassScore
@@ -79,16 +79,18 @@ import Model
       )
     , CandidateId, Photo (Photo)
     , ExamId, Exam (Exam, examEnd, examStatus)
-    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout)
-    , Test (Test, testName, testPass), Stem, Answer, Option, Skill (Skill)
-    , User
+    , ExamStatus
+      ( ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout
+      , ExamStatusCanceled
+      )
+    , Test (Test, testName, testPass)
+    , Stem, Answer, Option, Skill (Skill), User
     , EntityField
       ( CandidateId, PhotoCandidate, PhotoPhoto, CandidateFamilyName
-      , CandidateGivenName, CandidateAdditionalName
-      , ExamTest, ExamCandidate
-      , StemId, TestId, ExamId, AnswerExam
+      , CandidateGivenName, CandidateAdditionalName, UserEmail
+      , ExamTest, ExamCandidate, StemId, TestId, ExamId, AnswerExam
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
-      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId, UserEmail
+      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId
       )
     )
 
@@ -147,6 +149,8 @@ getCandidatesSearchR = do
     defaultLayout $ do
         setTitleI MsgSearch
         idFormQuery <- newIdent
+        idInputSearch <- newIdent
+        idButtonSearch <- newIdent
         $(widgetFile "data/candidates/search")
         $(widgetFile "data/candidates/candidates")
 

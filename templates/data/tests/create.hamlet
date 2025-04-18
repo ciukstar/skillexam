@@ -15,7 +15,7 @@
     
     <nav.right-align>
     
-      <a.button.transparent href=@{DataR TestsR} role=button>
+      <a.button.transparent.link href=@{DataR TestsR} role=button>
         _{MsgCancel}
         
       <button type=submit>

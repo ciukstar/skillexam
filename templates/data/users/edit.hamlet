@@ -12,7 +12,7 @@
   <form.margin method=post action=@{DataR $ UserR uid} enctype=#{et} novalidate>
     ^{fw}
     <nav.right-align>
-      <a.button.transparent href=@{DataR $ UserR uid}>
+      <a.button.transparent.link href=@{DataR $ UserR uid}>
         _{MsgCancel}
       <button.primary type=submit>
         _{MsgSave}

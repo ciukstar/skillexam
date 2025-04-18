@@ -38,9 +38,9 @@
   <h5>_{MsgConfirmPlease}
   <div>_{MsgDeleteAreYouSure}
   <nav.right-align.no-space>
-    <button.transparent.link data-ui=##{idDialogDelete}>
+    <button.transparent.link type=button data-ui=##{idDialogDelete}>
       _{MsgCancel}
     <form method=post action=@{DataR $ SkillsDeleteR sid} enctype=#{et0}>
       ^{fw0}
-      <button.primary type=submit>
+      <button.error type=submit>
         _{MsgDelete}

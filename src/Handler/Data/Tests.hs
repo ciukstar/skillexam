@@ -148,6 +148,8 @@ getTestSearchR = do
     defaultLayout $ do
         setTitleI MsgSearch
         idFormQuery <- newIdent
+        idInputSearch <- newIdent
+        idButtonSearch <- newIdent
         $(widgetFile "data/tests/search")
         $(widgetFile "data/tests/tests")
 

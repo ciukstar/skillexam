@@ -1,11 +1,16 @@
 
-div.search
+##{idButtonSearch}
+    position: absolute
+    inset: 0.5rem 0 auto auto
+    cursor: pointer
+    z-index: 1
 
-    button.end
-        position: absolute
-        inset: 50% 1rem auto auto
-        transform: translateY(-50%)
-        cursor: pointer
-        z-index: 1
-        inline-size: 1.5rem
-        block-size: 2rem
+main
+    a.row
+        div.max
+            min-width: 0
+            
+            div.headline, div.supporting-text
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis

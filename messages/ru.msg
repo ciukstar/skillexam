@@ -1,3 +1,4 @@
+Cancelled: Отменен
 StateMachineDiagram: Диаграмма конечного автомата
 Unit: Единица
 Hours: Часы

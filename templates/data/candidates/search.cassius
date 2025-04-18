@@ -1,6 +1,7 @@
 
-header.mdc-top-app-bar
-  background-color: var(--theme-background)
-  color: var(--theme-text-primary-on-light)
-  label.mdc-text-field
-    border-radius: 0
+
+##{idButtonSearch}
+    position: absolute
+    inset: 0.5rem 0 auto auto
+    cursor: pointer
+    z-index: 1

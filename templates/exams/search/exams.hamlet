@@ -56,7 +56,7 @@
             $maybe end <- end
               <div.supporting-text.secondary-text.small-text>
                 $with dt <- show end
-                  <time.full-datetime datetime=#{dt}>
+                  <time.daytime datetime=#{dt}>
                     #{dt}
 
           <i.secondary-text>arrow_forward_ios
@@ -87,7 +87,7 @@
             $maybe end <- end
               <div.supporting-text.secondary-text.small-text>
                 $with dt <- show end
-                  <time.full-datetime datetime=#{dt}>
+                  <time.daytime datetime=#{dt}>
                     #{dt}
 
           <i.secondary-text>arrow_forward_ios

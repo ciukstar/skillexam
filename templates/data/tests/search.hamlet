@@ -8,9 +8,10 @@
       <i>arrow_back    
 
     $maybe q <- mq
-      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q value=#{q}>
+      <input placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q value=#{q} ##{idInputSearch}
+          autofocus onfocus="this.setSelectionRange(this.value.length,this.value.length);">
     $nothing
-      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q>
+      <input autofocus placeholder=_{MsgSearch} type=search form=#{idFormQuery} name=q ##{idInputSearch}>
     
-    <button.end.transparent.round.circle.wave type=submit form=#{idFormQuery}>
+    <button.end.transparent.circle.wave type=submit form=#{idFormQuery} ##{idButtonSearch}>
       <i>search

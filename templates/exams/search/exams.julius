@@ -15,7 +15,7 @@ function debounce(f,t) {
 }
 
 Array.from(
-  document.querySelectorAll('time.full-datetime[datetime]')
+  document.querySelectorAll('time.daytime[datetime]')
 ).forEach(function (x) {
   x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,

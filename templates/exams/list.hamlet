@@ -50,7 +50,7 @@ $forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ 
   <form method=post action=@{ExamsR uid} enctype=#{et}>
     ^{fw}
     <nav.right-align>
-      <button.transparent type=button data-ui=##{idDialogTests}>
+      <button.transparent.link type=button data-ui=##{idDialogTests}>
         _{MsgCancel}
       <button type=submit>
         _{MsgSelect}

@@ -112,7 +112,6 @@ keyUtlDest = "_ULT"
 userSessKey :: Text
 userSessKey = "candidate"
 
-
 msgSuccess :: Text
 msgSuccess = "success"
 
