@@ -7,16 +7,18 @@
     <h1.title.max>
       _{MsgAuthentication}
     
-<main.responsive.padding.center-align>
-  $with plugins <- authPlugins app
-    $forall (i,p) <- zip indexes plugins
-      ^{apLogin p tp}
-      
-      $if i < length plugins
-        <div style="border-top:1px solid rgba(0,0,0,0.3);position:relative;margin: 1rem 0">
-          <div.background.large-text
-              style="padding:0 0.5rem;position:absolute;left:50%;transform:translate(-50%,-50%)">
-              
-            _{MsgOr}
+<main.responsive.padding.vertical.middle-align>
+
+  <div.responsive.center-align.top-margin style="max-width:30rem">
+    $with plugins <- authPlugins app
+      $forall (i,p) <- zip indexes plugins
+        ^{apLogin p tp}
+
+        $if i < length plugins
+          <div style="border-top:1px solid rgba(0,0,0,0.3);position:relative;margin: 1rem 0">
+            <div.background.large-text
+                style="padding:0 0.5rem;position:absolute;left:50%;transform:translate(-50%,-50%)">
+
+              _{MsgOr}
 
 ^{widgetSnackbar msgs}

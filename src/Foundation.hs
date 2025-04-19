@@ -46,14 +46,14 @@ import Yesod.Core.Handler
     ( getYesod, defaultCsrfCookieName, defaultCsrfHeaderName
     , withUrlRenderer, languages, HandlerFor, newIdent, getMessages
     , setUltDestCurrent, selectRep, provideRep, getMessageRender
-    , getRouteToParent, getUrlRender, lookupSession, setUltDest
+    , getRouteToParent, getUrlRender, lookupSession, setUltDest, getUrlRenderParams
     )
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Core
     ( MonadUnliftIO, unauthorizedI, object, (.=)
     , ErrorResponse (NotFound, PermissionDenied, InvalidArgs)
-    , TypedContent, Yesod (errorHandler), defaultErrorHandler
-    , setTitleI, WidgetFor
+    , TypedContent (TypedContent), Yesod (errorHandler), defaultErrorHandler
+    , setTitleI, WidgetFor, typeJavascript, ToContent (toContent)
     )
 import Yesod.Core.Types     (Logger)
 import Yesod.Default.Util   (addStaticContentExternal)
@@ -65,6 +65,7 @@ import Yesod.Form.Types (MForm, FormResult)
 import Control.Concurrent.STM.TChan (TChan)
 import Control.Concurrent.STM.TVar (TVar)
 import Data.Map (Map)
+import Text.Julius (juliusFile)
 
 
 -- | The foundation datatype for your application. This can be a good place to
@@ -178,6 +179,9 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized SitemapR _ = return Authorized
+    isAuthorized WebAppManifestR _ = return Authorized
+    isAuthorized ServiceWorkerR _ = return Authorized
     
     isAuthorized PhotoPlaceholderR _ = return Authorized
     
@@ -356,6 +360,11 @@ isAdmin = do
         Just (Entity _ (User _ _ _ _ True _ _ _)) -> return Authorized
         Just (Entity _ (User _ _ _ _ False _ _ _)) -> unauthorizedI MsgAccessDeniedAdminsOnly
         Nothing -> unauthorizedI MsgSignInToAccessPlease
+
+
+getServiceWorkerR :: Handler TypedContent
+getServiceWorkerR = do
+    TypedContent typeJavascript . toContent . $(juliusFile "static/js/sw.julius") <$> getUrlRenderParams
         
 
 -- How to run database actions.

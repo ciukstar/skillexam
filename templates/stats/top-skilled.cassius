@@ -1,4 +1,17 @@
 
+main
+
+    a.row
+    
+        div.max
+            min-width: 0
+            
+            div.headline, div.supporting-text
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis
+
+
 ##{idFormSkills}
     display: flex
     flex-direction: column

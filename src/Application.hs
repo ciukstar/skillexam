@@ -23,6 +23,7 @@ module Application
 
 import Control.Concurrent.STM.TVar (newTVarIO)
 import Control.Monad (void, when)
+import Control.Monad.IO.Class (MonadIO(liftIO))
 import Control.Monad.Logger (liftLoc, runLoggingT, LogLevel (LevelError))
 import Control.Monad.Trans.Reader (ReaderT)
 
@@ -37,7 +38,7 @@ import Database.Persist.Sqlite
     )
 
 import Foundation
-    ( App (..), Handler, resourcesApp, unsafeHandler
+    ( App (..), Handler, resourcesApp, unsafeHandler, getServiceWorkerR
     , Route (..)
     , DataR (..)
     , StatsR (..)
@@ -55,7 +56,9 @@ import Model
     )
 
 import Network.HTTP.Client.TLS (getGlobalManager)
-import Network.Wai (Middleware, Application)
+import Network.HTTP.Types (Header)
+import Network.Wai (Middleware, Application, mapResponseHeaders)
+import qualified Network.Wai as W (Response)
 import Network.Wai.Handler.Warp
     ( Settings, defaultSettings, defaultShouldDisplayException
     , runSettings, setHost, setOnException, setPort, getPort
@@ -80,6 +83,20 @@ import Settings
 import System.Environment.Blank (getEnv)
 import System.Log.FastLogger
     ( defaultBufSize, newStdoutLoggerSet, toLogStr
+    )
+
+import Handler.Candidates
+    ( getCandidatesR, getCandidateCreateFormR
+    , postCandidatesR, getCandidatePhotoR, getCandidateR
+    , getCandidateEditFormR, postCandidateR
+    , postCandidateDeleR, getCandidatesSearchR
+    , getCandidateExamsR, getCandidateExamR
+    , getCandidateSkillsR, getCandidatePhotosR
+    )
+
+import Handler.Common
+    ( getWebAppManifestR, getSitemapR, getFaviconR, getRobotsR
+    , getPhotoPlaceholderR
     )
 
 import Handler.Stats
@@ -108,15 +125,6 @@ import Handler.Steps
     , postCancelR
     , getRemainingTimeR
     , getWebSocketTimeoutR
-    )
-
-import Handler.Candidates
-    ( getCandidatesR, getCandidateCreateFormR
-    , postCandidatesR, getCandidatePhotoR, getCandidateR
-    , getCandidateEditFormR, postCandidateR
-    , postCandidateDeleR, getCandidatesSearchR
-    , getCandidateExamsR, getCandidateExamR
-    , getCandidateSkillsR, getCandidatePhotosR
     )
 
 import Handler.Docs (getDocsR)
@@ -173,8 +181,6 @@ import Handler.Data.Skills
     , getSkillR, getSkillEditFormR, postSkillR
     )
 
-import Handler.Common ( getFaviconR, getRobotsR, getPhotoPlaceholderR )
-
 import Demo.DemoDataFR (populateFR)
 import Demo.DemoDataRO (populateRO)
 import Demo.DemoDataRU (populateRU)
@@ -185,7 +191,6 @@ import Yesod.Auth.Email (saltPass)
 import Yesod.Core (Yesod(messageLoggerSource))
 import Yesod.Core.Dispatch (mkYesodDispatch, defaultMiddlewaresNoLogging, toWaiAppPlain)
 import Yesod.Core.Types (Logger(loggerSet))
-import Control.Monad.IO.Class (MonadIO(liftIO))
 import Yesod.Default.Config2
     ( makeYesodLogger, getDevSettings, useEnv, loadYamlSettingsArgs
     , develMainHelper, loadYamlSettings, configSettingsYml
@@ -268,7 +273,19 @@ makeApplication foundation = do
     logWare <- makeLogWare foundation
     -- Create the WAI application and apply middlewares
     appPlain <- toWaiAppPlain foundation
-    return $ logWare $ defaultMiddlewaresNoLogging $ gzip def { gzipFiles = GzipCompress } appPlain
+    return $ logWare $ defaultMiddlewaresNoLogging $
+        ( withHeader ("Service-Worker-Allowed","/") . gzip def { gzipFiles = GzipCompress }
+        ) appPlain
+
+
+withHeader :: Header -> Middleware
+withHeader h app req res = app req $ res . addH h
+
+
+addH :: Header -> W.Response -> W.Response
+addH h = mapResponseHeaders (h :)
+
+
 
 makeLogWare :: App -> IO Middleware
 makeLogWare foundation =

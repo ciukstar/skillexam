@@ -6,7 +6,7 @@ main
         div.max
             min-width: 0
             
-            div.headline, div.supproting-text
+            div.headline, div.supporting-text
                 white-space: nowrap
                 overflow: hidden
                 text-overflow: ellipsis

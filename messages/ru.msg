@@ -1,3 +1,4 @@
+MainMenu: Главное меню
 Cancelled: Отменен
 StateMachineDiagram: Диаграмма конечного автомата
 Unit: Единица

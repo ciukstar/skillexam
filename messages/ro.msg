@@ -1,3 +1,4 @@
+MainMenu: Meniul principal
 Cancelled: Anulat
 StateMachineDiagram: Diagrama mașinii de stare
 Unit: Unitate

@@ -1,2 +1,4 @@
 
+navigator.serviceWorker.register('@{ServiceWorkerR}', { scope: '/' });
+
 

@@ -1,3 +1,4 @@
+MainMenu: Menu principal
 Cancelled: Annulé
 StateMachineDiagram: Diagramme de machine d'état
 Unit: Unité 

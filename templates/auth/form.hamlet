@@ -29,11 +29,15 @@ $forall (_,msg) <- msgs
 
   <div.field.fill.label.round.border>
     <input type=text name=username required ##{idInputUsername} autocomplete=email>
-    <label for=#{idInputUsername}>_{MsgUsername}
+    <label for=#{idInputUsername}>
+      _{MsgUsername}
+      <sup>*
 
   <div.field.fill.label.round.border>
     <input type=password name=password required ##{idInputPassword}>
-    <label for=#{idInputPassword}>_{MsgPassword}
+    <label for=#{idInputPassword}>
+      _{MsgPassword}
+      <sup>*
 
   <button.responsive type=submit>
     _{MsgSignIn}

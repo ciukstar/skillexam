@@ -4,12 +4,10 @@
 {-# LANGUAGE TypeApplications #-}
 
 module Handler.Data.Tests
-  ( getTestsR
+  ( getTestsR, postTestsR
   , getTestCreateFormR
-  , postTestsR
   , getTestEditFormR
-  , postTestR
-  , getTestR
+  , getTestR, postTestR  
   , postTestDeleR
   , getTestSearchR
   , postTestPublishR
@@ -23,10 +21,9 @@ import Data.Maybe (isJust)
 import Data.Text (Text, unpack, pack)
 
 import Database.Esqueleto.Experimental
-    (select, from, table, where_, orderBy, desc
+    ( Value (unValue), select, from, table, where_, orderBy, desc
     , (^.), (==.), (%), (++.), (||.), (=.)
-    , val, selectOne, delete, upper_
-    , like, just, update, set, Value (unValue)
+    , val, selectOne, delete, upper_, like, just, update, set
     )
 import Database.Persist (Entity (Entity), entityVal, insert_, replace)
 import Database.Persist.Sql (fromSqlKey, toSqlKey)

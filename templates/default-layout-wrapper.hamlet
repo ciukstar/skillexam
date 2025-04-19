@@ -10,6 +10,12 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="theme-color" content="#6750a4">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link rel=icon type="image/x-icon" href=@{FaviconR}>
+    <link rel=apple-touch-icon href=@{StaticR img_apple_touch_icon_png}>
+    <link rel="sitemap" type="application/xml" title="Sitemap" href=@{SitemapR}>
+    <link rel=manifest href=@{WebAppManifestR}>
+    
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/beercss@3.10.6/dist/cdn/beer.min.css" rel="stylesheet">
