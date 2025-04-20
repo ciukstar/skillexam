@@ -14,6 +14,16 @@ Array.from(
   );
 });
 
+Array.from(
+  document.querySelectorAll('.percent[data-value]')
+).forEach(function (x) {
+  x.textContent = `(${Number(x.dataset.value).toLocaleString(navigator.language, {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })})`;
+});
+
 document.getElementById(#{idButtonTakeNewExam}).addEventListener('click', e => {
   e.stopPropagation();
 });

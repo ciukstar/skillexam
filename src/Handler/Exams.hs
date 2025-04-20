@@ -16,6 +16,7 @@ module Handler.Exams
   , getSearchExamR
   ) where
 
+import ClassyPrelude.Yesod (readMay)
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.STM
@@ -25,6 +26,7 @@ import Control.Concurrent.STM
 import Control.Monad.IO.Class (liftIO)
 
 import Data.Bifunctor (Bifunctor(bimap, second))
+import qualified Data.List.Safe as LS (head)
 import qualified Data.Map as M (insert, delete)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -33,7 +35,7 @@ import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Database.Esqueleto.Experimental
     ( SqlQuery, SqlExpr, Value (Value, unValue), selectOne, from, table
-    , (^.), (==.), (:&) ((:&)), (%), (++.), (>=.), (<.)
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (>=.), (<.), (/.)
     , where_, val, select, orderBy, innerJoin, sum_, desc, on, in_, like
     , subSelectList, selectQuery, upper_, groupBy, coalesceDefault, just
     , asc, subSelectMaybe, min_, max_, leftJoin, countRows
@@ -61,6 +63,7 @@ import Foundation
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
     , MsgTimeCompleted, MsgHours, MsgCancelled, MsgExamsPassed, MsgExamsFailed
+    , MsgSortBy, MsgDate, MsgResult, MsgFilter
     )
   )
 import qualified Foundation as F (App (exams))
@@ -68,14 +71,16 @@ import qualified Foundation as F (App (exams))
 import Material3 (md3radioField, md3widget)
 
 import Model
-    ( msgError
+    ( msgError, paramAsc, paramDesc
     , CandidateId
     , Candidate
       ( Candidate, candidateAdditionalName, candidateGivenName, candidateBday
       , candidateFamilyName
       )
     , ExamId, Exam (Exam, examEnd, examStatus)
-    , ExamStatus (ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout, ExamStatusCanceled)
+    , ExamStatus
+      ( ExamStatusOngoing, ExamStatusCompleted, ExamStatusTimeout, ExamStatusCanceled
+      )
     , TestId, Test (Test, testPass, testName)
     , Option, Stem, Answer, UserId
     , TimeUnit (TimeUnitMinute, TimeUnitHour)
@@ -83,7 +88,7 @@ import Model
       ( CandidateId, ExamCandidate, ExamStart, ExamAttempt, ExamTest, TestId
       , ExamId, StemId, StemTest, OptionStem, OptionPoints, AnswerOption
       , AnswerExam, TestName, CandidateUser, OptionId, StemOrdinal
-      , TestDuration, TestDurationUnit, TestPass
+      , TestDuration, TestDurationUnit, TestPass, ExamEnd, TestCode
       )
     )
 
@@ -117,7 +122,6 @@ import Yesod.Form.Types
     , FieldView (fvInput, fvId, fvErrors), FormResult (FormSuccess)
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
-import ClassyPrelude.Yesod (readMay)
 
 
 postExamEnrollmentFormR :: UserId -> CandidateId -> TestId -> Handler Html
@@ -301,7 +305,8 @@ getSearchExamsR uid = do
     exams <- case candidate of
       Just (Entity cid _) -> do
           result <- (readMay =<<) <$> lookupGetParam paramResult
-          runDB $ select $ queryScores cid result query
+          sort <- LS.head . filter ((`elem` [paramAsc,paramDesc]) . fst) . reqGetParams <$> getRequest
+          runDB $ select $ queryScores cid result sort query
       Nothing -> return []
           
     setUltDestCurrent
@@ -428,17 +433,22 @@ postExamsR uid = do
               
       _otherwise -> do
           result <- (readMay =<<) <$> lookupGetParam paramResult
+          
+          sort <- LS.head . filter ((`elem` [paramAsc,paramDesc]) . fst) . reqGetParams <$> getRequest
+          
           exams <- case candidate of
             Just (Entity cid _) -> do
-                runDB $ select $ queryScores cid result Nothing
+                runDB $ select $ queryScores cid result sort Nothing
             Nothing -> return []
             
           defaultLayout $ do
-              setTitleI MsgMyExams
+              setTitleI MsgMyExams 
               idOverlay <- newIdent
               idDialogMainMenu <- newIdent
               idButtonTakeNewExam <- newIdent
               idFormQuery <- newIdent
+              idInputResultFilter <- newIdent
+              idInputSortBy <- newIdent
               idDialogTests <- newIdent
               let list = $(widgetFile "exams/list")
               $(widgetFile "exams/exams")
@@ -451,11 +461,25 @@ data ExamResult = ExamResultPassed | ExamResultFailed
 paramResult :: Text
 paramResult = "result"
 
+valResult :: Text
+valResult = "result"
+
+valExamCode :: Text
+valExamCode = "code"
+
+valExamName :: Text
+valExamName = "name"
+
+valTimeEnd :: Text
+valTimeEnd = "end" 
+
 
 getExamsR :: UserId -> HandlerFor App Html
 getExamsR uid = do
 
     result <- (readMay =<<) <$> lookupGetParam paramResult
+
+    sort <- LS.head . filter ((`elem` [paramAsc,paramDesc]) . fst) . reqGetParams <$> getRequest
     
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
@@ -463,7 +487,7 @@ getExamsR uid = do
         return x
 
     exams <- case candidate of
-      Just (Entity cid _) -> runDB $ select $ queryScores cid result Nothing
+      Just (Entity cid _) -> runDB $ select $ queryScores cid result sort Nothing
       Nothing -> return []
           
     setUltDestCurrent
@@ -474,6 +498,8 @@ getExamsR uid = do
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
         idButtonTakeNewExam <- newIdent
+        idInputResultFilter <- newIdent
+        idInputSortBy <- newIdent
         idFormQuery <- newIdent
         idDialogTests <- newIdent
         let list = $(widgetFile "exams/list")
@@ -505,34 +531,52 @@ formTests extra = do
     return (testR,w)
 
 
-queryScores :: CandidateId -> Maybe ExamResult -> Maybe Text
+queryScores :: CandidateId -> Maybe ExamResult -> Maybe (Text, Text) -> Maybe Text
             -> SqlQuery ( SqlExpr (Entity Exam)
                         , SqlExpr (Entity Test)
-                        , SqlExpr (Value Double)
+                        , (SqlExpr (Value Double), SqlExpr (Value Double))
                         )
-queryScores cid result query = do
-    r :& e :& (_,s) <- from $ table @Exam
-       `innerJoin` table @Test `on` (\(r :& e) -> r ^. ExamTest ==. e ^. TestId)
+queryScores cid result sort query = do
+    e :& t :& (_,s) :& (_,n) <- from $ table @Exam
+       `innerJoin` table @Test `on` (\(e :& t) -> e ^. ExamTest ==. t ^. TestId)
        `innerJoin` ( do
           a :& o <- from $ table @Answer
               `innerJoin` table @Option `on` (\(a :& o) -> a ^. AnswerOption ==. o ^. OptionId)
           groupBy (a ^. AnswerExam)
           return (a ^. AnswerExam, coalesceDefault [sum_ (o ^. OptionPoints)] (val 0))
-        ) `on` (\(r :& _ :& (a, _)) -> a ==. r ^. ExamId)
+        ) `on` (\(e :& _ :& (a, _)) -> a ==. e ^. ExamId)
+       `innerJoin` ( do
+          m :& o <- from $ table @Stem
+              `innerJoin` table @Option `on` (\(m :& o) -> m ^. StemId ==. o ^. OptionStem)
+          groupBy (m ^. StemTest)
+          return (m ^. StemTest, coalesceDefault [sum_ (o ^. OptionPoints)] (val 0))
+        ) `on` (\(_ :& t :& _ :& (m,_)) -> m ==. t ^. TestId)
         
-    where_ $ r ^. ExamCandidate ==. val cid
+    where_ $ e ^. ExamCandidate ==. val cid
     
     case query of
-      Just q -> where_ $ upper_ (e ^. TestName) `like` (%) ++. upper_ (val q) ++. (%)
+      Just q -> where_ $ upper_ (t ^. TestName) `like` (%) ++. upper_ (val q) ++. (%)
       Nothing -> return ()
 
     case result of
-      Just ExamResultPassed -> where_ $ s >=. e ^. TestPass
-      Just ExamResultFailed -> where_ $ s <. e ^. TestPass
+      Just ExamResultPassed -> where_ $ s >=. t ^. TestPass
+      Just ExamResultFailed -> where_ $ s <. t ^. TestPass
       Nothing -> return ()
-      
-    orderBy [desc (r ^. ExamStart), desc (r ^. ExamAttempt)]
-    return (r,e,s)
+
+    case sort of
+      Just (p,v) | (p,v) == (paramAsc,valTimeEnd) -> orderBy [asc (e ^. ExamEnd)]
+                 | (p,v) == (paramDesc,valTimeEnd) -> orderBy [desc (e ^. ExamEnd)]
+                 | (p,v) == (paramAsc,valExamName) -> orderBy [asc (t ^. TestName)]
+                 | (p,v) == (paramDesc,valExamName) -> orderBy [desc (t ^. TestName)]
+                 | (p,v) == (paramAsc,valExamCode) -> orderBy [asc (t ^. TestCode)]
+                 | (p,v) == (paramDesc,valExamCode) -> orderBy [desc (t ^. TestCode)]
+                 | (p,v) == (paramAsc,valResult) -> orderBy [asc (s /. n)]
+                 | (p,v) == (paramDesc,valResult) -> orderBy [desc (s /. n)]
+                 | otherwise -> orderBy [desc (e ^. ExamStart), desc (e ^. ExamAttempt)]
+
+      Nothing -> orderBy [desc (e ^. ExamStart), desc (e ^. ExamAttempt)]      
+    
+    return (e,t,(s,n))
 
 
 printf :: String -> Double -> String

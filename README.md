@@ -72,7 +72,7 @@ After enrollment the candidate starts the Exam and its Answers are recorded.
 *State Machine Diagram*
 ![State Machine Diagram](static/img/SkillExam-SMD.svg)
 
-Once the exam time has expired, the system notifies the candidate and forces him to complete the exam.
+Once the exam time has expired, the system notifies the candidate and forces him to finish the exam.
 
 ### Answer
 

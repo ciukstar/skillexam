@@ -1,3 +1,6 @@
+Filter: Filter
+Result: Result
+SortBy: Sort by
 ExamsPassed: Passed
 ExamsFailed: Failed
 MainMenu: Main menu
@@ -281,4 +284,4 @@ Doc025: After enrollment the candidate starts the Exam and its Answers are recor
 
 Doc026: An Answer represents the Option for a given Question that a Candidate considers to be the correct one.
 
-Doc027: Once the exam time has expired, the system notifies the candidate and forces him to complete the exam
+Doc027: Once the exam time has expired, the system notifies the candidate and forces him to finish the exam

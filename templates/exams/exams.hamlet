@@ -18,30 +18,147 @@
 
 <main.responsive.no-padding>
 
-  <nav.scroll.padding>
-    <nav.no-space>
-      $case result 
-        $of Just ExamResultPassed
-          <button.border.left-round.small.fill type=submit form=#{idFormQuery}>
-            <span>_{MsgExamsPassed}
-          <button.border.right-round.small type=submit
-                 name=#{paramResult} value=#{show ExamResultFailed} form=#{idFormQuery}>
-            <span>_{MsgExamsFailed}
-     
-        $of Just ExamResultFailed
-          <button.border.left-round.small type=submit
-                 name=#{paramResult} value=#{show ExamResultPassed} form=#{idFormQuery}>
-            <span>_{MsgExamsPassed}
-          <button.border.right-round.small.fill type=submit form=#{idFormQuery}>
-            <span>_{MsgExamsFailed}
-     
-        $of Nothing
-          <button.border.left-round.small type=submit
-                 name=#{paramResult} value=#{show ExamResultPassed} form=#{idFormQuery}>
-            <span>_{MsgExamsPassed}
-          <button.border.right-round.small type=submit
-                 name=#{paramResult} value=#{show ExamResultFailed} form=#{idFormQuery}>
-            <span>_{MsgExamsFailed}
+  <details open>
+    <summary.left-margin>_{MsgFilter}
+
+    <nav.scroll.small-margin>
+      <nav.no-space>
+
+        $maybe result <- result
+          <input type=hidden name=#{paramResult} value=#{show result} form=#{idFormQuery} ##{idInputResultFilter}>
+        $nothing
+          <input type=hidden form=#{idFormQuery} ##{idInputResultFilter}>
+
+        $case result 
+          $of Just ExamResultPassed
+            <button.border.left-round.small.fill type=submit form=#{idFormQuery}
+                                                 onclick="filterExamsBy('','')">
+              <i>check
+              <span>_{MsgExamsPassed}
+            <button.border.right-round.small type=submit form=#{idFormQuery}
+                                             onclick="filterExamsBy('#{paramResult}','#{show ExamResultFailed}')">
+              <span>_{MsgExamsFailed}
+
+          $of Just ExamResultFailed
+            <button.border.left-round.small type=submit form=#{idFormQuery}
+                                            onclick="filterExamsBy('#{paramResult}','#{show ExamResultPassed}')">
+              <span>_{MsgExamsPassed}
+            <button.border.right-round.small.fill type=submit form=#{idFormQuery}
+                                                  onclick="filterExamsBy('','')">
+              <i>check
+              <span>_{MsgExamsFailed}
+
+          $of Nothing
+            <button.border.left-round.small type=submit form=#{idFormQuery}
+                                            onclick="filterExamsBy('#{paramResult}','#{show ExamResultPassed}')">
+              <span>_{MsgExamsPassed}
+            <button.border.right-round.small type=submit form=#{idFormQuery}
+                                             onclick="filterExamsBy('#{paramResult}','#{show ExamResultFailed}')">
+              <span>_{MsgExamsFailed}
+
+
+  <details open>
+    <summary.left-margin>_{MsgSortBy}
+
+    <nav.scroll.small-margin>
+      <nav.no-space>
+      
+        $maybe (direction,field) <- sort
+          <input type=hidden name=#{direction} value=#{field} form=#{idFormQuery} ##{idInputSortBy}>
+        $nothing
+          <input type=hidden form=#{idFormQuery} ##{idInputSortBy}>
+
+        $maybe field <- sort
+          $if field == (paramAsc,valTimeEnd)
+            <button.small.border.left-round.fill type=submit form=#{idFormQuery} 
+                                                 onclick="sortExamsBy('#{paramDesc}','#{valTimeEnd}')">
+              <i.small>south
+              <span>_{MsgDate}
+
+          $elseif field == (paramDesc,valTimeEnd)
+            <button.small.border.left-round.fill type=submit form=#{idFormQuery} 
+                                                 onclick="sortExamsBy('','')">
+              <i.small>north
+              <span>_{MsgDate}
+          $else
+            <button.small.border.left-round type=submit form=#{idFormQuery} 
+                                            onclick="sortExamsBy('#{paramAsc}','#{valTimeEnd}')">
+              <span>_{MsgDate}
+
+        $nothing
+          <button.small.border.left-round type=submit form=#{idFormQuery} 
+                                          onclick="sortExamsBy('#{paramAsc}','#{valTimeEnd}')">
+            <span>_{MsgDate}
+            
+
+        $maybe field <- sort
+          $if field == (paramAsc,valExamName)
+            <button.small.border.no-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('#{paramDesc}','#{valExamName}')">
+              <i.small>south
+              <span>_{MsgName}
+
+          $elseif field == (paramDesc,valExamName)
+            <button.small.border.no-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('','')">
+              <i.small>north
+              <span>_{MsgName}
+          $else
+            <button.small.border.no-round type=submit form=#{idFormQuery} 
+                                          onclick="sortExamsBy('#{paramAsc}','#{valExamName}')">
+              <span>_{MsgName}
+
+        $nothing
+          <button.small.border.no-round type=submit form=#{idFormQuery} 
+                                        onclick="sortExamsBy('#{paramAsc}','#{valExamName}')">
+            <span>_{MsgName}
+            
+
+        $maybe field <- sort
+          $if field == (paramAsc,valExamCode)
+            <button.small.border.no-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('#{paramDesc}','#{valExamCode}')">
+              <i.small>south
+              <span>_{MsgCode}
+
+          $elseif field == (paramDesc,valExamCode)
+            <button.small.border.no-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('','')">
+              <i.small>north
+              <span>_{MsgCode}
+          $else
+            <button.small.border.no-round type=submit form=#{idFormQuery} 
+                                          onclick="sortExamsBy('#{paramAsc}','#{valExamCode}')">
+              <span>_{MsgCode}
+
+        $nothing
+          <button.small.border.no-round type=submit form=#{idFormQuery} 
+                                        onclick="sortExamsBy('#{paramAsc}','#{valExamCode}')">
+            <span>_{MsgCode}
+            
+
+        $maybe field <- sort
+          $if field == (paramAsc,valResult)
+            <button.small.border.right-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('#{paramDesc}','#{valResult}')">
+              <i.small>south
+              <span>_{MsgResult}
+
+          $elseif field == (paramDesc,valResult)
+            <button.small.border.right-round.fill type=submit form=#{idFormQuery} 
+                                               onclick="sortExamsBy('','')">
+              <i.small>north
+              <span>_{MsgResult}
+          $else
+            <button.small.border.right-round type=submit form=#{idFormQuery} 
+                                          onclick="sortExamsBy('#{paramAsc}','#{valResult}')">
+              <span>_{MsgResult}
+
+        $nothing
+          <button.small.border.right-round type=submit form=#{idFormQuery} 
+                                           onclick="sortExamsBy('#{paramAsc}','#{valResult}')">
+            <span>_{MsgResult}
+            
 
   $if null exams
     <figure.center-align>

@@ -1,3 +1,6 @@
+Filter: Фильтровать
+Result: Результат
+SortBy: Сортировать по
 ExamsPassed: Сданные
 ExamsFailed: Проваленные
 MainMenu: Главное меню

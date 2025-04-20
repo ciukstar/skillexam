@@ -1,3 +1,6 @@
+Filter: Filtre
+Result: Résultat
+SortBy: Trier par
 ExamsPassed: Réussis
 ExamsFailed: Échoués
 MainMenu: Menu principal

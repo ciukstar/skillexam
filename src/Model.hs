@@ -106,6 +106,13 @@ instance HashDBUser User where
 instance SqlString Textarea
 
 
+paramAsc :: Text
+paramAsc = "asc"
+
+paramDesc :: Text
+paramDesc = "desc"
+
+
 keyUtlDest :: Text
 keyUtlDest = "_ULT"
 

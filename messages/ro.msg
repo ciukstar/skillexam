@@ -1,3 +1,6 @@
+Filter: Filtrați
+Result: Rezultat
+SortBy: Sortați după
 ExamsPassed: Promovate
 ExamsFailed: Nereușite
 MainMenu: Meniul principal

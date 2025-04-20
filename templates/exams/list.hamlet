@@ -1,5 +1,5 @@
 
-$forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ _),Value score) <- exams
+$forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ _),(Value score,Value total)) <- exams
   <a.row.padding.wave href=@{ExamR uid eid}>
 
     $if score >= pass
@@ -19,14 +19,20 @@ $forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ 
             _{MsgPass}
           $else
             _{MsgFail}
+            
         \ #
-        <span.lower>(_{MsgAttempt}: #{attempt})
+        
+        $with ratio <- score / total
+          <span.percent data-value=#{ratio}>(#{printf "%.2f" ratio})
+          
         
       $maybe end <- end
         <div.supporting-text.secondary-text.small-text>
           $with dt <- show end
             <time.full-datetime datetime=#{dt}>
               #{dt}
+              
+          <span.lower>(_{MsgAttempt}: #{attempt})
 
     <i.secondary-text>arrow_forward_ios
 
