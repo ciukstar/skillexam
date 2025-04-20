@@ -1,3 +1,5 @@
+ExamsPassed: Passed
+ExamsFailed: Failed
 MainMenu: Main menu
 Cancelled: Cancelled
 StateMachineDiagram: State machine diagram
@@ -278,3 +280,5 @@ Doc024: It describes when the Exam started and ended for the Candidate. It also 
 Doc025: After enrollment the candidate starts the Exam and its Answers are recorded.
 
 Doc026: An Answer represents the Option for a given Question that a Candidate considers to be the correct one.
+
+Doc027: Once the exam time has expired, the system notifies the candidate and forces him to complete the exam

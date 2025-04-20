@@ -69,6 +69,11 @@ It describes when the Exam started and ended for the Candidate. It also tracks t
 
 After enrollment the candidate starts the Exam and its Answers are recorded.
 
+*State Machine Diagram*
+![State Machine Diagram](static/img/SkillExam-SMD.svg)
+
+Once the exam time has expired, the system notifies the candidate and forces him to complete the exam.
+
 ### Answer
 
 An Answer represents the answer Option for a given Question that a Candidate considers to be the correct one.

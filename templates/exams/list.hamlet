@@ -1,6 +1,4 @@
 
-<form method=get #formGetMyExam>
-
 $forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ _),Value score) <- exams
   <a.row.padding.wave href=@{ExamR uid eid}>
 
@@ -33,6 +31,8 @@ $forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ 
     <i.secondary-text>arrow_forward_ios
 
   <hr>
+  
+<form method=get #formGetMyExam>
 
 <button.extended.large.elevate data-ui=##{idDialogTests} ##{idButtonTakeNewExam}>
    

@@ -45,11 +45,14 @@
 
 <dialog ##{idDialogDelete}>
   <h5>_{MsgConfirmPlease}
+
   <div>_{MsgDeleteAreYouSure}
-  <nav.right-align.no-space>
-    <button.transparent.link data-ui=##{idDialogDelete}>
-      _{MsgCancel}
-    <form method=post action=@{DataR $ CandidateDeleR cid} enctype=#{et0}>
-      ^{fw0}
-      <button.primary type=submit>
+  
+  <form method=post action=@{DataR $ CandidateDeleR cid} enctype=#{et0}>
+    ^{fw0}
+    
+    <nav.right-align.no-space>
+      <button.transparent.link type=button data-ui=##{idDialogDelete}>
+        _{MsgCancel}
+      <button.error type=submit>
         _{MsgDelete}

@@ -33,7 +33,7 @@ import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Database.Esqueleto.Experimental
     ( SqlQuery, SqlExpr, Value (Value, unValue), selectOne, from, table
-    , (^.), (==.), (:&) ((:&)), (%), (++.)
+    , (^.), (==.), (:&) ((:&)), (%), (++.), (>=.), (<.)
     , where_, val, select, orderBy, innerJoin, sum_, desc, on, in_, like
     , subSelectList, selectQuery, upper_, groupBy, coalesceDefault, just
     , asc, subSelectMaybe, min_, max_, leftJoin, countRows
@@ -54,13 +54,13 @@ import Foundation
     , MsgLogin, MsgPhoto, MsgAttempt, MsgExam, MsgBack, MsgTakePhoto
     , MsgExamResults, MsgStatus, MsgPass, MsgFail, MsgScore, MsgPassScore
     , MsgMaxScore, MsgCandidate, MsgCompleted, MsgSearch, MsgCancel
-    , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment
+    , MsgAuthenticate, MsgLoginToSeeYourExamsPlease, MsgEnrollment, MsgTimeout
     , MsgStartExam, MsgSelectATestForTheExam, MsgInvalidFormData, MsgBirthday
     , MsgNoQuestionsForTheTest, MsgPoints, MsgNumberOfQuestions, MsgName
     , MsgMinutes, MsgDuration, MsgDescr, MsgCode, MsgFamilyName, MsgSave
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
-    , MsgTimeout, MsgTimeCompleted, MsgHours, MsgCancelled
+    , MsgTimeCompleted, MsgHours, MsgCancelled, MsgExamsPassed, MsgExamsFailed
     )
   )
 import qualified Foundation as F (App (exams))
@@ -83,7 +83,7 @@ import Model
       ( CandidateId, ExamCandidate, ExamStart, ExamAttempt, ExamTest, TestId
       , ExamId, StemId, StemTest, OptionStem, OptionPoints, AnswerOption
       , AnswerExam, TestName, CandidateUser, OptionId, StemOrdinal
-      , TestDuration, TestDurationUnit
+      , TestDuration, TestDurationUnit, TestPass
       )
     )
 
@@ -101,7 +101,7 @@ import Yesod.Core
     ( Html, Yesod (defaultLayout), setTitleI, getMessages, whamlet, redirect
     , SomeMessage (SomeMessage), MonadHandler (liftHandler), ToWidget (toWidget)
     , addMessageI, FileInfo, setUltDest, YesodRequest (reqGetParams), getRequest
-    , getYesod
+    , getYesod, lookupGetParam
     )
 import Yesod.Core.Handler
     ( HandlerFor, setUltDestCurrent, getUrlRender, newIdent
@@ -117,6 +117,7 @@ import Yesod.Form.Types
     , FieldView (fvInput, fvId, fvErrors), FormResult (FormSuccess)
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
+import ClassyPrelude.Yesod (readMay)
 
 
 postExamEnrollmentFormR :: UserId -> CandidateId -> TestId -> Handler Html
@@ -298,7 +299,9 @@ getSearchExamsR uid = do
         return x
 
     exams <- case candidate of
-      Just (Entity cid _) -> runDB $ select $ queryScores cid query
+      Just (Entity cid _) -> do
+          result <- (readMay =<<) <$> lookupGetParam paramResult
+          runDB $ select $ queryScores cid result query
       Nothing -> return []
           
     setUltDestCurrent
@@ -424,8 +427,10 @@ postExamsR uid = do
             Nothing -> redirect $ ExamUserEnrollmentR uid tid
               
       _otherwise -> do
+          result <- (readMay =<<) <$> lookupGetParam paramResult
           exams <- case candidate of
-            Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
+            Just (Entity cid _) -> do
+                runDB $ select $ queryScores cid result Nothing
             Nothing -> return []
             
           defaultLayout $ do
@@ -433,13 +438,24 @@ postExamsR uid = do
               idOverlay <- newIdent
               idDialogMainMenu <- newIdent
               idButtonTakeNewExam <- newIdent
+              idFormQuery <- newIdent
               idDialogTests <- newIdent
               let list = $(widgetFile "exams/list")
               $(widgetFile "exams/exams")
     
 
+data ExamResult = ExamResultPassed | ExamResultFailed
+    deriving (Eq, Show, Read)
+
+
+paramResult :: Text
+paramResult = "result"
+
+
 getExamsR :: UserId -> HandlerFor App Html
 getExamsR uid = do
+
+    result <- (readMay =<<) <$> lookupGetParam paramResult
     
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
@@ -447,7 +463,7 @@ getExamsR uid = do
         return x
 
     exams <- case candidate of
-      Just (Entity cid _) -> runDB $ select $ queryScores cid Nothing
+      Just (Entity cid _) -> runDB $ select $ queryScores cid result Nothing
       Nothing -> return []
           
     setUltDestCurrent
@@ -458,6 +474,7 @@ getExamsR uid = do
         idOverlay <- newIdent
         idDialogMainMenu <- newIdent
         idButtonTakeNewExam <- newIdent
+        idFormQuery <- newIdent
         idDialogTests <- newIdent
         let list = $(widgetFile "exams/list")
         $(widgetFile "exams/exams")
@@ -488,12 +505,12 @@ formTests extra = do
     return (testR,w)
 
 
-queryScores :: CandidateId -> Maybe Text
+queryScores :: CandidateId -> Maybe ExamResult -> Maybe Text
             -> SqlQuery ( SqlExpr (Entity Exam)
                         , SqlExpr (Entity Test)
                         , SqlExpr (Value Double)
                         )
-queryScores cid query = do
+queryScores cid result query = do
     r :& e :& (_,s) <- from $ table @Exam
        `innerJoin` table @Test `on` (\(r :& e) -> r ^. ExamTest ==. e ^. TestId)
        `innerJoin` ( do
@@ -502,10 +519,18 @@ queryScores cid query = do
           groupBy (a ^. AnswerExam)
           return (a ^. AnswerExam, coalesceDefault [sum_ (o ^. OptionPoints)] (val 0))
         ) `on` (\(r :& _ :& (a, _)) -> a ==. r ^. ExamId)
+        
     where_ $ r ^. ExamCandidate ==. val cid
+    
     case query of
       Just q -> where_ $ upper_ (e ^. TestName) `like` (%) ++. upper_ (val q) ++. (%)
       Nothing -> return ()
+
+    case result of
+      Just ExamResultPassed -> where_ $ s >=. e ^. TestPass
+      Just ExamResultFailed -> where_ $ s <. e ^. TestPass
+      Nothing -> return ()
+      
     orderBy [desc (r ^. ExamStart), desc (r ^. ExamAttempt)]
     return (r,e,s)
 

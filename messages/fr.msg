@@ -1,3 +1,5 @@
+ExamsPassed: Réussis
+ExamsFailed: Échoués
 MainMenu: Menu principal
 Cancelled: Annulé
 StateMachineDiagram: Diagramme de machine d'état
@@ -278,3 +280,5 @@ Doc024: Il décrit quand l'examen a commencé et s'est terminé pour un candidat
 Doc025: Après l'inscription, le candidat commence l'examen et ses réponses sont enregistrées.
 
 Doc026: Une réponse représente l'option pour une question donnée qu'un candidat considère comme la bonne.
+
+Doc027: Une fois le temps d'examen expiré, le système avertit le candidat et l'oblige à terminer l'examen

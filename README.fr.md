@@ -73,6 +73,11 @@ Il décrit quand l'examen a commencé et s'est terminé pour un candidat. Il sui
 
 Après l'inscription, le candidat commence l'examen et ses réponses sont enregistrées.
 
+*Diagramme de machine d'état*
+![State Machine Diagram](static/img/SkillExam-SMD.svg)
+
+Une fois le temps d'examen expiré, le système avertit le candidat et l'oblige à terminer l'examen.
+
 ### Réponse
 
 Une réponse représente l'option pour une question donnée qu'un candidat considère comme la bonne.

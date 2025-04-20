@@ -18,6 +18,31 @@
 
 <main.responsive.no-padding>
 
+  <nav.scroll.padding>
+    <nav.no-space>
+      $case result 
+        $of Just ExamResultPassed
+          <button.border.left-round.small.fill type=submit form=#{idFormQuery}>
+            <span>_{MsgExamsPassed}
+          <button.border.right-round.small type=submit
+                 name=#{paramResult} value=#{show ExamResultFailed} form=#{idFormQuery}>
+            <span>_{MsgExamsFailed}
+     
+        $of Just ExamResultFailed
+          <button.border.left-round.small type=submit
+                 name=#{paramResult} value=#{show ExamResultPassed} form=#{idFormQuery}>
+            <span>_{MsgExamsPassed}
+          <button.border.right-round.small.fill type=submit form=#{idFormQuery}>
+            <span>_{MsgExamsFailed}
+     
+        $of Nothing
+          <button.border.left-round.small type=submit
+                 name=#{paramResult} value=#{show ExamResultPassed} form=#{idFormQuery}>
+            <span>_{MsgExamsPassed}
+          <button.border.right-round.small type=submit
+                 name=#{paramResult} value=#{show ExamResultFailed} form=#{idFormQuery}>
+            <span>_{MsgExamsFailed}
+
   $if null exams
     <figure.center-align>
       <i.extra>folder_open
@@ -26,6 +51,9 @@
    
   $else
     ^{list}
+
+
+  <form method=get action=@{ExamsR uid} ##{idFormQuery}>
 
 
 ^{widgetSnackbar msgs}

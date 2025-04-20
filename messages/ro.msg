@@ -1,3 +1,5 @@
+ExamsPassed: Promovate
+ExamsFailed: Nereușite
 MainMenu: Meniul principal
 Cancelled: Anulat
 StateMachineDiagram: Diagrama mașinii de stare
@@ -278,3 +280,5 @@ Doc024: Descrie când a început și s-a încheiat examenul pentru un candidat. 
 Doc025: După înregistrare, candidatul începe examenul și răspunsurile acestuia sunt înregistrate.
 
 Doc026: Un răspuns reprezintă opțiunea pentru o anumită întrebare pe care un candidat o consideră a fi cea corectă.
+
+Doc027: Odată ce timpul de examen a expirat, sistemul îl anunță pe candidat și îl obligă să finalizeze examenul
