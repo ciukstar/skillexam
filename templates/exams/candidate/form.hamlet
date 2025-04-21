@@ -27,7 +27,7 @@
         <i>photo_camera
 
 
-$forall v <- [fnameV,gnameV,anameV,bdayV]
+$forall v <- [fnameV,gnameV,anameV,bdayV,emailV,phoneV]
   ^{md3widget v}
 
       

@@ -106,9 +106,9 @@ getTestExamUserEnrollmentR tid uid = do
         return x
 
     case candidate of
-      Just (Entity cid (Candidate _ _ _ _ (Just uid'))) -> redirect $ TestExamEnrollmentFormR tid uid' cid
+      Just (Entity cid (Candidate _ _ _ _ _ _ (Just uid'))) -> redirect $ TestExamEnrollmentFormR tid uid' cid
       
-      Just (Entity _ (Candidate _ _ _ _ Nothing)) -> invalidArgsI [MsgInvalidArguments]
+      Just (Entity _ (Candidate _ _ _ _ _ _ Nothing)) -> invalidArgsI [MsgInvalidArguments]
       
       Nothing -> redirect $ TestExamLoginR tid
 

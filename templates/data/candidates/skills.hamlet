@@ -1,16 +1,47 @@
 
-$if null skills
-  <figure.center-align>
-    <i.extra>folder_open
-    <figcaption>
-      <div>
-        _{MsgNoSkillsYet}.
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@?{(DataR CandidatesR,[("id",pack $ show $ fromSqlKey cid)])}
+      role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgCandidate}
+
+<main.responsive.no-padding>
+  $maybe Entity _ (Candidate fname gname aname _ _ _ _) <- candidate
+    <figure.center-align>
+      <img.extra.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+      <figcaption>
+        #{fname} #{gname}
+        $maybe aname <- aname
+          \ #{aname}
+
+    <div.tabs>
+      <a href=@{DataR $ CandidateR cid}>
+        _{MsgDetails}
         
-      <div.small-text.secondary-text>
-        _{MsgPassExamInvite}.
+      <a.active href=@{DataR $ CandidateSkillsR cid}>
+        _{MsgSkills}
+        
+      <a href=@{DataR $ CandidateExamsR cid}>
+        _{MsgExams}
       
-$else
-  <ul.list.border>
-    $forall Entity _ (Skill _ name _) <- skills
-      <li.wave>
-        #{name}
+    <div.page.no-padding.active>
+
+      $if null skills
+        <figure.center-align>
+          <i.extra>folder_open
+          <figcaption>
+            <div>
+              _{MsgNoSkillsYet}.
+
+            <div.small-text.secondary-text>
+              _{MsgPassExamInvite}.
+
+      $else
+        <ul.list.border>
+          $forall Entity _ (Skill _ name _) <- skills
+            <li.wave>
+              #{name}

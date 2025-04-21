@@ -21,10 +21,11 @@ module Handler.Candidates
   ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad (void, forM_, forM)
 
 import Data.Bifunctor (Bifunctor(bimap))
 import Data.Maybe (fromMaybe)
-import Data.Text (pack)
+import Data.Text (pack, Text)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Format.ISO8601 (iso8601Show)
@@ -38,9 +39,10 @@ import Database.Esqueleto.Experimental
     , SqlExpr, sum_, subSelectList, asc
     )
 import Database.Persist
-    ( Entity (Entity, entityVal), (=.)
-    , PersistStoreWrite (insert, replace), PersistUniqueWrite (upsert)
+    ( Entity (Entity, entityVal), insert, insert_, replace, upsert, insertMany_
+    , upsertBy
     )
+import qualified Database.Persist as P ((=.))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
@@ -58,14 +60,15 @@ import Foundation
       ( MsgCandidates, MsgSearch, MsgAdd, MsgFamilyName, MsgGivenName
       , MsgAdditionalName, MsgCandidate, MsgCancel, MsgSave
       , MsgBirthday, MsgPhoto, MsgSkills , MsgDelete, MsgDetails
-      , MsgBack, MsgAge, MsgExams, MsgInvalidData, MsgClose
+      , MsgBack, MsgAge, MsgExams, MsgInvalidData, MsgClose, MsgSocialMedia
       , MsgNoCandidatesYet, MsgNewRecordAdded, MsgRecordEdited
       , MsgRecordDeleted, MsgPass, MsgFail, MsgNoSkillsYet, MsgCancelled
       , MsgNoExamsYet, MsgPassExamInvite, MsgTakePhoto, MsgUploadPhoto
       , MsgEdit, MsgDeleteAreYouSure, MsgConfirmPlease, MsgInvalidFormData
       , MsgExam, MsgCompleted, MsgExamResults, MsgMaxScore, MsgPassScore
       , MsgScore, MsgStatus, MsgUser, MsgTimeCompleted, MsgStatus, MsgOngoing
-      , MsgCompleted, MsgTimeout
+      , MsgCompleted, MsgTimeout, MsgEmail, MsgPhone, MsgPersonalData
+      , MsgContacts, MsgNoSocialMediaLinks
       )
     )
 
@@ -74,8 +77,8 @@ import Material3 (md3widget, md3selectWidget)
 import Model
     ( msgSuccess, msgError, keyUtlDest
     , Candidate
-      ( Candidate, candidateFamilyName, candidateGivenName
-      , candidateAdditionalName, candidateBday, candidateUser
+      ( Candidate, candidateFamilyName, candidateGivenName, candidateBday
+      , candidateAdditionalName, candidateUser, candidateEmail, candidatePhone
       )
     , CandidateId, Photo (Photo)
     , ExamId, Exam (Exam, examEnd, examStatus)
@@ -90,8 +93,8 @@ import Model
       , CandidateGivenName, CandidateAdditionalName, UserEmail
       , ExamTest, ExamCandidate, StemId, TestId, ExamId, AnswerExam
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
-      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId
-      )
+      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId, PhotoMime, SocialLink, SocialCandidate
+      ), Social (Social), Unique (UniqueSocial)
     )
 
 import Settings (widgetFile)
@@ -106,16 +109,16 @@ import qualified Text.Printf as Printf (printf)
 import Yesod.Core
     ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
     , TypedContent (TypedContent), ToContent (toContent), emptyContent
-    , liftIO, getUrlRenderParams, MonadHandler (liftHandler)
+    , liftIO, getUrlRenderParams, MonadHandler (liftHandler), FileInfo (fileContentType)
     )
 import Yesod.Core.Handler
-    ( redirect, FileInfo, fileSourceByteString, getMessages, addMessageI
+    ( redirect, fileSourceByteString, getMessages, addMessageI
     , setUltDestCurrent, redirectUltDest, lookupSession, getUrlRender
-    , lookupPostParam, getCurrentRoute, newIdent
+    , lookupPostParam, newIdent
     )
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (textField, dayField, fileField, intField, selectFieldList)
+import Yesod.Form.Fields (textField, dayField, fileField, intField, selectFieldList, emailField)
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
 import Yesod.Form.Types
     (FormResult (FormSuccess)
@@ -179,23 +182,38 @@ postCandidateDeleR cid = do
 
 postCandidateR :: CandidateId -> Handler Html
 postCandidateR cid = do
+    
     candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
         return x
-    ((fr,widget),enctype) <- runFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
+
+    links <- runDB $ select $ do
+        x <- from $ table @Social
+        where_ $ x ^. SocialCandidate ==. val cid
+        return x
+        
+    ((fr,fw),et) <- runFormPost $ formCandidate links candidate
     case fr of
-      FormSuccess (c,photo) -> do
-          runDB $ replace cid c
-          case photo of
-            Just fs -> do
-                bs <- fileSourceByteString fs
-                _ <- runDB $ upsert (Photo cid bs "image/avif") [PhotoPhoto =. bs]
-                return ()
-                
-            _otherwise -> return ()
+      FormSuccess ((r,Just fi),ls) -> do
+          runDB $ replace cid r
+          bs <- fileSourceByteString fi
+          void $ runDB $ upsert (Photo cid bs (fileContentType fi))
+              [ PhotoPhoto P.=. bs
+              , PhotoMime P.=. fileContentType fi
+              ]
+              
+          forM_ (Social cid <$> ls) $ \x@(Social _ link) -> do
+              runDB $ upsertBy (UniqueSocial cid link) x [ SocialLink P.=. link ]
             
+          addMessageI msgSuccess MsgRecordEdited
+          redirectUltDest $ DataR CandidatesR
+          
+      FormSuccess ((r,Nothing),ls) -> do
+          runDB $ replace cid r
+          forM_ (Social cid <$> ls) $ \x@(Social _ link) -> do
+              runDB $ upsertBy (UniqueSocial cid link) x [ SocialLink P.=. link ]
+              
           addMessageI msgSuccess MsgRecordEdited
           redirectUltDest $ DataR CandidatesR
           
@@ -212,8 +230,13 @@ getCandidateEditFormR cid = do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
         return x
-    (widget,enctype) <- generateFormPost $ formCandidate candidate
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
+
+    links <- runDB $ select $ do
+        x <- from $ table @Social
+        where_ $ x ^. SocialCandidate ==. val cid
+        return x
+        
+    (fw,et) <- generateFormPost $ formCandidate links candidate
     defaultLayout $ do
         msgs <- getMessages
         setTitleI MsgCandidate
@@ -222,11 +245,12 @@ getCandidateEditFormR cid = do
 
 getCandidateSkillsR :: CandidateId -> Handler Html
 getCandidateSkillsR cid = do
-    curr <- getCurrentRoute
-    candidate <- ((,Nothing) <$>) <$> runDB ( selectOne $ do
+    
+    candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
-        return x )
+        return x
+        
     skills <- runDB $ select $ distinct $ do
         _ :& r :& o :& _ :& s <- from $ table @Answer
             `innerJoin` table @Exam `on` (\(a :& r) -> a ^. AnswerExam ==. r ^. ExamId)
@@ -258,15 +282,11 @@ getCandidateSkillsR cid = do
         where_ $ o ^. OptionKey
         orderBy [desc (s ^. SkillName)]
         return s
-    let tab = $(widgetFile "data/candidates/skills")
-    msgs <- getMessages
+    
     setUltDestCurrent
-    (fw0,et0) <- generateFormPost formCandidateDelete
     defaultLayout $ do
         setTitleI MsgCandidate
-        idOverlay <- newIdent
-        idDialogDelete <- newIdent
-        $(widgetFile "data/candidates/candidate")
+        $(widgetFile "data/candidates/skills")
 
 
 getCandidateExamR :: CandidateId -> ExamId -> Handler Html
@@ -307,11 +327,12 @@ getCandidateExamR cid eid = do
 
 getCandidateExamsR :: CandidateId -> Handler Html
 getCandidateExamsR cid = do
-    curr <- getCurrentRoute
-    candidate <- ((,Nothing) <$>) <$> runDB ( selectOne $ do
+    
+    candidate <- runDB $ selectOne $ do
         x <- from $ table @Candidate
         where_ $ x ^. CandidateId ==. val cid
-        return x )
+        return x
+        
     tests <- runDB $ select $ do
         x :& e :& (_,score) <- from $ table @Exam
             `innerJoin` table @Test `on` (\(x :& e) -> x ^. ExamTest ==. e ^. TestId)
@@ -329,22 +350,18 @@ getCandidateExamsR cid = do
         where_ $ x ^. ExamCandidate ==. val cid
         orderBy [desc (x ^. ExamId)]
         return (x,e, coalesceDefault [score] (val 0))
+        
     mrid <- (toSqlKey <$>) <$> runInputGet (iopt intField "id")
-    msgs <- getMessages
     rndr <- getUrlRenderParams
     setUltDestCurrent
-    (fw0,et0) <- generateFormPost formCandidateDelete
     defaultLayout $ do
         setTitleI MsgCandidate
-        idOverlay <- newIdent
-        idDialogDelete <- newIdent
-        let tab = $(widgetFile "data/candidates/exams")
-        $(widgetFile "data/candidates/candidate")
+        $(widgetFile "data/candidates/exams")
 
 
 getCandidateR :: CandidateId -> Handler Html
 getCandidateR cid = do
-    curr <- getCurrentRoute
+    
     candidate <- do
         candidate <- runDB $ selectOne $ do
             x <- from $ table @Candidate
@@ -353,9 +370,9 @@ getCandidateR cid = do
         y <- liftIO $ (\(y,_,_) -> y) . toGregorian .  utctDay <$> getCurrentTime
         return $ candidate >>= \c -> return (c, (y -) . (\(y',_,_) -> y') . toGregorian <$> (candidateBday . entityVal) c)
 
-    let tab = $(widgetFile "data/candidates/details")
-    msgs <- getMessages
     (fw0,et0) <- generateFormPost formCandidateDelete
+
+    msgs <- getMessages    
     defaultLayout $ do
         setUltDestCurrent
         setTitleI MsgCandidate
@@ -395,21 +412,28 @@ getCandidatePhotoR cid = do
 
 postCandidatesR :: Handler Html
 postCandidatesR = do
-    ((fr,widget),enctype) <- runFormPost $ formCandidate Nothing
+    ((fr,fw),et) <- runFormPost $ formCandidate [] Nothing
     case fr of
-      FormSuccess (x,photo) -> do
-          cid <- runDB $ insert x
-          case photo of
-            Just fs -> do
-                bs <- fileSourceByteString fs
-                _ <- runDB $ upsert (Photo cid bs "image/avif") [PhotoPhoto =. bs]
-                return ()
-            Nothing -> return ()
+      FormSuccess ((r,Just fi),links) -> do
+          cid <- runDB $ insert r
+          bs <- fileSourceByteString fi
+          void $ runDB $ upsert (Photo cid bs (fileContentType fi))
+              [ PhotoPhoto P.=. bs
+              , PhotoMime P.=. fileContentType fi
+              ]
+
+          runDB $ insertMany_ (Social cid <$> links)          
+              
           addMessageI msgSuccess MsgNewRecordAdded
-          redirectUltDest $ DataR CandidatesR
+          redirect $ DataR CandidatesR
+          
+      FormSuccess ((r,Nothing),links) -> do
+          cid <- runDB $ insert r
+          runDB $ insertMany_ (Social cid <$> links)
+          addMessageI msgSuccess MsgNewRecordAdded
+          redirect $ DataR CandidatesR
           
       _otherwise -> defaultLayout $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
           setTitleI MsgCandidate
           $(widgetFile "data/candidates/create")
 
@@ -439,15 +463,14 @@ getCandidatesR = do
 
 getCandidateCreateFormR :: Handler Html
 getCandidateCreateFormR = do
-    (widget,enctype) <- generateFormPost $ formCandidate Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> lookupSession keyUtlDest
+    (fw,et) <- generateFormPost $ formCandidate [] Nothing
     defaultLayout $ do
         setTitleI MsgCandidate
         $(widgetFile "data/candidates/create")
 
 
-formCandidate :: Maybe (Entity Candidate) -> Form (Candidate,Maybe FileInfo)
-formCandidate candidate extra = do
+formCandidate :: [Entity Social] -> Maybe (Entity Candidate) -> Form ((Candidate,Maybe FileInfo),[Text])
+formCandidate links candidate extra = do
     (fnameR,fnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgFamilyName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
@@ -467,6 +490,16 @@ formCandidate candidate extra = do
         { fsLabel = SomeMessage MsgBirthday
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateBday . entityVal <$> candidate)
+        
+    (emailR,emailV) <- mopt emailField FieldSettings
+        { fsLabel = SomeMessage MsgEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (candidateEmail . entityVal <$> candidate)
+        
+    (phoneR,phoneV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgPhone
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (candidatePhone . entityVal <$> candidate)
 
     users <- liftHandler $ fieldListOptions <$> runDB ( select $ do
         x <- from $ table @User
@@ -484,8 +517,20 @@ formCandidate candidate extra = do
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
-    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> userR)
-                <*> photoR
+    linksRV <- forM links $ \(Entity _ (Social _ link)) -> mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgSocialMedia
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (Just link)
+
+    (linkR,linkV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgSocialMedia
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } Nothing
+
+    let r = (,) <$> ( (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> emailR <*> phoneR <*> userR)
+                          <*> photoR
+                    )
+                <*> traverse fst linksRV
     
     idLabelPhoto <- newIdent
     idImgPhoto <- newIdent
@@ -497,6 +542,10 @@ formCandidate candidate extra = do
     idVideo <- newIdent
     idButtonCloseDialogSnapshot <- newIdent
     idButtonCapture <- newIdent
+
+    idPagePersonalData <- newIdent
+    idPageContacts <- newIdent
+    idPageSocialMedia <- newIdent
     
     return ( r
            , $(widgetFile "data/candidates/form")

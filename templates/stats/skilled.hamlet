@@ -9,7 +9,7 @@
 
 <main.responsive.margin>
  
-  $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
+  $maybe Entity cid (Candidate fname gname aname _ _ _ _) <- candidate
     <figure.row>
       <img.extra.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
         onerror="this.src = '@{PhotoPlaceholderR}'">

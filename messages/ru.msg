@@ -1,3 +1,8 @@
+NoSocialMediaLinks: Ссылки на социальные сети отсутствуют
+SocialMedia: Соцсети
+Contacts: Контакты
+PersonalData: Личные данные
+Phone: Телефон
 Filter: Фильтровать
 Result: Результат
 SortBy: Сортировать по

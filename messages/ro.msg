@@ -1,3 +1,8 @@
+NoSocialMediaLinks: Nu există link-uri către rețelele sociale
+SocialMedia: Social media
+Contacts: Contacte
+PersonalData: Date personale
+Phone: Telefon
 Filter: Filtrați
 Result: Rezultat
 SortBy: Sortați după

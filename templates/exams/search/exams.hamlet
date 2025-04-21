@@ -50,14 +50,19 @@
                   _{MsgPass}
                 $else
                   _{MsgFail}
+
               \ #
-              <span.lower>(_{MsgAttempt}: #{attempt})
+
+              $with ratio <- score / total
+                <span.percent data-value=#{ratio}>(#{printf "%.2f" ratio})
 
             $maybe end <- end
               <div.supporting-text.secondary-text.small-text>
                 $with dt <- show end
                   <time.daytime datetime=#{dt}>
                     #{dt}
+                    
+                <span.lower>(_{MsgAttempt}: #{attempt})
 
           <i.secondary-text>arrow_forward_ios
           

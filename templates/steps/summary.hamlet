@@ -32,7 +32,7 @@
             <th scope=row>_{MsgPassMark}
             <td>#{printf "%.0f" pass}
 
-  $maybe Entity _ (Candidate fname gname aname _ _) <- candidate
+  $maybe Entity _ (Candidate fname gname aname _ _ _ _) <- candidate
     $maybe (code,name,attempt,start,end,_,_) <- res
       
       <fieldset>

@@ -24,7 +24,7 @@ import Model
     , Option (optionStem, Option, optionOrdinal, optionText, optionKey, optionPoints)
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
-      , candidateBday, candidateUser
+      , candidateBday, candidateUser, candidateEmail, candidatePhone
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , StemType (SingleRespose, MultiResponse)
@@ -71,11 +71,11 @@ populateEN = do
     uid1 <- insert user1
 
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
-      insert_ UserPhoto { userPhotoUser = uid1
-                        , userPhotoMime = "image/avif"
-                        , userPhotoPhoto = bs
-                        , userPhotoAttribution = Just freepik
-                        }
+        insert_ UserPhoto { userPhotoUser = uid1
+                          , userPhotoMime = "image/avif"
+                          , userPhotoPhoto = bs
+                          , userPhotoAttribution = Just freepik
+                          }
 
     pass2 <- liftIO $ saltPass "jsmith"
     let user2 = User { userEmail = "jsmith@xmail.edu"
@@ -128,17 +128,19 @@ populateEN = do
     uid4 <- insert user4
 
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
-      insert_ UserPhoto { userPhotoUser = uid4
-                        , userPhotoMime = "image/avif"
-                        , userPhotoPhoto = bs
-                        , userPhotoAttribution = Just freepik
-                        }
+        insert_ UserPhoto { userPhotoUser = uid4
+                          , userPhotoMime = "image/avif"
+                          , userPhotoPhoto = bs
+                          , userPhotoAttribution = Just freepik
+                          }
 
     c001 <- insert $ Candidate
                { candidateFamilyName = "Lopez"
                , candidateGivenName = "Mary"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-26) today
+               , candidateEmail = Just (userEmail user1)
+               , candidatePhone = Just "+1098743334"
                , candidateUser = Just uid1
                }               
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
@@ -152,6 +154,8 @@ populateEN = do
                , candidateGivenName = "Johnny"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-28) today
+               , candidateEmail = Just (userEmail user2)
+               , candidatePhone = Just "+1098743335"
                , candidateUser = Just uid2
                }
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
@@ -165,6 +169,8 @@ populateEN = do
                , candidateGivenName = "John"
                , candidateAdditionalName = Just "Thomas"
                , candidateBday = Just $ addGregorianYearsClip (-21) today
+               , candidateEmail = Just (userEmail user3)
+               , candidatePhone = Just "+1098743336"
                , candidateUser = Just uid3
                }        
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
@@ -178,6 +184,8 @@ populateEN = do
                , candidateGivenName = "Patricia"
                , candidateAdditionalName = Just "Elizabeth"
                , candidateBday = Just $ addGregorianYearsClip (-30) today
+               , candidateEmail = Just (userEmail user4)
+               , candidatePhone = Just "+1098743337"
                , candidateUser = Just uid4
                } 
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
@@ -191,6 +199,8 @@ populateEN = do
                , candidateGivenName = "Chris"
                , candidateAdditionalName = Just "Lee"
                , candidateBday = Just $ addGregorianYearsClip (-32) today
+               , candidateEmail = Just "cwilson@xmail.edu"
+               , candidatePhone = Just "+1098743338"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_6.avif") >>= \bs ->
@@ -204,6 +214,8 @@ populateEN = do
                , candidateGivenName = "Philip"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateEmail = Just "phdavis@xmail.edu"
+               , candidatePhone = Just "+1098743339"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_7.avif") >>= \bs ->
@@ -217,6 +229,8 @@ populateEN = do
                , candidateGivenName = "Helen"
                , candidateAdditionalName = Just "Renee"
                , candidateBday = Just $ addGregorianYearsClip (-35) today
+               , candidateEmail = Just "htaylor@xmail.edu"
+               , candidatePhone = Just "+1098743340"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_5.avif") >>= \bs ->
@@ -230,6 +244,8 @@ populateEN = do
                , candidateGivenName = "Barbara"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-42) today
+               , candidateEmail = Just "byoung@xmail.edu"
+               , candidatePhone = Just "+1098743341"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_8.avif") >>= \bs ->
@@ -243,6 +259,8 @@ populateEN = do
                , candidateGivenName = "Jorge"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-46) today
+               , candidateEmail = Just "jwalker@xmail.edu"
+               , candidatePhone = Just "+1098743342"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_9.avif") >>= \bs ->
@@ -256,6 +274,8 @@ populateEN = do
                , candidateGivenName = "Robert"
                , candidateAdditionalName = Just "William"
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateEmail = Just "revans@xmail.edu"
+               , candidatePhone = Just "+1098743343"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_10.avif") >>= \bs ->
@@ -269,6 +289,8 @@ populateEN = do
                , candidateGivenName = "Isabel"
                , candidateAdditionalName = Just "Mae"
                , candidateBday = Just $ addGregorianYearsClip (-31) today
+               , candidateEmail = Just "ihughes@xmail.edu"
+               , candidatePhone = Just "+1098743344"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_11.avif") >>= \bs ->

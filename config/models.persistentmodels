@@ -1,68 +1,76 @@
 
 Answer
-  exam ExamId OnDeleteCascade
-  stem StemId
-  option OptionId OnDeleteCascade
-  time UTCTime
-  UniqueAnswer exam stem option
+    exam ExamId OnDeleteCascade
+    stem StemId
+    option OptionId OnDeleteCascade
+    time UTCTime
+    UniqueAnswer exam stem option
 
 Exam
-  test TestId OnDeleteCascade
-  candidate CandidateId OnDeleteCascade
-  status ExamStatus
-  attempt Int
-  start UTCTime
-  end UTCTime Maybe
-  UniqueExam test candidate attempt
+    test TestId OnDeleteCascade
+    candidate CandidateId OnDeleteCascade
+    status ExamStatus
+    attempt Int
+    start UTCTime
+    end UTCTime Maybe
+    UniqueExam test candidate attempt
 
 Photo
-  candidate CandidateId OnDeleteCascade
-  photo ByteString
-  mime Text
-  UniquePhoto candidate
+    candidate CandidateId OnDeleteCascade
+    photo ByteString
+    mime Text
+    UniquePhoto candidate
+
+Social
+    candidate CandidateId OnDeleteCascade
+    link Text
+    UniqueSocial candidate link
 
 Candidate
-  familyName Text
-  givenName Text
-  additionalName Text Maybe
-  bday Day Maybe
-  user UserId Maybe
+    familyName Text
+    givenName Text
+    additionalName Text Maybe
+    bday Day Maybe
+    email Text Maybe
+    phone Text Maybe
+    user UserId Maybe
 
 
 Option
-  stem StemId OnDeleteCascade
-  ordinal Text
-  text Textarea
-  key Bool
-  points Double
-  UniqueOption stem ordinal
+    stem StemId OnDeleteCascade
+    ordinal Text
+    text Textarea
+    key Bool
+    points Double
+    UniqueOption stem ordinal
 
 
 Stem
-  test TestId OnDeleteCascade
-  skill SkillId OnDeleteCascade
-  ordinal Int
-  text Textarea
-  type StemType
-  instruc Textarea
-  UniqueStem test ordinal
+    test TestId OnDeleteCascade
+    skill SkillId OnDeleteCascade
+    ordinal Int
+    text Textarea
+    type StemType
+    instruc Textarea
+    UniqueStem test ordinal
 
 
 Test
-  code Text
-  name Text
-  duration Double
-  durationUnit TimeUnit
-  pass Double
-  descr Textarea Maybe
-  state TestState
-  UniqueExamCode code
+    code Text
+    name Text
+    duration Double
+    durationUnit TimeUnit
+    pass Double
+    descr Textarea Maybe
+    state TestState
+    UniqueExamCode code
+
 
 Skill
-  code Text
-  name Text
-  descr Textarea Maybe
-  UniqueSkillCode code
+    code Text
+    name Text
+    descr Textarea Maybe
+    UniqueSkillCode code
 
 
 UserPhoto

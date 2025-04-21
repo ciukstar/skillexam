@@ -26,11 +26,38 @@
                                         ##{idButtonTakePhoto} data-ui=##{idOverlay}>
         <i>photo_camera
 
+<div.tabs>
+  <a.active data-ui=##{idPagePersonalData} href=#data>
+    _{MsgPersonalData}
 
-$forall v <- [fnameV,gnameV,anameV,bdayV]
-  ^{md3widget v}
+  <a data-ui=##{idPageContacts} href=#cotacts>
+    _{MsgContacts}
 
-^{md3selectWidget userV}
+  <a data-ui=##{idPageSocialMedia} href=#social>
+    _{MsgSocialMedia}
+
+<div.page.top-padding.horizontal-padding.active ##{idPagePersonalData}>
+  $forall v <- [fnameV,gnameV,anameV,bdayV]
+    ^{md3widget v}
+
+  ^{md3selectWidget userV}
+
+<div.page.top-padding.horizontal-padding ##{idPageContacts}>
+  $forall v <- [emailV,phoneV]
+    ^{md3widget v}
+
+<div.page.top-padding.horizontal-padding ##{idPageSocialMedia}>
+  $if null linksRV
+    ^{md3widget linkV}
+              
+  $else
+    $forall (_,v) <- linksRV
+      ^{md3widget v}
+
+  <nav.center-align>
+    <a.button.fill>
+      <i>add
+      _{MsgAdd}
 
       
 <div.overlay ##{idOverlay} data-ui=##{idOverlay}>

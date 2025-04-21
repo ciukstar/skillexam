@@ -16,7 +16,7 @@ module Handler.Exams
   , getSearchExamR
   ) where
 
-import ClassyPrelude.Yesod (readMay)
+import ClassyPrelude.Yesod (readMay, emailField)
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.STM
@@ -63,7 +63,7 @@ import Foundation
     , MsgGivenName, MsgAdditionalName, MsgUploadPhoto, MsgRetakeThisExam
     , MsgLoginRequired, MsgNoExamsWereFoundForSearchTerms, MsgOngoing
     , MsgTimeCompleted, MsgHours, MsgCancelled, MsgExamsPassed, MsgExamsFailed
-    , MsgSortBy, MsgDate, MsgResult, MsgFilter
+    , MsgSortBy, MsgDate, MsgResult, MsgFilter, MsgEmail, MsgPhone
     )
   )
 import qualified Foundation as F (App (exams))
@@ -75,7 +75,7 @@ import Model
     , CandidateId
     , Candidate
       ( Candidate, candidateAdditionalName, candidateGivenName, candidateBday
-      , candidateFamilyName
+      , candidateFamilyName, candidateEmail, candidatePhone
       )
     , ExamId, Exam (Exam, examEnd, examStatus)
     , ExamStatus
@@ -389,13 +389,23 @@ formCandidate uid candidate extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (candidateBday . entityVal <$> candidate)
         
+    (emailR,emailV) <- mopt emailField FieldSettings
+        { fsLabel = SomeMessage MsgEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (candidateEmail . entityVal <$> candidate)
+        
+    (phoneR,phoneV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgPhone
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (candidatePhone . entityVal <$> candidate)
+        
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
-    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> pure (Just uid))
+    let r = (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> emailR <*> phoneR <*> pure (Just uid))
                 <*> photoR
     
     idLabelPhoto <- newIdent

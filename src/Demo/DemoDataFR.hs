@@ -18,7 +18,7 @@ import Model
     ( Skill(Skill, skillCode, skillName, skillDescr)
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateAdditionalName
-      , candidateBday, candidateUser
+      , candidateBday, candidateUser, candidateEmail, candidatePhone
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , Test
@@ -58,15 +58,16 @@ populateFR = do
                           |]
 
     pass1 <- liftIO $ saltPass "lmartin"
-    uid1 <- insert $ User { userEmail = "lmartin@xmailx.fr"
-                          , userPassword = Just pass1
-                          , userName = Just "Léo Martin"
-                          , userSuper = False
-                          , userAdmin = True
-                          , userAuthType = UserAuthTypePassword
-                          , userVerkey = Nothing
-                          , userVerified = False
-                          }
+    let user1 = User { userEmail = "lmartin@xmailx.fr"
+                     , userPassword = Just pass1
+                     , userName = Just "Léo Martin"
+                     , userSuper = False
+                     , userAdmin = True
+                     , userAuthType = UserAuthTypePassword
+                     , userVerkey = Nothing
+                     , userVerified = False
+                     }
+    uid1 <- insert user1
 
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
       insert_ UserPhoto { userPhotoUser = uid1
@@ -76,15 +77,16 @@ populateFR = do
                         }
 
     pass2 <- liftIO $ saltPass "jbernard"
-    uid2 <- insert $ User { userEmail = "jbernard@xmailx.fr"
-                          , userPassword = Just pass2
-                          , userName = Just "Jade Bernard"
-                          , userSuper = False
-                          , userAdmin = False
-                          , userAuthType = UserAuthTypePassword
-                          , userVerkey = Nothing
-                          , userVerified = False
-                          }
+    let user2 = User { userEmail = "jbernard@xmailx.fr"
+                     , userPassword = Just pass2
+                     , userName = Just "Jade Bernard"
+                     , userSuper = False
+                     , userAdmin = False
+                     , userAuthType = UserAuthTypePassword
+                     , userVerkey = Nothing
+                     , userVerified = False
+                     }
+    uid2 <- insert user2
 
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
       insert_ UserPhoto { userPhotoUser = uid2
@@ -94,15 +96,16 @@ populateFR = do
                         }
 
     pass3 <- liftIO $ saltPass "grthomas"
-    uid3 <- insert $ User { userEmail = "grthomas@xmailx.fr"
-                          , userPassword = Just pass3
-                          , userName = Just "Gabriel Raphaël Thomas"
-                          , userSuper = False
-                          , userAdmin = False
-                          , userAuthType = UserAuthTypePassword
-                          , userVerkey = Nothing
-                          , userVerified = False
-                          }
+    let user3 = User { userEmail = "grthomas@xmailx.fr"
+                     , userPassword = Just pass3
+                     , userName = Just "Gabriel Raphaël Thomas"
+                     , userSuper = False
+                     , userAdmin = False
+                     , userAuthType = UserAuthTypePassword
+                     , userVerkey = Nothing
+                     , userVerified = False
+                     }
+    uid3 <- insert user3
 
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
       insert_ UserPhoto { userPhotoUser = uid3
@@ -112,15 +115,16 @@ populateFR = do
                         }
 
     pass4 <- liftIO $ saltPass "lerobert"
-    uid4 <- insert $ User { userEmail = "lerobert@xmailx.fr"
-                          , userPassword = Just pass4
-                          , userName = Just "Louise Emma Robert"
-                          , userSuper = False
-                          , userAdmin = False
-                          , userAuthType = UserAuthTypePassword
-                          , userVerkey = Nothing
-                          , userVerified = False
-                          }
+    let user4 = User { userEmail = "lerobert@xmailx.fr"
+                     , userPassword = Just pass4
+                     , userName = Just "Louise Emma Robert"
+                     , userSuper = False
+                     , userAdmin = False
+                     , userAuthType = UserAuthTypePassword
+                     , userVerkey = Nothing
+                     , userVerified = False
+                     }
+    uid4 <- insert user4
 
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
       insert_ UserPhoto { userPhotoUser = uid4
@@ -134,6 +138,8 @@ populateFR = do
                , candidateGivenName = "Léo"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-28) today
+               , candidateEmail = Just (userEmail user1)
+               , candidatePhone = Just "+33-775-552-652"
                , candidateUser = Just uid1
                }
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
@@ -147,6 +153,8 @@ populateFR = do
                , candidateGivenName = "Jade"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-26) today
+               , candidateEmail = Just (userEmail user2)
+               , candidatePhone = Just "+33-775-552-653"
                , candidateUser = Just uid2
                }        
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
@@ -160,6 +168,8 @@ populateFR = do
                , candidateGivenName = "Gabriel"
                , candidateAdditionalName = Just "Raphaël"
                , candidateBday = Just $ addGregorianYearsClip (-21) today
+               , candidateEmail = Just (userEmail user3)
+               , candidatePhone = Just "+33-775-552-654"
                , candidateUser = Just uid3
                }
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
@@ -173,6 +183,8 @@ populateFR = do
                , candidateGivenName = "Louise"
                , candidateAdditionalName = Just "Emma"
                , candidateBday = Just $ addGregorianYearsClip (-30) today
+               , candidateEmail = Just (userEmail user4)
+               , candidatePhone = Just "+33-775-552-655"
                , candidateUser = Just uid4
                }
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
@@ -186,6 +198,8 @@ populateFR = do
                , candidateGivenName = "Arthur"
                , candidateAdditionalName = Just "Louis"
                , candidateBday = Just $ addGregorianYearsClip (-32) today
+               , candidateEmail = Just "arichard@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-656"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_6.avif") >>= \bs ->
@@ -199,6 +213,8 @@ populateFR = do
                , candidateGivenName = "Jules"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateEmail = Just "jdurand@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-657"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_7.avif") >>= \bs ->
@@ -212,6 +228,8 @@ populateFR = do
                , candidateGivenName = "Alice"
                , candidateAdditionalName = Just "Ambre"
                , candidateBday = Just $ addGregorianYearsClip (-35) today
+               , candidateEmail = Just "adubois@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-658"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_5.avif") >>= \bs ->
@@ -225,6 +243,8 @@ populateFR = do
                , candidateGivenName = "Lina"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-42) today
+               , candidateEmail = Just "lmoreau@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-659"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_8.avif") >>= \bs ->
@@ -238,6 +258,8 @@ populateFR = do
                , candidateGivenName = "Adam"
                , candidateAdditionalName = Nothing
                , candidateBday = Just $ addGregorianYearsClip (-46) today
+               , candidateEmail = Just "alaurent@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-660"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_9.avif") >>= \bs ->
@@ -251,6 +273,8 @@ populateFR = do
                , candidateGivenName = "Maël"
                , candidateAdditionalName = Just "Lucas"
                , candidateBday = Just $ addGregorianYearsClip (-39) today
+               , candidateEmail = Just "asimon@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-661"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_10.avif") >>= \bs ->
@@ -264,6 +288,8 @@ populateFR = do
                , candidateGivenName = "Rose"
                , candidateAdditionalName = Just "Chloé"
                , candidateBday = Just $ addGregorianYearsClip (-31) today
+               , candidateEmail = Just "rmichel@xmailx.fr"
+               , candidatePhone = Just "+33-775-552-662"
                , candidateUser = Nothing
                }
     liftIO (BS.readFile "demo/user_11.avif") >>= \bs ->

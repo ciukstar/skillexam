@@ -55,7 +55,7 @@
         <tr.wave>
           <td.bold>_{MsgCandidate}
           <td>
-            $maybe Entity cid (Candidate fname gname aname _ _) <- candidate
+            $maybe Entity cid (Candidate fname gname aname _ _ _ _) <- candidate
               <figure.row>
                 <img.circle.small src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
                   onerror="this.src = '@{PhotoPlaceholderR}'">

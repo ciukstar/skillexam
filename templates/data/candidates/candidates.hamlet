@@ -8,10 +8,10 @@
         _{MsgNoCandidatesYet}.
         
   $else
-    $forall (Entity cid (Candidate fname gname aname _ _), Value nexams) <- candidates
-      <a.row.padding.wave href=@{DataR $ CandidateR cid} :Just cid == activated:.active role=listitem>
+    $forall (Entity cid (Candidate fname gname aname _ _ _ _), Value nexams) <- candidates
+      <a.row.padding.wave href=@{DataR $ CandidateR cid} :Just cid == activated:.active>
 
-        <img.extra.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+        <img.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
      
         <div.max>

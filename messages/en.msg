@@ -1,3 +1,8 @@
+NoSocialMediaLinks: There are no links to social networks
+SocialMedia: Social media
+Contacts: Contacts
+PersonalData: Personal data
+Phone: Phone
 Filter: Filter
 Result: Result
 SortBy: Sort by
