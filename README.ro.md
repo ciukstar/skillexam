@@ -77,6 +77,11 @@ După înregistrare, candidatul începe examenul și răspunsurile acestuia sunt
 
 Odată ce timpul de examen a expirat, sistemul îl anunță pe candidat și îl obligă să finalizeze examenul.
 
+### Examen la distanță
+
+...
+
+
 ### Răspuns
 
 Un răspuns reprezintă opțiunea pentru o anumită întrebare pe care un candidat o consideră a fi cea corectă.

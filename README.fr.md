@@ -78,6 +78,12 @@ Après l'inscription, le candidat commence l'examen et ses réponses sont enregi
 
 Une fois le temps d'examen expiré, le système avertit le candidat et l'oblige à terminer l'examen.
 
+
+### Examen à distance
+
+...
+
+
 ### Réponse
 
 Une réponse représente l'option pour une question donnée qu'un candidat considère comme la bonne.

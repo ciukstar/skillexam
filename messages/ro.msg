@@ -1,3 +1,4 @@
+RemoteExam: Examen la distanță
 RemoteExams: Examene la distanță
 NoSocialMediaLinks: Nu există link-uri către rețelele sociale
 SocialMedia: Social media

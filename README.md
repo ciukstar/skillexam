@@ -74,6 +74,10 @@ After enrollment the candidate starts the Exam and its Answers are recorded.
 
 Once the exam time has expired, the system notifies the candidate and forces him to finish the exam.
 
+### Remote exam
+
+...
+
 ### Answer
 
 An Answer represents the answer Option for a given Question that a Candidate considers to be the correct one.

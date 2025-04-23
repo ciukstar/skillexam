@@ -1,3 +1,4 @@
+RemoteExam: Examen à distance
 RemoteExams: Examens à distance
 NoSocialMediaLinks: Il n'y a pas de liens vers les réseaux sociaux
 SocialMedia: Réseaux sociaux

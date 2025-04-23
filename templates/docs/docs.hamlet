@@ -41,22 +41,22 @@
       
   <h2>_{MsgBasicEntities}
 
-  <h3>_{MsgSkill}
+  <h3.bold>_{MsgSkill}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc007 (rndr $ DataR SkillsR))}
 
-  <h3>_{MsgCandidate}
+  <h3.bold>_{MsgCandidate}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc008 (rndr $ DataR CandidatesR))}
 
-  <h3>_{MsgTest}
+  <h3.bold>_{MsgTest}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc009 (rndr $ DataR TestsR))}
   <p>_{MsgDoc010}
   <p>_{MsgDoc011}
   <p>_{MsgDoc012}
 
-  <h3>_{MsgQuestion}
+  <h3.bold>_{MsgQuestion}
   <p>_{MsgDoc013}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs MsgDoc014}
@@ -65,7 +65,7 @@
   <p>_{MsgDoc017}
   <p>_{MsgDoc018}
 
-  <h3>_{MsgOption}
+  <h3.bold>_{MsgOption}
   <p>_{MsgDoc019}
   <p>
     #{preEscapedToMarkup $ renderMessage app langs MsgDoc020}
@@ -73,7 +73,7 @@
   <p>
     #{preEscapedToMarkup $ renderMessage app langs (MsgDoc022 (rndr HomeR))}
 
-  <h3>_{MsgExam}
+  <h3.bold>_{MsgExam}
   <p>_{MsgDoc023}
   <p>_{MsgDoc024}
   <p>_{MsgDoc025}
@@ -86,7 +86,12 @@
 
   <p>_{MsgDoc027}.
 
-  <h3>_{MsgAnswer}
+
+  <h3.bold>_{MsgRemoteExam}
+  <p>...
+  
+
+  <h3.bold>_{MsgAnswer}
   <p>_{MsgDoc026}
 
   <figure>
