@@ -231,6 +231,8 @@ instance Yesod App where
     isAuthorized (RemainingTimeR _) _ = return Authorized
 
         
+    isAuthorized (DataR (RemoteDeleR _)) _ = isAdmin
+    isAuthorized (DataR (RemoteEditR _)) _ = isAdmin
     isAuthorized (DataR RemoteNewR) _ = isAdmin
     isAuthorized (DataR (RemoteR _)) _ = isAdmin
     isAuthorized (DataR RemotesR) _ = isAdmin

@@ -1,3 +1,8 @@
+ForPotentialCandidates: Для потенциальных кандидатов
+ForRegisteredCandidate: Для зарегистрированного кандидата
+RemoteTest: Удаленный тест
+RemoteTests: Дистанционные тесты
+ExamLink: Ссылка на экзамен
 RemoteExam: Дистанционный экзамен
 RemoteExams: Дистанционные экзамены
 NoSocialMediaLinks: Ссылки на социальные сети отсутствуют

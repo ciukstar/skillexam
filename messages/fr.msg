@@ -1,3 +1,8 @@
+ForPotentialCandidates: Pour les candidats potentiels
+ForRegisteredCandidate: Pour un candidat inscrit
+RemoteTest: Test à distance
+RemoteTests: Tests à distance
+ExamLink: Lien vers l'examen
 RemoteExam: Examen à distance
 RemoteExams: Examens à distance
 NoSocialMediaLinks: Il n'y a pas de liens vers les réseaux sociaux

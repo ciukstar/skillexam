@@ -7,21 +7,21 @@
       <i>menu
       
     <h1.title.max>
-      _{MsgRemoteExams}
+      _{MsgRemoteTests}
         
     ^{widgetAccount}
 
 
 <main.responsive.no-padding>
 
-  $if null exams
+  $if null tests
     <figure.center-align.margin>
       <i.extra>folder_open
       <figcaption>
-        <p>_{MsgNoExamsYet}.
+        <p>_{MsgNoTestsYet}.
         
   $else            
-    $forall (Entity rid (Remote _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- exams
+    $forall (Entity rid (Remote _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- tests
       <a.row.wave.padding href=@{DataR $ RemoteR rid}>
         
         <div.max>

@@ -1,3 +1,8 @@
+ForPotentialCandidates: Pentru candidați potențiali
+ForRegisteredCandidate: Pentru un candidat înregistrat 
+RemoteTest: Test la distanță
+RemoteTests: Teste la distanta
+ExamLink: Link pentru examen
 RemoteExam: Examen la distanță
 RemoteExams: Examene la distanță
 NoSocialMediaLinks: Nu există link-uri către rețelele sociale

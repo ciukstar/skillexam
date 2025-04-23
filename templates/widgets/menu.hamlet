@@ -52,7 +52,7 @@
       _{MsgData}
       
     <a href=@{DataR RemotesR} :curr == Just (DataR RemotesR):.active>
-      <i.no-round>connect_without_contact
+      <i.no-round>cast_for_education
       <span>_{MsgRemoteExams}
       
     <a href=@{DataR CandidatesR} :curr == Just (DataR CandidatesR):.active>

@@ -153,6 +153,8 @@ import Handler.Data.Remote
     ( getRemotesR
     , getRemoteR
     , getRemoteNewR
+    , getRemoteEditR
+    , postRemoteDeleR
     )
     
 import Handler.Data.Options

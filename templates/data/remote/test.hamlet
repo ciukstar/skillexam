@@ -1,0 +1,48 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{DataR RemotesR} role=button aria-label=_{MsgBack}>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgRemoteTest}
+      
+    <div.row>
+      <button.circle.transparent type=button title=_{MsgDelete} data-ui=##{idDialogDelete}>
+        <i>delete
+        
+      <a.button.circle.transparent href=@{DataR $ RemoteEditR rid} title=_{MsgEdit} role=button>
+        <i>edit
+
+<main.responsive>
+  $maybe (Entity rid (Remote _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- test
+    <table>
+      <tbody>
+        <tr.wave>
+          <th scope=row>_{MsgCode}
+          <td>#{code}
+        <tr.wave>
+          <th scope=row>_{MsgName}
+          <td>#{name}
+        <tr.wave>
+          <th scope=row>_{MsgExamLink}
+          <td>
+
+^{widgetSnackbar msgs}
+
+<div.overlay ##{idOverlay} data-ui=##{idOverlay}>
+
+<dialog ##{idDialogDelete}>
+  <h5>_{MsgConfirmPlease}
+  
+  <div>_{MsgDeleteAreYouSure}
+  
+  <form method=post action=@{DataR $ RemoteDeleR rid} enctype=#{et0}>
+    ^{fw0}
+    
+    <nav.right-align.no-space>
+      <button.transparent.link type=button data-ui=##{idDialogDelete}>
+        _{MsgCancel}
+ 
+      <button.error type=submit>
+        _{MsgDelete}

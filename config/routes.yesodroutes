@@ -62,9 +62,11 @@
 
 /data DataR:
 
-    /remotes/new/form  RemoteNewR GET
-    /remotes/#RemoteId RemoteR    GET
-    /remotes           RemotesR   GET
+    /remotes/#RemoteId/dele RemoteDeleR POST
+    /remotes/#RemoteId/edit RemoteEditR GET
+    /remotes/new/form       RemoteNewR  GET
+    /remotes/#RemoteId      RemoteR     GET
+    /remotes                RemotesR    GET
 
     /form/candidates/#CandidateId          CandidateEditFormR GET
     /search/candidates                     CandidatesSearchR  GET
