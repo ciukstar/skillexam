@@ -9,10 +9,10 @@
 
 <main.responsive.no-padding>
 
-  <form method=post action=@{DataR CandidatesR} enctype=#{et} novalidate>
+  <form method=post action=@{DataR CandidatesR} enctype=#{et}>
     ^{fw}
     
-    <nav.right-align>
+    <nav.right-align.horizontal-padding.bottom-padding>
       <a.button.transparent.link href=@{DataR CandidatesR} role=button>
         _{MsgCancel}
         

@@ -77,3 +77,45 @@ fetch(
 }).then(dt => {
   document.getElementById(#{fvId photoV}).files = dt.files;
 });
+
+
+document.getElementById(#{idButtonSocialAdd}).addEventListener('click', e => {
+  
+  [document.getElementById(#{idFigureEmptySocial})].filter(x => !!x).forEach(x => { x.remove(); });
+  
+  document.getElementById(#{idSocialMediaLinks}).appendChild((() => {
+    const field = document.createElement('div');
+    field.classList.add('field','suffix','border','round','small');
+
+    field.appendChild((() => {
+      const input = document.createElement('input');
+      input.setAttribute('type','url');
+      input.setAttribute('name',#{nameSocialMediaLink});
+      return input;
+    }) ());
+    
+    field.appendChild((() => {
+      const button = document.createElement('button');
+      button.classList.add('small','circle','transparent');
+      button.setAttribute('type','button');
+      button.style.position = 'absolute';
+      button.style.inset = '10% 0 auto auto';
+      
+      button.appendChild((() => {
+        const icon = document.createElement('i');
+        icon.classList.add('error-text');
+        icon.textContent = 'delete';
+        return icon;
+      }) ());
+
+      button.addEventListener('click', e => {
+        field.remove();
+      });
+      
+      return button;
+      
+    }) ());
+    
+    return field;
+  }) ());
+});

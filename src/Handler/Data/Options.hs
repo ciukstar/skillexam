@@ -41,7 +41,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3textareaWidget, md3switchWidget)
+import Material3 (md3widget, md3widgetTextarea, md3widgetSwitch)
 
 import Model
     ( msgSuccess, msgError
@@ -216,9 +216,9 @@ formOption _ qid option extra = do
 
                     ^{md3widget ordinalV}
 
-                    ^{md3textareaWidget textV}
+                    ^{md3widgetTextarea textV}
 
-                    ^{md3switchWidget keyV}
+                    ^{md3widgetSwitch keyV}
 
                     ^{md3widget pointsV}
                     |]

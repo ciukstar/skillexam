@@ -47,7 +47,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3textareaWidget, md3selectWidget)
+import Material3 (md3widget, md3widgetTextarea, md3widgetSelect)
 
 import Model
     ( msgSuccess, msgError
@@ -350,9 +350,9 @@ formTest test extra = do
                         $nothing
                           <span.helper>_{h}
 
-                    ^{md3textareaWidget descrV}
+                    ^{md3widgetTextarea descrV}
 
-                    ^{md3selectWidget stateV}
+                    ^{md3widgetSelect stateV}
 
                     |]
     return (r,w)

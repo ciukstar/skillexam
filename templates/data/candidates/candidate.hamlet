@@ -39,32 +39,51 @@
 
       <table aria-label=_{MsgCandidate}>
         <tbody>
-          <tr.wave>
-            <th scope=row>_{MsgFamilyName}
-            <td>#{fname}
-          <tr.wave>
-            <th scope=row>_{MsgGivenName}
-            <td>#{gname}
-          <tr.wave>
-            <th scope=row>_{MsgAdditionalName}
-            <td>
-              $maybe aname <- aname
-                #{aname}
+          $maybe lang <- LS.head langs
+            $if T.take 2 lang == "ru"
+              <tr.wave>
+                <th scope=row>_{MsgFamilyName}
+                <td>#{fname}
+  
+              <tr>
+                <th scope=row>_{MsgGivenName}
+                <td>#{gname}
 
-          <tr.wave>
+              $maybe aname <- aname
+                <tr>
+                  <th scope=row>_{MsgAdditionalName}
+                  <td>
+                    #{aname}
+      
+            $else
+              <tr>
+                <th scope=row>_{MsgGivenName}
+                <td>#{gname}
+
+              $maybe aname <- aname
+                <tr>
+                  <th scope=row>_{MsgAdditionalName}
+                  <td>
+                    #{aname}
+      
+              <tr>
+                <th scope=row>_{MsgFamilyName}
+                <td>#{fname}
+
+          <tr>
             <th scope=row>_{MsgAge}
             <td>
               $maybe age <- age
                 #{age}
 
-          <tr.wave>
+          <tr>
             <th scope=row>_{MsgBirthday}
             <td>
               $maybe day <- show <$> bday
                 <time.day datetime=#{day}>
                   #{day}
 
-          <tr.wave>
+          <tr>
             <th scope=row>_{MsgEmail}
             <td>
               $maybe email <- email
@@ -72,13 +91,25 @@
                 <a.button.small.circle.fill href="mailto:#{email}">
                   <i>mail
 
-          <tr.wave>
+          <tr>
             <th scope=row>_{MsgPhone}
             <td>
               $maybe phone <- phone
                 <span>#{phone}
                 <a.button.small.circle.fill href="tel:#{phone}">
                   <i>phone
+                  
+          $forall Entity _ (Social _ link) <- links
+            <tr>
+              <th scope=row>
+                <i>public
+                
+              <td>
+                <a.link target=_blank href=#{link} 
+                  style="display: inline-block;max-width: 50vw;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+
+                  #{link}
+            
 
 ^{widgetSnackbar msgs}
 

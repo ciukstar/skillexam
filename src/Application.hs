@@ -86,7 +86,8 @@ import System.Log.FastLogger
     )
 
 import Handler.Candidates
-    ( getCandidatesR, getCandidateCreateFormR
+    ( getCandidatesR
+    , getCandidateNewR
     , postCandidatesR, getCandidatePhotoR, getCandidateR
     , getCandidateEditFormR, postCandidateR
     , postCandidateDeleR, getCandidatesSearchR

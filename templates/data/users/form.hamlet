@@ -46,7 +46,7 @@ $forall v <- [emailV, nameV]
 
 
 $forall v <- [adminV]
-  ^{md3switchWidget v}
+  ^{md3widgetSwitch v}
       
 
 <dialog ##{idDialogSnapshot}>

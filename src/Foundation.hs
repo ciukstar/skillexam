@@ -259,7 +259,7 @@ instance Yesod App where
     isAuthorized (DataR OptionsDeleteR {}) _ = isAdmin
 
     isAuthorized (DataR (CandidateSkillsR _)) _ = isAdmin
-    isAuthorized (DataR CandidateCreateFormR) _ = isAdmin
+    isAuthorized (DataR CandidateNewR) _ = isAdmin
     isAuthorized (DataR (CandidateR _)) _ = isAdmin
     isAuthorized (DataR (CandidateEditFormR _)) _ = isAdmin
     isAuthorized (DataR (CandidateDeleR _)) _ = isAdmin

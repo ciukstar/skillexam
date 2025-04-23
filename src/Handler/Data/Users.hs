@@ -51,7 +51,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3switchWidget)
+import Material3 (md3widget, md3widgetSwitch)
     
 import Model
     ( msgSuccess, msgError

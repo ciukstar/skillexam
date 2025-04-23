@@ -5,11 +5,11 @@
 
 module Material3
   ( md3widget
-  , md3textareaWidget
-  , md3selectWidget
-  , md3checkboxWidget
-  , md3switchWidget
-  , md3fileWidget
+  , md3widgetTextarea
+  , md3widgetSelect
+  , md3widgetCheckbox
+  , md3widgetSwitch
+  , md3widgetFile
   , daytimeLocalField
   , md3radioField
   ) where
@@ -50,8 +50,8 @@ md3radioField options = (radioField' options)
 |] }
 
 
-md3fileWidget :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
-md3fileWidget v = [whamlet|
+md3widgetFile :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
+md3widgetFile v = [whamlet|
   <button.transparent.border.small>
     <i>upload_file
     <span>#{fvLabel v}
@@ -62,8 +62,8 @@ md3fileWidget v = [whamlet|
 |]
 
 
-md3switchWidget :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
-md3switchWidget v = [whamlet|
+md3widgetSwitch :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
+md3widgetSwitch v = [whamlet|
   <div.field.no-margin.middle-align.small :isJust (fvErrors v):.invalid>
     <nav.no-padding>          
       <label.switch>
@@ -76,16 +76,16 @@ md3switchWidget v = [whamlet|
 |]
 
 
-md3checkboxWidget :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
-md3checkboxWidget v = [whamlet|
+md3widgetCheckbox :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
+md3widgetCheckbox v = [whamlet|
   <label.checkbox.small>
     ^{fvInput v}
     <span>#{fvLabel v}
 |]
 
     
-md3textareaWidget :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
-md3textareaWidget v = [whamlet|
+md3widgetTextarea :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
+md3widgetTextarea v = [whamlet|
   <div.field.border.round.label.textarea.small :isJust (fvErrors v):.invalid>
     ^{fvInput v}
     <label for=#{fvId v}>
@@ -97,8 +97,8 @@ md3textareaWidget v = [whamlet|
 |]
 
     
-md3selectWidget :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
-md3selectWidget v = [whamlet|
+md3widgetSelect :: RenderMessage m FormMessage => FieldView m -> WidgetFor m ()
+md3widgetSelect v = [whamlet|
   <div.field.label.suffix.border.round.small :isJust (fvErrors v):.invalid>
     ^{fvInput v}
     <label for=#{fvId v}>

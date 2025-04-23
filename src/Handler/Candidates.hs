@@ -6,7 +6,7 @@
 
 module Handler.Candidates
   ( getCandidatesR
-  , getCandidateCreateFormR
+  , getCandidateNewR
   , postCandidateR
   , postCandidatesR
   , getCandidatePhotoR
@@ -24,8 +24,10 @@ import Control.Applicative ((<|>))
 import Control.Monad (void, forM_, forM)
 
 import Data.Bifunctor (Bifunctor(bimap))
-import Data.Maybe (fromMaybe)
+import qualified Data.List.Safe as LS (head)
+import Data.Maybe (fromMaybe, isJust)
 import Data.Text (pack, Text)
+import qualified Data.Text as T (take, null, strip)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Format.ISO8601 (iso8601Show)
@@ -39,22 +41,22 @@ import Database.Esqueleto.Experimental
     , SqlExpr, sum_, subSelectList, asc
     )
 import Database.Persist
-    ( Entity (Entity, entityVal), insert, insert_, replace, upsert, insertMany_
+    ( Entity (Entity, entityVal), insert, replace, upsert, insertMany_
     , upsertBy
     )
 import qualified Database.Persist as P ((=.))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 
 import Foundation
-    ( Form, Handler, widgetAccount, widgetMainMenu, widgetSnackbar
+    ( App, Form, Handler, widgetAccount, widgetMainMenu, widgetSnackbar
     , Route
       ( StaticR, PhotoPlaceholderR
       , DataR
       )
     , DataR
-      ( CandidatesR, CandidateR, CandidateSkillsR, CandidatePhotoR, CandidateExamsR
-      , CandidateDeleR, CandidatesSearchR, CandidateCreateFormR, CandidateExamR
-      , CandidateEditFormR
+      ( CandidatesR, CandidateR, CandidateSkillsR, CandidatePhotoR
+      , CandidateExamsR, CandidateDeleR, CandidatesSearchR, CandidateNewR
+      , CandidateExamR, CandidateEditFormR
       )
     , AppMessage
       ( MsgCandidates, MsgSearch, MsgAdd, MsgFamilyName, MsgGivenName
@@ -72,7 +74,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3selectWidget)
+import Material3 (md3widget, md3widgetSelect)
 
 import Model
     ( msgSuccess, msgError, keyUtlDest
@@ -88,13 +90,15 @@ import Model
       )
     , Test (Test, testName, testPass)
     , Stem, Answer, Option, Skill (Skill), User
+    , Social (Social, socialLink), Unique (UniqueSocial)
     , EntityField
       ( CandidateId, PhotoCandidate, PhotoPhoto, CandidateFamilyName
       , CandidateGivenName, CandidateAdditionalName, UserEmail
       , ExamTest, ExamCandidate, StemId, TestId, ExamId, AnswerExam
       , OptionId, AnswerOption, OptionStem, StemSkill, SkillId, OptionKey
-      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId, PhotoMime, SocialLink, SocialCandidate
-      ), Social (Social), Unique (UniqueSocial)
+      , SkillName, OptionPoints, TestPass, StemTest, UserName, UserId
+      , PhotoMime, SocialLink, SocialCandidate
+      )
     )
 
 import Settings (widgetFile)
@@ -109,20 +113,24 @@ import qualified Text.Printf as Printf (printf)
 import Yesod.Core
     ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
     , TypedContent (TypedContent), ToContent (toContent), emptyContent
-    , liftIO, getUrlRenderParams, MonadHandler (liftHandler), FileInfo (fileContentType)
+    , liftIO, getUrlRenderParams, MonadHandler (liftHandler)
+    , FileInfo (fileContentType), languages, lookupPostParams
     )
 import Yesod.Core.Handler
     ( redirect, fileSourceByteString, getMessages, addMessageI
     , setUltDestCurrent, redirectUltDest, lookupSession, getUrlRender
     , lookupPostParam, newIdent
     )
+import Yesod.Core.Types (WidgetFor)
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (textField, dayField, fileField, intField, selectFieldList, emailField)
+import Yesod.Form.Fields
+    ( textField, dayField, fileField, intField, selectFieldList, emailField
+    )
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
 import Yesod.Form.Types
     (FormResult (FormSuccess)
-    , FieldView (fvInput, fvErrors, fvId)
+    , FieldView (fvInput, fvErrors, fvId, fvRequired, fvLabel)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Persist (YesodPersist(runDB))
@@ -370,8 +378,14 @@ getCandidateR cid = do
         y <- liftIO $ (\(y,_,_) -> y) . toGregorian .  utctDay <$> getCurrentTime
         return $ candidate >>= \c -> return (c, (y -) . (\(y',_,_) -> y') . toGregorian <$> (candidateBday . entityVal) c)
 
+    links <- runDB $ select $ do
+        x <- from $ table @Social
+        where_ $ x ^. SocialCandidate ==. val cid
+        return x
+
     (fw0,et0) <- generateFormPost formCandidateDelete
 
+    langs <- languages
     msgs <- getMessages    
     defaultLayout $ do
         setUltDestCurrent
@@ -435,7 +449,7 @@ postCandidatesR = do
           
       _otherwise -> defaultLayout $ do
           setTitleI MsgCandidate
-          $(widgetFile "data/candidates/create")
+          $(widgetFile "data/candidates/new")
 
 
 getCandidatesR :: Handler Html
@@ -461,16 +475,16 @@ getCandidatesR = do
         $(widgetFile "data/candidates/candidates")
 
 
-getCandidateCreateFormR :: Handler Html
-getCandidateCreateFormR = do
+getCandidateNewR :: Handler Html
+getCandidateNewR = do
     (fw,et) <- generateFormPost $ formCandidate [] Nothing
     defaultLayout $ do
         setTitleI MsgCandidate
-        $(widgetFile "data/candidates/create")
+        $(widgetFile "data/candidates/new")
 
 
 formCandidate :: [Entity Social] -> Maybe (Entity Candidate) -> Form ((Candidate,Maybe FileInfo),[Text])
-formCandidate links candidate extra = do
+formCandidate medias candidate extra = do
     (fnameR,fnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgFamilyName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
@@ -517,20 +531,18 @@ formCandidate links candidate extra = do
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
-    linksRV <- forM links $ \(Entity _ (Social _ link)) -> mreq textField FieldSettings
+    linksRV <- forM (socialLink . entityVal <$> medias) $ \link -> mreq textField FieldSettings
         { fsLabel = SomeMessage MsgSocialMedia
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Just nameSocialMediaLink
+        , fsAttrs = []
         } (Just link)
 
-    (linkR,linkV) <- mopt textField FieldSettings
-        { fsLabel = SomeMessage MsgSocialMedia
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
-        } Nothing
+    links <- filter (not . T.null . T.strip) <$> lookupPostParams nameSocialMediaLink
 
     let r = (,) <$> ( (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> emailR <*> phoneR <*> userR)
                           <*> photoR
                     )
-                <*> traverse fst linksRV
+                <*> pure links
     
     idLabelPhoto <- newIdent
     idImgPhoto <- newIdent
@@ -546,6 +558,9 @@ formCandidate links candidate extra = do
     idPagePersonalData <- newIdent
     idPageContacts <- newIdent
     idPageSocialMedia <- newIdent
+    idSocialMediaLinks <- newIdent
+    idFigureEmptySocial <- newIdent
+    idButtonSocialAdd <- newIdent
     
     return ( r
            , $(widgetFile "data/candidates/form")
@@ -554,6 +569,28 @@ formCandidate links candidate extra = do
   where
       
       fieldListOptions = (bimap ((\(x,y) -> fromMaybe y x) . bimap unValue unValue) unValue <$>)
+
+      nameSocialMediaLink :: Text
+      nameSocialMediaLink = "social-media-link"
+
+      md3widgetDeleteButton :: FieldView App -> WidgetFor App ()
+      md3widgetDeleteButton v = [whamlet|
+        <div.field.label.border.round.small.suffix :isJust (fvErrors v):.invalid #idField#{fvId v}>
+
+          ^{fvInput v}
+          
+          <label for=#{fvId v}>
+            #{fvLabel v}
+            $if fvRequired v
+              <sup>*
+
+          <button.small.circle.transparent type=button style="position: absolute; inset: 10% 0px auto auto;"
+              onclick="document.getElementById('idField#{fvId v}').remove()">
+            <i.error-text>delete
+
+          $maybe err <- fvErrors v
+            <span.error>#{err}
+      |]
 
 
 

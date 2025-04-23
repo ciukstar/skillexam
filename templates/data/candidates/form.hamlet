@@ -27,35 +27,40 @@
         <i>photo_camera
 
 <div.tabs>
-  <a.active data-ui=##{idPagePersonalData} href=#data>
+  <a.active data-ui=##{idPagePersonalData} role=button>
     _{MsgPersonalData}
 
-  <a data-ui=##{idPageContacts} href=#cotacts>
+  <a data-ui=##{idPageContacts} role=button>
     _{MsgContacts}
 
-  <a data-ui=##{idPageSocialMedia} href=#social>
+  <a data-ui=##{idPageSocialMedia} role=button>
     _{MsgSocialMedia}
 
 <div.page.top-padding.horizontal-padding.active ##{idPagePersonalData}>
   $forall v <- [fnameV,gnameV,anameV,bdayV]
     ^{md3widget v}
 
-  ^{md3selectWidget userV}
+  ^{md3widgetSelect userV}
 
 <div.page.top-padding.horizontal-padding ##{idPageContacts}>
   $forall v <- [emailV,phoneV]
     ^{md3widget v}
 
 <div.page.top-padding.horizontal-padding ##{idPageSocialMedia}>
-  $if null linksRV
-    ^{md3widget linkV}
-              
-  $else
-    $forall (_,v) <- linksRV
-      ^{md3widget v}
+  
+  <div ##{idSocialMediaLinks}>
+    $if null linksRV
+      <figure.center-align ##{idFigureEmptySocial}>
+        <i.extra>folder_open
+        <figcaption>
+          <div>_{MsgNoSocialMediaLinks}.
+
+    $else
+      $forall (_,v) <- linksRV
+        ^{md3widgetDeleteButton v}
 
   <nav.center-align>
-    <a.button.fill>
+    <button.fill type=button formethod=post ##{idButtonSocialAdd}>
       <i>add
       _{MsgAdd}
 

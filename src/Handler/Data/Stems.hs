@@ -47,7 +47,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3textareaWidget, md3selectWidget)
+import Material3 (md3widget, md3widgetTextarea, md3widgetSelect)
 
 import Model
     ( msgSuccess, msgError
@@ -250,13 +250,13 @@ formStem eid stem extra = do
 
                     ^{md3widget ordinalV}
 
-                    ^{md3textareaWidget textV}
+                    ^{md3widgetTextarea textV}
 
-                    ^{md3selectWidget typeV}
+                    ^{md3widgetSelect typeV}
 
-                    ^{md3textareaWidget instrucV}
+                    ^{md3widgetTextarea instrucV}
 
-                    ^{md3selectWidget skillV}
+                    ^{md3widgetSelect skillV}
                     |]
     return (r,w)
   where

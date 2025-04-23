@@ -44,7 +44,7 @@ import Foundation
       )
     )
 
-import Material3 (md3widget, md3textareaWidget)
+import Material3 (md3widget, md3widgetTextarea)
 
 import Model
     ( msgError, msgSuccess
@@ -247,7 +247,7 @@ formSkill skill extra = do
                     $forall v <- [codeV,nameV]
                       ^{md3widget v}
 
-                    ^{md3textareaWidget descrV}
+                    ^{md3widgetTextarea descrV}
                     |]
     return (r,w)
   where

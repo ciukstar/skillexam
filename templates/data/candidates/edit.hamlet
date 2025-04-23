@@ -9,7 +9,7 @@
 
 <main.responsive.no-padding>
 
-  <form method=post action=@{DataR $ CandidateR cid} enctype=#{et} novalidate>
+  <form method=post action=@{DataR $ CandidateR cid} enctype=#{et}>
     ^{fw}
     
     <nav.right-align.horizontal-padding.bottom-padding>

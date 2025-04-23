@@ -62,17 +62,17 @@
 
 /data DataR:
 
-    /form/candidates/#CandidateId          CandidateEditFormR   GET
-    /form/candidates                       CandidateCreateFormR GET
-    /search/candidates                     CandidatesSearchR    GET
-    /delete/candidates/#CandidateId        CandidateDeleR       POST
-    /candidates/#CandidateId/exams/#ExamId CandidateExamR       GET
-    /candidates/#CandidateId/exams         CandidateExamsR      GET
-    /candidates/#CandidateId/photo         CandidatePhotoR      GET
-    /photo/candidates                      CandidatePhotosR     GET
-    /candidates/#CandidateId/skills        CandidateSkillsR     GET
-    /candidates/#CandidateId               CandidateR           GET POST
-    /candidates                            CandidatesR          GET POST
+    /form/candidates/#CandidateId          CandidateEditFormR GET
+    /search/candidates                     CandidatesSearchR  GET
+    /delete/candidates/#CandidateId        CandidateDeleR     POST
+    /candidates/#CandidateId/exams/#ExamId CandidateExamR     GET
+    /candidates/#CandidateId/exams         CandidateExamsR    GET
+    /candidates/#CandidateId/photo         CandidatePhotoR    GET
+    /photo/candidates                      CandidatePhotosR   GET
+    /candidates/#CandidateId/skills        CandidateSkillsR   GET
+    /candidates/new/form                   CandidateNewR      GET
+    /candidates/#CandidateId               CandidateR         GET POST
+    /candidates                            CandidatesR        GET POST
 
     /form/tests/#TestId/stems/#StemId/options/#OptionId   OptionEditFormR   GET
     /form/tests/#TestId/stems/#StemId/options             OptionCreateFormR GET
