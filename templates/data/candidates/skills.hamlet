@@ -31,13 +31,13 @@
     <div.page.no-padding.active>
 
       $if null skills
-        <figure.center-align>
+        <figure.center-align.margin>
           <i.extra>folder_open
           <figcaption>
-            <div>
+            <p>
               _{MsgNoSkillsYet}.
 
-            <div.small-text.secondary-text>
+            <p.small-text.secondary-text>
               _{MsgPassExamInvite}.
 
       $else

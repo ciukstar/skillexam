@@ -2,4 +2,13 @@
 main
       
     table tbody tr:hover
+    
         background-color: var(--surface-container)
+
+    a.social.link
+    
+        display: inline-block
+        max-width: 50vw
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis

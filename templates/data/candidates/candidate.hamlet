@@ -102,11 +102,25 @@
           $forall Entity _ (Social _ link) <- links
             <tr>
               <th scope=row>
-                <i>public
+                $if T.isInfixOf "://wa.me/" link
+                  <i>
+                    <img src=@{StaticR img_Logo_Whatsapp_Green_svg} alt=Whatsapp loading=lazy>
+                $elseif T.isPrefixOf "whatsapp://" link
+                  <i>
+                    <img src=@{StaticR img_Logo_Whatsapp_Green_svg} alt=Whatsapp loading=lazy>
+                    
+                $elseif T.isInfixOf "://t.me/" link
+                  <i>
+                    <img src=@{StaticR img_Logo_Telegram_svg} alt=Telegram loading=lazy>
+                $elseif T.isPrefixOf "tg://" link
+                  <i>
+                    <img src=@{StaticR img_Logo_Telegram_svg} alt=Telegram loading=lazy>
+                    
+                $else
+                  <i>public
                 
               <td>
-                <a.link target=_blank href=#{link} 
-                  style="display: inline-block;max-width: 50vw;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                <a.social.link target=_blank href=#{link}>
 
                   #{link}
             

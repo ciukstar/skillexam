@@ -39,7 +39,7 @@ import Model
       ( UserPhoto, userPhotoUser, userPhotoMime, userPhotoPhoto, userPhotoAttribution
       )
     , AuthenticationType (UserAuthTypePassword), ExamStatus (ExamStatusCompleted)
-    , TimeUnit (TimeUnitMinute)
+    , TimeUnit (TimeUnitMinute), Social (Social, socialCandidate, socialLink)
     )
 
 import Text.Hamlet (shamlet)
@@ -142,7 +142,13 @@ populateEN = do
                , candidateEmail = Just (userEmail user1)
                , candidatePhone = Just "+1098743334"
                , candidateUser = Just uid1
-               }               
+               }
+    insert_ Social { socialCandidate = c001
+                   , socialLink = "https://wa.me/1098743334"
+                   }
+    insert_ Social { socialCandidate = c001
+                   , socialLink = "https://t.me/+1098743334"
+                   }
     liftIO (BS.readFile "demo/user_1.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c001
                       , photoPhoto = bs
@@ -158,6 +164,12 @@ populateEN = do
                , candidatePhone = Just "+1098743335"
                , candidateUser = Just uid2
                }
+    insert_ Social { socialCandidate = c002
+                   , socialLink = "https://wa.me/1098743335"
+                   }
+    insert_ Social { socialCandidate = c002
+                   , socialLink = "https://t.me/+1098743335"
+                   }
     liftIO (BS.readFile "demo/user_2.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c002
                       , photoPhoto = bs
@@ -172,7 +184,13 @@ populateEN = do
                , candidateEmail = Just (userEmail user3)
                , candidatePhone = Just "+1098743336"
                , candidateUser = Just uid3
-               }        
+               }
+    insert_ Social { socialCandidate = c003
+                   , socialLink = "https://wa.me/1098743336"
+                   }
+    insert_ Social { socialCandidate = c003
+                   , socialLink = "https://t.me/+1098743336"
+                   }
     liftIO (BS.readFile "demo/user_3.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c003
                       , photoPhoto = bs
@@ -187,7 +205,13 @@ populateEN = do
                , candidateEmail = Just (userEmail user4)
                , candidatePhone = Just "+1098743337"
                , candidateUser = Just uid4
-               } 
+               }
+    insert_ Social { socialCandidate = c004
+                   , socialLink = "https://wa.me/1098743337"
+                   }
+    insert_ Social { socialCandidate = c004
+                   , socialLink = "https://t.me/+1098743337"
+                   }
     liftIO (BS.readFile "demo/user_4.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c004
                       , photoPhoto = bs
@@ -203,6 +227,12 @@ populateEN = do
                , candidatePhone = Just "+1098743338"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c005
+                   , socialLink = "https://wa.me/1098743338"
+                   }
+    insert_ Social { socialCandidate = c005
+                   , socialLink = "https://t.me/+1098743338"
+                   }
     liftIO (BS.readFile "demo/user_6.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c005
                       , photoPhoto = bs
@@ -218,6 +248,12 @@ populateEN = do
                , candidatePhone = Just "+1098743339"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c006
+                   , socialLink = "https://wa.me/1098743339"
+                   }
+    insert_ Social { socialCandidate = c006
+                   , socialLink = "https://t.me/+1098743339"
+                   }
     liftIO (BS.readFile "demo/user_7.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c006
                       , photoPhoto = bs
@@ -233,6 +269,12 @@ populateEN = do
                , candidatePhone = Just "+1098743340"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c007
+                   , socialLink = "https://wa.me/1098743340"
+                   }
+    insert_ Social { socialCandidate = c007
+                   , socialLink = "https://t.me/+1098743340"
+                   }
     liftIO (BS.readFile "demo/user_5.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c007
                       , photoPhoto = bs
@@ -248,6 +290,12 @@ populateEN = do
                , candidatePhone = Just "+1098743341"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c008
+                   , socialLink = "https://wa.me/1098743341"
+                   }
+    insert_ Social { socialCandidate = c008
+                   , socialLink = "https://t.me/+1098743341"
+                   }
     liftIO (BS.readFile "demo/user_8.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c008
                       , photoPhoto = bs
@@ -263,6 +311,12 @@ populateEN = do
                , candidatePhone = Just "+1098743342"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c009
+                   , socialLink = "https://wa.me/1098743342"
+                   }
+    insert_ Social { socialCandidate = c009
+                   , socialLink = "https://t.me/+1098743342"
+                   }
     liftIO (BS.readFile "demo/user_9.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c009
                       , photoPhoto = bs
@@ -278,6 +332,12 @@ populateEN = do
                , candidatePhone = Just "+1098743343"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c010
+                   , socialLink = "https://wa.me/1098743343"
+                   }
+    insert_ Social { socialCandidate = c010
+                   , socialLink = "https://t.me/+1098743343"
+                   }
     liftIO (BS.readFile "demo/user_10.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c010
                       , photoPhoto = bs
@@ -293,6 +353,12 @@ populateEN = do
                , candidatePhone = Just "+1098743344"
                , candidateUser = Nothing
                }
+    insert_ Social { socialCandidate = c011
+                   , socialLink = "https://wa.me/1098743344"
+                   }
+    insert_ Social { socialCandidate = c011
+                   , socialLink = "https://t.me/+1098743344"
+                   }
     liftIO (BS.readFile "demo/user_11.avif") >>= \bs ->
         insert_ Photo { photoCandidate = c011
                       , photoPhoto = bs

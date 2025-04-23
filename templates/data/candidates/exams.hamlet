@@ -31,11 +31,12 @@
     <div.page.no-padding.active>
 
       $if null tests
-        <figure.center-align>
+        <figure.center-align.margin>
           <i.extra>folder_open
           <figcaption>
-            <div>_{MsgNoExamsYet}.
-            <div.secondary>_{MsgPassExamInvite}.
+            <p>_{MsgNoExamsYet}.
+            <p.small-text.secondary-text>
+              _{MsgPassExamInvite}.
 
       $else
 

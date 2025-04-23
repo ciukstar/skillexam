@@ -5,12 +5,10 @@
 {-# LANGUAGE TupleSections #-}
 
 module Handler.Candidates
-  ( getCandidatesR
+  ( getCandidatesR, postCandidatesR
   , getCandidateNewR
-  , postCandidateR
-  , postCandidatesR
   , getCandidatePhotoR
-  , getCandidateR
+  , getCandidateR, postCandidateR
   , getCandidateEditFormR
   , postCandidateDeleR
   , getCandidatesSearchR
@@ -20,14 +18,14 @@ module Handler.Candidates
   , getCandidatePhotosR
   ) where
 
-import Control.Applicative ((<|>))
 import Control.Monad (void, forM_, forM)
 
 import Data.Bifunctor (Bifunctor(bimap))
 import qualified Data.List.Safe as LS (head)
 import Data.Maybe (fromMaybe, isJust)
+import qualified Data.Set as S (fromList, toList)
 import Data.Text (pack, Text)
-import qualified Data.Text as T (take, null, strip)
+import qualified Data.Text as T (take, null, strip, isInfixOf, isPrefixOf)
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Format.ISO8601 (iso8601Show)
@@ -77,7 +75,7 @@ import Foundation
 import Material3 (md3widget, md3widgetSelect)
 
 import Model
-    ( msgSuccess, msgError, keyUtlDest
+    ( msgSuccess, msgError
     , Candidate
       ( Candidate, candidateFamilyName, candidateGivenName, candidateBday
       , candidateAdditionalName, candidateUser, candidateEmail, candidatePhone
@@ -105,6 +103,7 @@ import Settings (widgetFile)
 import Settings.StaticFiles
     ( img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg
     , img_camera_24dp_0000F5_FILL0_wght400_GRAD0_opsz24_svg
+    , img_Logo_Whatsapp_Green_svg, img_Logo_Telegram_svg
     )
     
 import Text.Hamlet (Html)
@@ -114,18 +113,17 @@ import Yesod.Core
     ( Yesod(defaultLayout), SomeMessage (SomeMessage), setTitleI
     , TypedContent (TypedContent), ToContent (toContent), emptyContent
     , liftIO, getUrlRenderParams, MonadHandler (liftHandler)
-    , FileInfo (fileContentType), languages, lookupPostParams
+    , FileInfo (fileContentType), languages, lookupPostParams, getMessageRender
     )
 import Yesod.Core.Handler
     ( redirect, fileSourceByteString, getMessages, addMessageI
-    , setUltDestCurrent, redirectUltDest, lookupSession, getUrlRender
-    , lookupPostParam, newIdent
+    , setUltDestCurrent, redirectUltDest, newIdent
     )
 import Yesod.Core.Types (WidgetFor)
 import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
-    ( textField, dayField, fileField, intField, selectFieldList, emailField
+    ( textField, dayField, fileField, intField, selectFieldList, emailField, urlField
     )
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost)
 import Yesod.Form.Types
@@ -168,11 +166,6 @@ getCandidatesSearchR = do
 
 postCandidateDeleR :: CandidateId -> Handler Html
 postCandidateDeleR cid = do
-
-    location <- getUrlRender >>= \rndr -> fromMaybe (rndr $ DataR CandidatesR) <$> do
-        l <- lookupPostParam "location"
-        ult <- lookupSession keyUtlDest
-        return $ l <|> ult
         
     ((fr,_),_) <- runFormPost formCandidateDelete
     case fr of
@@ -181,11 +174,11 @@ postCandidateDeleR cid = do
               x <- from $ table @Candidate
               where_ $ x ^. CandidateId ==. val cid
           addMessageI msgSuccess MsgRecordDeleted
-          redirect location
+          redirect $ DataR CandidatesR
 
       _otherwise -> do
           addMessageI msgError MsgInvalidFormData
-          redirect location
+          redirect $ DataR $ CandidateR cid
 
 
 postCandidateR :: CandidateId -> Handler Html
@@ -211,8 +204,11 @@ postCandidateR cid = do
               , PhotoMime P.=. fileContentType fi
               ]
               
-          forM_ (Social cid <$> ls) $ \x@(Social _ link) -> do
-              runDB $ upsertBy (UniqueSocial cid link) x [ SocialLink P.=. link ]
+          runDB $ delete $ do
+              x <- from $ table @Social
+              where_ $ x ^. SocialCandidate ==. val cid
+              
+          runDB $ insertMany_ (Social cid <$> ls)
             
           addMessageI msgSuccess MsgRecordEdited
           redirectUltDest $ DataR CandidatesR
@@ -436,7 +432,7 @@ postCandidatesR = do
               , PhotoMime P.=. fileContentType fi
               ]
 
-          runDB $ insertMany_ (Social cid <$> links)          
+          runDB $ insertMany_ (Social cid <$> links)
               
           addMessageI msgSuccess MsgNewRecordAdded
           redirect $ DataR CandidatesR
@@ -531,13 +527,13 @@ formCandidate medias candidate extra = do
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
-    linksRV <- forM (socialLink . entityVal <$> medias) $ \link -> mreq textField FieldSettings
+    linksRV <- forM (socialLink . entityVal <$> medias) $ \link -> mreq urlField FieldSettings
         { fsLabel = SomeMessage MsgSocialMedia
         , fsTooltip = Nothing, fsId = Nothing, fsName = Just nameSocialMediaLink
         , fsAttrs = []
         } (Just link)
 
-    links <- filter (not . T.null . T.strip) <$> lookupPostParams nameSocialMediaLink
+    links <- S.toList . S.fromList . filter (not . T.null . T.strip) <$> lookupPostParams nameSocialMediaLink
 
     let r = (,) <$> ( (,) <$> (Candidate <$> fnameR <*> gnameR <*> anameR <*> bdayR <*> emailR <*> phoneR <*> userR)
                           <*> photoR
@@ -561,6 +557,8 @@ formCandidate medias candidate extra = do
     idSocialMediaLinks <- newIdent
     idFigureEmptySocial <- newIdent
     idButtonSocialAdd <- newIdent
+
+    msgr <- getMessageRender
     
     return ( r
            , $(widgetFile "data/candidates/form")
