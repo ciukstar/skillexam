@@ -1,0 +1,42 @@
+
+^{widgetMainMenu idOverlay idDialogMainMenu}
+
+<header.fixed.primary>
+  <nav.responsive.max>
+    <button.circle.transparent data-ui=##{idDialogMainMenu}>
+      <i>menu
+      
+    <h1.title.max>
+      _{MsgRemoteExams}
+        
+    ^{widgetAccount}
+
+
+<main.responsive.no-padding>
+
+  $if null exams
+    <figure.center-align.margin>
+      <i.extra>folder_open
+      <figcaption>
+        <p>_{MsgNoExamsYet}.
+        
+  $else            
+    $forall (Entity rid (Remote _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- exams
+      <a.row.wave.padding href=@{DataR $ RemoteR rid}>
+        
+        <div.max>
+          <div.headline.large-text>
+            #{name}
+            
+          <div.supproting-text.secondary-text>
+            #{code}
+
+        <i.secondary-text>arrow_forward_ios
+
+      <hr>
+
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR RemoteNewR}
+    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+    <i>add
+
+^{widgetSnackbar msgs}

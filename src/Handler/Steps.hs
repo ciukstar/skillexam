@@ -149,6 +149,7 @@ getWebSocketTimeoutR eid = webSockets $ do
                                   , ExamEnd =. just (val now)
                                   ]
                             where_ $ x ^. ExamId ==. val eid
+                            where_ $ x ^. ExamStatus ==. val ExamStatusOngoing
                         sendTextData signalTimeout
                     _otherwise -> return ()
           loop

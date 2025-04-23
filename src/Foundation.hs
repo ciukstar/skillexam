@@ -230,6 +230,11 @@ instance Yesod App where
     isAuthorized (WebSocketTimeoutR _) _ = return Authorized
     isAuthorized (RemainingTimeR _) _ = return Authorized
 
+        
+    isAuthorized (DataR RemoteNewR) _ = isAdmin
+    isAuthorized (DataR (RemoteR _)) _ = isAdmin
+    isAuthorized (DataR RemotesR) _ = isAdmin
+
     isAuthorized (DataR SkillCreateFormR) _ = isAdmin
     isAuthorized (DataR SkillsSearchR) _ = isAdmin
     isAuthorized (DataR (SkillsDeleteR _)) _ = isAdmin

@@ -1,3 +1,4 @@
+RemoteExams: Remote exams
 NoSocialMediaLinks: There are no links to social networks
 SocialMedia: Social media
 Contacts: Contacts

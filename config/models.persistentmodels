@@ -1,4 +1,12 @@
 
+Remote
+    test TestId OnDeleteCascade
+    candidate CandidateId Maybe OnDeleteCascade
+    token Text
+    timeCreated UTCTime
+    valid Bool
+    
+
 Answer
     exam ExamId OnDeleteCascade
     stem StemId

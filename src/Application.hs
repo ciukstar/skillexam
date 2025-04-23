@@ -147,6 +147,13 @@ import Handler.Tests
 import Handler.Home
     ( getHomeR
     )
+
+
+import Handler.Data.Remote
+    ( getRemotesR
+    , getRemoteR
+    , getRemoteNewR
+    )
     
 import Handler.Data.Options
     ( getOptionsR, getOptionCreateFormR

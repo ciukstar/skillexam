@@ -1,3 +1,4 @@
+RemoteExams: Дистанционные экзамены
 NoSocialMediaLinks: Ссылки на социальные сети отсутствуют
 SocialMedia: Соцсети
 Contacts: Контакты

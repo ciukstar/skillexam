@@ -51,6 +51,10 @@
     <div.small-text>
       _{MsgData}
       
+    <a href=@{DataR RemotesR} :curr == Just (DataR RemotesR):.active>
+      <i.no-round>connect_without_contact
+      <span>_{MsgRemoteExams}
+      
     <a href=@{DataR CandidatesR} :curr == Just (DataR CandidatesR):.active>
       <i.no-round>group
       <span>_{MsgCandidates}
