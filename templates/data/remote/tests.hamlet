@@ -35,8 +35,8 @@
 
       <hr>
 
-  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR RemoteNewR}
-    aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
+  <a.button.circle.extra.fixed.right.bottom.margin.medium-elevate href=@{DataR RemoteNewTestR}
+                 aria-label=_{MsgAdd} style="z-index:1" onclick="event.stopPropagation()">
     <i>add
 
 ^{widgetSnackbar msgs}

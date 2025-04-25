@@ -29,4 +29,5 @@ deploy-demo-en.sh
 deploy-demo-fr.sh
 deploy-demo-ro.sh
 deploy-demo-ru.sh
+deploy-yc-demo-ru.sh
 skillexam

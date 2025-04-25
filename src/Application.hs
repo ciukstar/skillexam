@@ -152,7 +152,8 @@ import Handler.Home
 import Handler.Data.Remote
     ( getRemotesR
     , getRemoteR
-    , getRemoteNewR
+    , getRemoteNewTestR, postRemoteNewTestR
+    , getRemoteNewCandidatesR
     , getRemoteEditR
     , postRemoteDeleR
     )

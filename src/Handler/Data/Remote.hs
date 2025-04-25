@@ -1,56 +1,78 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Handler.Data.Remote
   ( getRemotesR
   , getRemoteR
-  , getRemoteNewR
+  , getRemoteNewTestR
+  , postRemoteNewTestR
+  , getRemoteNewCandidatesR
   , getRemoteEditR
   , postRemoteDeleR 
   ) where
 
+import Control.Monad (unless)
 import Control.Monad.IO.Class (liftIO)
+
+import qualified Data.List as L (find)
+import Data.Text (pack)
+import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, orderBy, desc, innerJoin, on
     , (^.), (==.), (:&) ((:&))
-    , where_, val
+    , where_, val, asc
     )
 
-import Database.Persist (Entity (Entity))
+import Database.Persist (Entity (Entity), entityVal)
+import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
     ( Handler, Form, widgetMainMenu, widgetAccount, widgetSnackbar
     , Route (DataR)
     , DataR
-      ( RemotesR, RemoteNewR, RemoteR, RemoteEditR, RemoteDeleR
+      ( RemotesR, RemoteNewTestR, RemoteR, RemoteEditR, RemoteDeleR
+      , RemoteNewCandidatesR
       )
     , AppMessage
       ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam, MsgSave
       , MsgCancel, MsgExamLink, MsgEdit, MsgName, MsgDeleteAreYouSure
       , MsgConfirmPlease, MsgCode, MsgDelete, MsgBack, MsgRemoteTests
-      , MsgRemoteTest
+      , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgNext
       )
     )
     
 import Model
-    ( RemoteId, Remote(Remote)
-    , Test (Test)
+    ( RemoteId, Remote(Remote, remoteTest, remoteCandidate)
+    , CandidateId
+    , TestId, Test (Test)
     , EntityField
-      ( RemoteTimeCreated, RemoteTest, TestId, RemoteId
-      )
+      ( RemoteTimeCreated, RemoteTest, TestId, RemoteId, TestName, CandidateFamilyName, CandidateId, CandidateGivenName, CandidateAdditionalName
+      ), Candidate (Candidate)
     )
 
 import Settings (widgetFile)
 
+import Text.Cassius (cassius)
 import Text.Hamlet (Html)
 
-import Yesod.Core (Yesod(defaultLayout), setTitleI, newIdent, getMessages)
-import Yesod.Core.Widget (whamlet)
-import Yesod.Form.Functions (generateFormPost)
+import Yesod.Core
+    ( MonadHandler (liftHandler), Yesod(defaultLayout), setTitleI, newIdent
+    , getMessages, handlerToWidget, redirect
+    )
+import Yesod.Core.Widget (whamlet, toWidget)
+import Yesod.Form.Functions (generateFormPost, mreq, runFormPost)
 import Yesod.Persist.Core (YesodPersist(runDB))
-import Data.Time.Clock (getCurrentTime)
+import Yesod.Form.Fields
+    ( OptionList (olOptions), Option (optionInternalValue, optionExternalValue)
+    , optionsPairs, radioField'
+    )
+import Yesod.Form.Types
+    ( Field(fieldView), FieldSettings (FieldSettings), FieldView (fvInput)
+    , FormResult (FormSuccess)
+    )
 
 
 postRemoteDeleR :: RemoteId -> Handler Html
@@ -84,25 +106,180 @@ formRemoteTestDelete :: Form ()
 formRemoteTestDelete extra = return (pure (), [whamlet|^{extra}|])
 
 
-getRemoteNewR :: Handler Html
-getRemoteNewR = do
+getRemoteNewCandidatesR :: TestId -> Handler Html
+getRemoteNewCandidatesR tid = do
 
-    (fw,et) <- generateFormPost $ formRemoteTest Nothing
-    
+    (fw,et) <- generateFormPost $ formRemoteCandidates Nothing
+
+    msgs <- getMessages 
     defaultLayout $ do
         setTitleI MsgRemoteExam
-        $(widgetFile "data/remote/new")
+        $(widgetFile "data/remote/new/candidates")
 
 
-formRemoteTest :: Maybe (Entity Remote) -> Form Remote
-formRemoteTest remote extra = do
-
+formRemoteCandidates :: TestId -> Form (TestId,[CandidateId])
+formRemoteCandidates tid extra = do
     
+    options <- liftHandler $ runDB $ select $ do
+        x <- from $ table @Candidate
+        orderBy [ asc (x ^. CandidateFamilyName)
+                , asc (x ^. CandidateGivenName)
+                , asc (x ^. CandidateAdditionalName)
+                , asc (x ^. CandidateId)
+                ]
+        return x
+
+    (candidatesR,candidatesV) <- mreq (md3checkFieldList options) "" Nothing
     
+    return ( (,) tid <$> candidatesR
+           , [whamlet|^{extra} ^{fvInput candidatesV}|])
+
+  where
+
+      pairs (Entity tid' (Test _ name _ _ _ _ _)) = (name, tid')
+
+      md3checkFieldList :: [Entity Candidate] -> Field Handler [CandidateId]
+      md3checkFieldList options = (radioField' (optionsPairs (pairs <$> options)))
+          { fieldView = \theId name attrs x isReq -> do
+                opts <- zip [1 :: Int ..] . olOptions <$> handlerToWidget (optionsPairs (pairs <$> options))
+
+                let sel (Left _) _ = False
+                    sel (Right y) opt = optionInternalValue opt == y
+
+                let findOpt :: Option TestId -> [Entity Test] -> Maybe (Entity Test)
+                    findOpt opt = L.find (\(Entity tid' _) -> tid' == optionInternalValue opt)
+                    
+                unless (null opts) $ toWidget [cassius|
+                    div.row
+                        .content
+                            display: inline-grid
+                        .headline
+                            display: inline-block
+                            white-space: nowrap
+                            overflow: hidden
+                            text-overflow: ellipsis
+                    |]
+                [whamlet|
+                    $if null opts
+                        <figure style="text-align:center">
+                          <span style="font-size:4rem">&varnothing;
+                          <figcaption>
+                            _{MsgNoTestsYet}.
+                    $else
+                      <div *{attrs}>
+                        $forall (i,opt) <- opts
+                          $maybe (Entity _ (Test tcode tname _ _ _ _ _)) <- findOpt opt options
+                            <div.max.row.no-margin.padding.wave onclick="document.getElementById('#{theId}-#{i}').click()">
+
+                              <div.content.max>
+                                <h6.headline.large-text>
+                                  #{tname}
+                                <div.supporting-text.secondary-text>
+                                  #{tcode}
+
+                              <label.radio>
+                                <input type=radio ##{theId}-#{i} name=#{name} value=#{optionExternalValue opt}
+                                  :sel x opt:checked :isReq:required=true>
+                                <span>
+
+                |]
+                    }
+
+
+postRemoteNewTestR :: Handler Html
+postRemoteNewTestR = do
+
+    ((fr,fw),et) <- runFormPost $ formRemoteTest Nothing
+    case fr of
+      FormSuccess r -> redirect $ DataR $ RemoteNewCandidatesR r
+      _otherwise -> do
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgRemoteExam
+              $(widgetFile "data/remote/new/test")
+
+
+getRemoteNewTestR :: Handler Html
+getRemoteNewTestR = do
+
+    (fw,et) <- generateFormPost $ formRemoteTest Nothing
+
+    msgs <- getMessages
+    defaultLayout $ do
+        setTitleI MsgRemoteExam
+        $(widgetFile "data/remote/new/test")
+
+
+formRemoteExam :: Maybe (Entity Remote) -> Form Remote
+formRemoteExam remote extra = do
     now <- liftIO getCurrentTime
-    let r = Remote <$> testR <*> candidateR <*> tokenR <*> pure now <*> validR
-    let w = undefined
+    let r = undefined -- Remote <$> testR <*> candidateR <*> tokenR <*> pure now <*> validR
+    let w = [whamlet|^{extra}|]
     return (r,w)
+
+
+formRemoteTest :: Maybe (Entity Remote) -> Form TestId
+formRemoteTest remote extra = do
+    
+    options <- liftHandler $ runDB $ select $ do
+        x <- from $ table @Test
+        orderBy [asc (x ^. TestName), asc (x ^. TestId)]
+        return x
+
+    (testR,testV) <- mreq (md3radioFieldList options) "" (remoteTest . entityVal <$> remote)
+    
+    return (testR, [whamlet|^{extra} ^{fvInput testV}|])
+
+  where
+
+      pairs (Entity tid' (Test _ name _ _ _ _ _)) = (name, tid')
+
+      md3radioFieldList :: [Entity Test] -> Field Handler TestId
+      md3radioFieldList options = (radioField' (optionsPairs (pairs <$> options)))
+          { fieldView = \theId name attrs x isReq -> do
+                opts <- zip [1 :: Int ..] . olOptions <$> handlerToWidget (optionsPairs (pairs <$> options))
+
+                let sel (Left _) _ = False
+                    sel (Right y) opt = optionInternalValue opt == y
+
+                let findOpt :: Option TestId -> [Entity Test] -> Maybe (Entity Test)
+                    findOpt opt = L.find (\(Entity tid' _) -> tid' == optionInternalValue opt)
+                    
+                unless (null opts) $ toWidget [cassius|
+                    div.row
+                        .content
+                            display: inline-grid
+                        .headline
+                            display: inline-block
+                            white-space: nowrap
+                            overflow: hidden
+                            text-overflow: ellipsis
+                    |]
+                [whamlet|
+                    $if null opts
+                        <figure style="text-align:center">
+                          <span style="font-size:4rem">&varnothing;
+                          <figcaption>
+                            _{MsgNoTestsYet}.
+                    $else
+                      <div *{attrs}>
+                        $forall (i,opt) <- opts
+                          $maybe (Entity _ (Test tcode tname _ _ _ _ _)) <- findOpt opt options
+                            <div.max.row.no-margin.padding.wave onclick="document.getElementById('#{theId}-#{i}').click()">
+
+                              <div.content.max>
+                                <h6.headline.large-text>
+                                  #{tname}
+                                <div.supporting-text.secondary-text>
+                                  #{tcode}
+
+                              <label.radio>
+                                <input type=radio ##{theId}-#{i} name=#{name} value=#{optionExternalValue opt}
+                                  :sel x opt:checked :isReq:required=true>
+                                <span>
+
+                |]
+                    }
 
 
 getRemotesR :: Handler Html
