@@ -1,5 +1,8 @@
+NoRegisteredCandidatesHaveBeenSelected: No registered candidates have been selected
 Create: Create
-YouAreAboutToCreateExamsForCandidates n@Int m@Int: You are about to create #{show n} exams for #{show m} candidates
+YouAreAboutToCreateExamForUnregisteredCandidates: You are about to create an exam for unregistered candidates
+YouAreAboutToCreateExamForCandidate: You are about to create an exam for a candidate
+YouAreAboutToCreateExamForCandidates m@Int: You are about to create an exam for #{show m} candidates
 Valid: Valid
 Author: Author
 DateCreated: DateCreated

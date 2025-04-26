@@ -12,7 +12,7 @@
     <hr.m.l.max>
     
     <div.center-align>
-      <button.circle.small>
+      <button.circle.small disabled>
         <i>done
       <div.small-margin>
         _{MsgTest}
@@ -38,7 +38,7 @@
 <main.responsive.no-padding>
 
 
-  <form method=post action=@{DataR RemoteNewTestR} enctype=#{et} ##{idFormRemoteNewTest}>
+  <form method=post action=@{DataR $ RemoteNewCandidatesR tid} enctype=#{et} ##{idFormRemoteNewTest}>
     ^{fw}
 
 <nav.bottom.right-align.horizontal-padding.bottom-padding>

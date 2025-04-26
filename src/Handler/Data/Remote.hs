@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Handler.Data.Remote
-  ( getRemotesR
+  ( getRemotesR, postRemoteNewExamR
   , getRemoteR
   , getRemoteNewTestR, postRemoteNewTestR
   , getRemoteNewCandidatesR, postRemoteNewCandidatesR
@@ -17,13 +17,14 @@ import Control.Monad (unless, forM)
 import Control.Monad.IO.Class (liftIO)
 
 import qualified Data.List as L (find)
+import Data.Maybe (fromMaybe)
 import Data.Text (pack)
 import Data.Time.Clock (getCurrentTime)
 
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, orderBy, desc, innerJoin, on
     , (^.), (==.), (:&) ((:&))
-    , where_, val, asc
+    , where_, val, asc, in_, valList, PersistStoreWrite (insert)
     )
 
 import Database.Persist (Entity (Entity), entityVal)
@@ -33,23 +34,26 @@ import Foundation
     ( Handler, Form, widgetMainMenu, widgetAccount, widgetSnackbar
     , Route (DataR)
     , DataR
-      ( RemotesR, RemoteNewTestR, RemoteR, RemoteEditR, RemoteDeleR
-      , RemoteNewCandidatesR, CandidatePhotoR, RemoteNewExamR, UserPhotoR
+      ( RemotesR, RemoteNewTestR, RemoteR, RemoteEditR, CandidatePhotoR
+      , RemoteNewCandidatesR, RemoteNewExamR, UserPhotoR, RemoteDeleR
       )
     , AppMessage
       ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam, MsgSave
       , MsgCancel, MsgExamLink, MsgEdit, MsgName, MsgDeleteAreYouSure
       , MsgConfirmPlease, MsgCode, MsgDelete, MsgBack, MsgRemoteTests
-      , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgNoCandidatesYet
-      , MsgNext, MsgPhoto, MsgPublished, MsgUnpublished, MsgPoints
+      , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgUnpublished
+      , MsgNext, MsgPhoto, MsgPublished, MsgPoints, MsgNoCandidatesYet
       , MsgPassMark, MsgMinutes, MsgHours, MsgExamState, MsgDuration
-      , MsgDescr, MsgDateCreated, MsgAuthor, MsgYes, MsgValid, MsgCreate
-      , MsgNo
+      , MsgDescr, MsgDateCreated, MsgAuthor, MsgYes, MsgNo, MsgValid
+      , MsgYouAreAboutToCreateExamForUnregisteredCandidates, MsgCreate
+      , MsgYouAreAboutToCreateExamForCandidate, MsgDetails
+      , MsgYouAreAboutToCreateExamForCandidates
+      , MsgNoRegisteredCandidatesHaveBeenSelected, MsgClose
       )
     )
     
 import Model
-    ( RemoteId, Remote(Remote, remoteTest, remoteCandidate)
+    ( RemoteId, Remote(Remote, remoteTest, remoteCandidate, remoteToken, remoteTimeCreated)
     , CandidateId, Candidate (Candidate), Candidates (Candidates)
     , TimeUnit (TimeUnitMinute, TimeUnitHour)
     , UserId, User (User)
@@ -67,12 +71,13 @@ import Settings (widgetFile)
 import Text.Cassius (cassius)
 import Text.Hamlet (Html)
 
+import Yesod.Auth (YesodAuth(maybeAuthId))
 import Yesod.Core
     ( MonadHandler (liftHandler), Yesod(defaultLayout), setTitleI, newIdent
-    , getMessages, handlerToWidget, redirect
+    , getMessages, handlerToWidget, redirect, notAuthenticated
     )
 import Yesod.Core.Widget (whamlet, toWidget)
-import Yesod.Form.Functions (generateFormPost, mreq, runFormPost)
+import Yesod.Form.Functions (generateFormPost, mreq, runFormPost, mopt)
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.Form.Fields
     ( OptionList (olOptions), Option (optionInternalValue, optionExternalValue)
@@ -116,29 +121,82 @@ formRemoteTestDelete :: Form ()
 formRemoteTestDelete extra = return (pure (), [whamlet|^{extra}|])
 
 
-getRemoteNewExamR :: UserId -> TestId -> Candidates -> Handler Html
-getRemoteNewExamR tid candidates@(Candidates cids) = do
+postRemoteNewExamR :: TestId -> Candidates -> Handler Html
+postRemoteNewExamR tid candis@(Candidates cids) = do
 
-    uid <- 
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val tid
+        return x
+
+    candidates <- runDB $ select $ do
+        x <- from $ table @Candidate
+        where_ $ x ^. CandidateId `in_` valList cids
+        return x
+    
+    ((fr,fw),et) <- runFormPost $ formRemoteExam tid cids
+    case fr of
+      FormSuccess r -> do
+          eids <- forM r $ \x -> do
+              token <- liftIO $ toText <$> nextRandom
+              now <- liftIO getCurrentTime
+              runDB $ insert x { remoteToken = token
+                               , remoteTimeCreated = now
+                               }
+
+          remotes <- runDB $ select $ do
+              x <- from $ table @Remote
+              where_ $ x ^. RemoteId `in_` valList eids
+              return x
+                  
+          msgs <- getMessages 
+          defaultLayout $ do
+              setTitleI MsgRemoteExam
+              $(widgetFile "data/remote/new/links")
+              
+      _otherwise -> do
+          msgs <- getMessages 
+          defaultLayout $ do
+              setTitleI MsgRemoteExam
+              idFormRemoteNewExam <- newIdent
+              $(widgetFile "data/remote/new/exam")
+
+
+getRemoteNewExamR :: TestId -> Candidates -> Handler Html
+getRemoteNewExamR tid candis@(Candidates cids) = do
+
+    test <- runDB $ selectOne $ do
+        x <- from $ table @Test
+        where_ $ x ^. TestId ==. val tid
+        return x
+
+    candidates <- runDB $ select $ do
+        x <- from $ table @Candidate
+        where_ $ x ^. CandidateId `in_` valList cids
+        return x
     
     (fw,et) <- generateFormPost $ formRemoteExam tid cids
     
     msgs <- getMessages 
     defaultLayout $ do
         setTitleI MsgRemoteExam
-        $(widgetFile "data/remote/new/exam") 
+        idFormRemoteNewExam <- newIdent
+        $(widgetFile "data/remote/new/exam")
 
 
-formRemoteExam :: UserId -> TestId -> [CandidateId] -> Form [Remote]
-formRemoteExam oid tid cids extra = do
+formRemoteExam :: TestId -> [CandidateId] -> Form [Remote]
+formRemoteExam tid cids extra = do
     now <- liftIO getCurrentTime
-    
-    r <- return $ pure $ (\cid -> Remote oid tid (Just cid) "token" now True) <$> cids
-    
-    -- let r = undefined -- Remote <$> testR <*> candidateR <*> tokenR <*> pure now <*> validR
 
-    let w = [whamlet|^{extra}|]
-    return (r,w)
+    let token = "some token"
+    uid <- maybeAuthId
+
+    case uid of
+      Nothing -> notAuthenticated
+      Just uid' -> do
+          let r = pure $ (\cid -> Remote uid' tid (Just cid) token now True) <$> cids
+          let w = [whamlet|^{extra}|]
+          return (r,w)
 
 
 postRemoteNewCandidatesR :: TestId -> Handler Html
@@ -179,9 +237,9 @@ formRemoteCandidates tid extra = do
                 ]
         return x
 
-    (candidatesR,candidatesV) <- mreq (md3checkFieldList options) "" Nothing
+    (candidatesR,candidatesV) <- mopt (md3checkFieldList options) "" Nothing
     
-    return ( (,) tid <$> candidatesR
+    return ( (,) tid . fromMaybe [] <$> candidatesR
            , [whamlet|^{extra} ^{fvInput candidatesV}|]
            )
 

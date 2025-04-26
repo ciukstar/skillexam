@@ -12,7 +12,7 @@
     <hr.m.l.max>
     
     <div.center-align>
-      <button.circle.small>
+      <button.circle.small disabled>
         <i>done
       <div.small-margin>
         _{MsgTest}
@@ -20,7 +20,7 @@
     <hr.max>
     
     <div.center-align>
-      <button.circle.small>
+      <button.circle.small disabled>
         <i>done
       <div.small-margin>
         _{MsgCandidates}
@@ -35,19 +35,66 @@
         
     <hr.m.l.max>
 
-<main.responsive.no-padding>
+<main.responsive>
 
+  <p>
+    $if null cids
+      _{MsgYouAreAboutToCreateExamForUnregisteredCandidates}.
+    $elseif length cids == 1
+      _{MsgYouAreAboutToCreateExamForCandidate}.
+    $else
+      _{MsgYouAreAboutToCreateExamForCandidates (length cids)}.
 
-  <form method=post action=@{DataR $ RemoteNewExamR tid candidates} enctype=#{et}>
+  <details>
+    <summary>
+      <i>expand_circle_down
+      _{MsgDetails}
+      <span.ellipsis>...
+    
+    <fieldset>
+      <legend>_{MsgTest}
+      $maybe Entity _ (Test code name dur unit _ _ _) <- test
+        <p>
+          #{name}
+          <div.secondary-text>
+            <span>#{code} (
+            $with dur <- show dur
+              <span.duration data-value=#{dur}>
+                #{dur}
+            <span style="text-transform:lowercase">
+              $case unit
+                $of TimeUnitMinute
+                  _{MsgMinutes}
+                $of TimeUnitHour
+                  _{MsgHours}
+            )
+            
+      
+    <fieldset>
+      <legend>_{MsgCandidates}
+      
+      $if null candidates
+        <p>_{MsgNoRegisteredCandidatesHaveBeenSelected}.
+      $else 
+        $forall Entity cid (Candidate fname gname aname _ _ _ _) <- candidates
+          <ul.list.border>
+            <li>
+              <img.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy>
+              <div.max>
+                #{fname} #{gname}
+                $maybe aname <- aname
+                  #{name}
+
+  <form method=post action=@{DataR $ RemoteNewExamR tid candis} enctype=#{et} ##{idFormRemoteNewExam}>
     ^{fw}
 
-    <nav.bottom.right-align.horizontal-padding.bottom-padding>
+<nav.bottom.right-align.horizontal-padding.bottom-padding>
 
-      <a.button.transparent.link href=@{DataR RemotesR} role=button>
-        _{MsgCancel}
+  <a.button.transparent.link href=@{DataR RemotesR} role=button>
+    _{MsgCancel}
 
-      <button type=submit>
-        _{MsgCreate}
+  <button type=submit form=#{idFormRemoteNewExam}>
+    _{MsgCreate}
 
 
 ^{widgetSnackbar msgs}

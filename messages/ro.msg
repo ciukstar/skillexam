@@ -1,5 +1,8 @@
+NoRegisteredCandidatesHaveBeenSelected: Niciun candidat înregistrat nu a fost selectat
 Create: Creează
-YouAreAboutToCreateExamsForCandidates n m: Sunteți pe cale să creați #{show n} examene pentru #{show m} candidați
+YouAreAboutToCreateExamForUnregisteredCandidates: Sunteți pe punctul de a crea un examen pentru candidați neînregistrați
+YouAreAboutToCreateExamForCandidate: Sunteți pe punctul de a crea un examen pentru un candidat
+YouAreAboutToCreateExamForCandidates m: Sunteți pe punctul de a crea un examen pentru #{show m} candidați
 Valid: Valabil
 Author: Autorul
 DateCreated: Data creării

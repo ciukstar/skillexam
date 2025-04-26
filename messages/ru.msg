@@ -1,5 +1,8 @@
+NoRegisteredCandidatesHaveBeenSelected: Ни один зарегистрированный кандидат не был выбран
 Create: Создать
-YouAreAboutToCreateExamsForCandidates n m: Вы собираетесь создать #{show n} экзаменов для #{show m} кандидатов
+YouAreAboutToCreateExamForUnregisteredCandidates: Вы собираетесь создать экзамен для незарегистрированных кандидатов
+YouAreAboutToCreateExamForCandidate: Вы собираетесь создать экзамен для кандидата
+YouAreAboutToCreateExamForCandidates m: Вы собираетесь создать экзамен для #{show m} кандидатов
 Valid: Действительный
 Author: Автор
 DateCreated: Дата создания

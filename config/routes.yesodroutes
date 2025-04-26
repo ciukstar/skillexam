@@ -64,7 +64,7 @@
 
     /remotes/#RemoteId/dele                           RemoteDeleR          POST
     /remotes/#RemoteId/edit                           RemoteEditR          GET
-    /remotes/new/tests/#TestId/candidates/+Candidates RemoteNewExamR       GET 
+    /remotes/new/tests/#TestId/candidates/+Candidates RemoteNewExamR       GET POST 
     /remotes/new/tests/#TestId                        RemoteNewCandidatesR GET POST
     /remotes/new/test                                 RemoteNewTestR       GET POST
     /remotes/#RemoteId                                RemoteR              GET

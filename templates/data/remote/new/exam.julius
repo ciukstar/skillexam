@@ -1,0 +1,9 @@
+
+Array.from(
+  document.body.querySelectorAll('details')
+).forEach(x => {
+  x.addEventListener('toggle', function (e) {
+    x.querySelector('summary i').textContent = x.open ? 'expand_circle_up' : 'expand_circle_down';
+    x.querySelector('summary .ellipsis').textContent = x.open ? '' : '... ';
+  });
+});

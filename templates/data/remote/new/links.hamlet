@@ -1,0 +1,22 @@
+
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{DataR RemotesR} role=button>
+      <i>arrow_back
+
+    <h1.title.max>
+      _{MsgRemoteExam}
+
+<main.responsive.no-padding>
+
+  <ul.list.border>
+    $forall Entity _ (Remote _ _ _ token _ _) <- remotes
+      <li>
+        #{token}
+
+  <nav.right-align>
+    <a.button.transparent.link href=@{DataR RemotesR} role=button>
+      _{MsgClose}
+
+
+^{widgetSnackbar msgs}

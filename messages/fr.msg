@@ -1,5 +1,8 @@
+NoRegisteredCandidatesHaveBeenSelected: Aucun candidat inscrit n'a été sélectionné
 Create: Créer
-YouAreAboutToCreateExamsForCandidates n m: Vous êtes sur le point de créer #{show n} examens pour #{show m} candidats
+YouAreAboutToCreateExamForUnregisteredCandidates: Vous êtes sur le point de créer un examen pour les candidats non inscrits
+YouAreAboutToCreateExamForCandidate: Vous êtes sur le point de créer un examen pour un candidat
+YouAreAboutToCreateExamForCandidates m: Vous êtes sur le point de créer un examen pour #{show m} candidats
 Valid: Valide
 Author: Auteur
 DateCreated: Date de création

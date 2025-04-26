@@ -137,7 +137,6 @@ import Handler.Tests
     , getSearchTestExamR
     , getSearchTestExamSkillsR
     , getTestExamLoginR
-
     , getTestExamsR
     , getTestExamEnrollmentR
     , getTestExamUserEnrollmentR
@@ -154,7 +153,7 @@ import Handler.Data.Remote
     , getRemoteR
     , getRemoteNewTestR, postRemoteNewTestR
     , getRemoteNewCandidatesR, postRemoteNewCandidatesR
-    , getRemoteNewExamR
+    , getRemoteNewExamR, postRemoteNewExamR
     , getRemoteEditR
     , postRemoteDeleR
     )
