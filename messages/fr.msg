@@ -1,3 +1,8 @@
+Create: Créer
+YouAreAboutToCreateExamsForCandidates n m: Vous êtes sur le point de créer #{show n} examens pour #{show m} candidats
+Valid: Valide
+Author: Auteur
+DateCreated: Date de création
 ForPotentialCandidates: Pour les candidats potentiels
 ForRegisteredCandidate: Pour un candidat inscrit
 RemoteTest: Test à distance

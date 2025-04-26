@@ -21,7 +21,7 @@
         <p>_{MsgNoTestsYet}.
         
   $else            
-    $forall (Entity rid (Remote _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- tests
+    $forall (Entity rid (Remote _ _ _ _ created valid), Entity _ (Test code name dur unit pass descr state)) <- tests
       <a.row.wave.padding href=@{DataR $ RemoteR rid}>
         
         <div.max>

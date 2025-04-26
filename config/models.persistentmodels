@@ -1,5 +1,6 @@
 
 Remote
+    owner UserId OnDeleteCascade
     test TestId OnDeleteCascade
     candidate CandidateId Maybe OnDeleteCascade
     token Text

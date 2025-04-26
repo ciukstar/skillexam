@@ -1,3 +1,8 @@
+Create: Create
+YouAreAboutToCreateExamsForCandidates n@Int m@Int: You are about to create #{show n} exams for #{show m} candidates
+Valid: Valid
+Author: Author
+DateCreated: DateCreated
 ForPotentialCandidates: For potential candidates
 ForRegisteredCandidate: For a registered candidate
 RemoteTest: Remote test

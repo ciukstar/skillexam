@@ -233,6 +233,7 @@ instance Yesod App where
         
     isAuthorized (DataR (RemoteDeleR _)) _ = isAdmin
     isAuthorized (DataR (RemoteEditR _)) _ = isAdmin
+    isAuthorized (DataR (RemoteNewCandidatesR _)) _ = isAdmin
     isAuthorized (DataR RemoteNewTestR) _ = isAdmin
     isAuthorized (DataR (RemoteR _)) _ = isAdmin
     isAuthorized (DataR RemotesR) _ = setUltDestCurrent >> isAdmin

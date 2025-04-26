@@ -6,10 +6,10 @@
 
     <h1.title.max>
       _{MsgRemoteExam}
-
-<main.responsive.no-padding>
  
   <nav>
+    <hr.m.l.max>
+    
     <div.center-align>
       <button.circle.small>
         1
@@ -31,18 +31,22 @@
         3
       <div.small-margin>
         _{MsgExam}
-
-
-  <form method=post action=@{DataR RemoteNewTestR} enctype=#{et}>
-    ^{fw}
-    
-    <nav.right-align.horizontal-padding.bottom-padding>
-      <a.button.transparent.link href=@{DataR RemotesR} role=button>
-        _{MsgCancel}
         
-      <button type=submit>
-        _{MsgNext}
-        <i>arrow_forward
+    <hr.m.l.max>
+
+<main.responsive.no-padding>
+
+
+  <form method=post action=@{DataR RemoteNewTestR} enctype=#{et} ##{idFormRemoteNewTest}>
+    ^{fw}
+
+<nav.bottom.right-align.horizontal-padding.bottom-padding>
+  <a.button.transparent.link href=@{DataR RemotesR} role=button>
+    _{MsgCancel}
+
+  <button type=submit form=#{idFormRemoteNewTest}>
+    _{MsgNext}
+    <i>arrow_forward
 
 
 ^{widgetSnackbar msgs}

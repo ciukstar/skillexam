@@ -1,7 +1,7 @@
 
 <header.fixed>
   <nav.responsive.max>
-    <a.button.circle.transparent href=@?{(DataR RemoteNewTestR,[("tid",pack $ show $ fromSqlKey tid)])} role=button>
+    <a.button.circle.transparent href=@?{(DataR $ RemoteNewCandidatesR tid,[("tid",pack $ show $ fromSqlKey tid)])} role=button>
       <i>arrow_back
 
     <h1.title.max>
@@ -21,14 +21,14 @@
     
     <div.center-align>
       <button.circle.small>
-        2
+        <i>done
       <div.small-margin>
         _{MsgCandidates}
     
     <hr.max>
     
     <div.center-align>
-      <button.circle.small disabled>
+      <button.circle.small>
         3
       <div.small-margin>
         _{MsgExam}
@@ -38,17 +38,16 @@
 <main.responsive.no-padding>
 
 
-  <form method=post action=@{DataR RemoteNewTestR} enctype=#{et} ##{idFormRemoteNewTest}>
+  <form method=post action=@{DataR $ RemoteNewExamR tid candidates} enctype=#{et}>
     ^{fw}
 
-<nav.bottom.right-align.horizontal-padding.bottom-padding>
+    <nav.bottom.right-align.horizontal-padding.bottom-padding>
 
-  <a.button.transparent.link href=@?{(DataR RemoteNewTestR,[("tid",pack $ show $ fromSqlKey tid)])} role=button>
-    _{MsgCancel}
+      <a.button.transparent.link href=@{DataR RemotesR} role=button>
+        _{MsgCancel}
 
-  <button type=submit form=#{idFormRemoteNewTest}>
-    _{MsgNext}
-    <i>arrow_forward
+      <button type=submit>
+        _{MsgCreate}
 
 
 ^{widgetSnackbar msgs}

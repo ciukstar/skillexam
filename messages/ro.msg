@@ -1,3 +1,8 @@
+Create: Creează
+YouAreAboutToCreateExamsForCandidates n m: Sunteți pe cale să creați #{show n} examene pentru #{show m} candidați
+Valid: Valabil
+Author: Autorul
+DateCreated: Data creării
 ForPotentialCandidates: Pentru candidați potențiali
 ForRegisteredCandidate: Pentru un candidat înregistrat 
 RemoteTest: Test la distanță

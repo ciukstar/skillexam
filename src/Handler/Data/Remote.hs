@@ -6,14 +6,14 @@
 module Handler.Data.Remote
   ( getRemotesR
   , getRemoteR
-  , getRemoteNewTestR
-  , postRemoteNewTestR
-  , getRemoteNewCandidatesR
+  , getRemoteNewTestR, postRemoteNewTestR
+  , getRemoteNewCandidatesR, postRemoteNewCandidatesR
+  , getRemoteNewExamR
   , getRemoteEditR
   , postRemoteDeleR 
   ) where
 
-import Control.Monad (unless)
+import Control.Monad (unless, forM)
 import Control.Monad.IO.Class (liftIO)
 
 import qualified Data.List as L (find)
@@ -34,23 +34,32 @@ import Foundation
     , Route (DataR)
     , DataR
       ( RemotesR, RemoteNewTestR, RemoteR, RemoteEditR, RemoteDeleR
-      , RemoteNewCandidatesR
+      , RemoteNewCandidatesR, CandidatePhotoR, RemoteNewExamR, UserPhotoR
       )
     , AppMessage
       ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam, MsgSave
       , MsgCancel, MsgExamLink, MsgEdit, MsgName, MsgDeleteAreYouSure
       , MsgConfirmPlease, MsgCode, MsgDelete, MsgBack, MsgRemoteTests
-      , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgNext
+      , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgNoCandidatesYet
+      , MsgNext, MsgPhoto, MsgPublished, MsgUnpublished, MsgPoints
+      , MsgPassMark, MsgMinutes, MsgHours, MsgExamState, MsgDuration
+      , MsgDescr, MsgDateCreated, MsgAuthor, MsgYes, MsgValid, MsgCreate
+      , MsgNo
       )
     )
     
 import Model
     ( RemoteId, Remote(Remote, remoteTest, remoteCandidate)
-    , CandidateId
+    , CandidateId, Candidate (Candidate), Candidates (Candidates)
+    , TimeUnit (TimeUnitMinute, TimeUnitHour)
+    , UserId, User (User)
+    , TestState (TestStatePublished, TestStateUnpublished)
     , TestId, Test (Test)
     , EntityField
-      ( RemoteTimeCreated, RemoteTest, TestId, RemoteId, TestName, CandidateFamilyName, CandidateId, CandidateGivenName, CandidateAdditionalName
-      ), Candidate (Candidate)
+      ( RemoteTimeCreated, RemoteTest, TestId, RemoteId, CandidateFamilyName
+      , TestName, CandidateId, CandidateGivenName, CandidateAdditionalName
+      , RemoteOwner, UserId
+      )
     )
 
 import Settings (widgetFile)
@@ -67,10 +76,10 @@ import Yesod.Form.Functions (generateFormPost, mreq, runFormPost)
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.Form.Fields
     ( OptionList (olOptions), Option (optionInternalValue, optionExternalValue)
-    , optionsPairs, radioField'
+    , optionsPairs, radioField', multiSelectField
     )
 import Yesod.Form.Types
-    ( Field(fieldView), FieldSettings (FieldSettings), FieldView (fvInput)
+    ( Field(fieldView), FieldView (fvInput)
     , FormResult (FormSuccess)
     )
 
@@ -87,33 +96,74 @@ getRemoteR :: RemoteId -> Handler Html
 getRemoteR rid = do
 
     test <- runDB $ selectOne $ do
-        x :& t <- from $ table @Remote
+        x :& t :& o <- from $ table @Remote
             `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
+            `innerJoin` table @User `on` (\(x :& _ :& o) -> x ^. RemoteOwner ==. o ^. UserId)
         where_ $ x ^. RemoteId ==. val rid
-        return (x,t)
+        return (x,(t,o))
 
     (fw0,et0) <- generateFormPost formRemoteTestDelete
 
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgRemoteExam
+        setTitleI MsgRemoteExam 
         idOverlay <- newIdent
         idDialogDelete <- newIdent
-        $(widgetFile "data/remote/test")
+        $(widgetFile "data/remote/test") 
 
 
 formRemoteTestDelete :: Form ()
 formRemoteTestDelete extra = return (pure (), [whamlet|^{extra}|])
 
 
+getRemoteNewExamR :: UserId -> TestId -> Candidates -> Handler Html
+getRemoteNewExamR tid candidates@(Candidates cids) = do
+
+    uid <- 
+    
+    (fw,et) <- generateFormPost $ formRemoteExam tid cids
+    
+    msgs <- getMessages 
+    defaultLayout $ do
+        setTitleI MsgRemoteExam
+        $(widgetFile "data/remote/new/exam") 
+
+
+formRemoteExam :: UserId -> TestId -> [CandidateId] -> Form [Remote]
+formRemoteExam oid tid cids extra = do
+    now <- liftIO getCurrentTime
+    
+    r <- return $ pure $ (\cid -> Remote oid tid (Just cid) "token" now True) <$> cids
+    
+    -- let r = undefined -- Remote <$> testR <*> candidateR <*> tokenR <*> pure now <*> validR
+
+    let w = [whamlet|^{extra}|]
+    return (r,w)
+
+
+postRemoteNewCandidatesR :: TestId -> Handler Html
+postRemoteNewCandidatesR tid = do
+
+    ((fr,fw),et) <- runFormPost $ formRemoteCandidates tid
+    case fr of
+      FormSuccess (tid',cids') -> redirect $ DataR $ RemoteNewExamR tid' (Candidates cids')
+      _otherwise -> do
+          msgs <- getMessages 
+          defaultLayout $ do
+              setTitleI MsgRemoteExam
+              idFormRemoteNewTest <- newIdent
+              $(widgetFile "data/remote/new/candidates")
+
+
 getRemoteNewCandidatesR :: TestId -> Handler Html
 getRemoteNewCandidatesR tid = do
 
-    (fw,et) <- generateFormPost $ formRemoteCandidates Nothing
+    (fw,et) <- generateFormPost $ formRemoteCandidates tid
 
     msgs <- getMessages 
     defaultLayout $ do
         setTitleI MsgRemoteExam
+        idFormRemoteNewTest <- newIdent
         $(widgetFile "data/remote/new/candidates")
 
 
@@ -132,22 +182,27 @@ formRemoteCandidates tid extra = do
     (candidatesR,candidatesV) <- mreq (md3checkFieldList options) "" Nothing
     
     return ( (,) tid <$> candidatesR
-           , [whamlet|^{extra} ^{fvInput candidatesV}|])
+           , [whamlet|^{extra} ^{fvInput candidatesV}|]
+           )
 
   where
 
-      pairs (Entity tid' (Test _ name _ _ _ _ _)) = (name, tid')
+      pairs (Entity cid' (Candidate fname gname aname _ _ _ _)) = ( fname <> " " <> gname <> case aname of
+                                                                      Just x -> " " <> x
+                                                                      Nothing -> ""
+                                                                  , cid'
+                                                                  )
 
       md3checkFieldList :: [Entity Candidate] -> Field Handler [CandidateId]
-      md3checkFieldList options = (radioField' (optionsPairs (pairs <$> options)))
+      md3checkFieldList options = (multiSelectField (optionsPairs (pairs <$> options)))
           { fieldView = \theId name attrs x isReq -> do
                 opts <- zip [1 :: Int ..] . olOptions <$> handlerToWidget (optionsPairs (pairs <$> options))
 
                 let sel (Left _) _ = False
-                    sel (Right y) opt = optionInternalValue opt == y
+                    sel (Right ys) opt = optionInternalValue opt `elem` ys
 
-                let findOpt :: Option TestId -> [Entity Test] -> Maybe (Entity Test)
-                    findOpt opt = L.find (\(Entity tid' _) -> tid' == optionInternalValue opt)
+                let findOpt :: Option CandidateId -> [Entity Candidate] -> Maybe (Entity Candidate)
+                    findOpt opt = L.find (\(Entity cid' _) -> cid' == optionInternalValue opt)
                     
                 unless (null opts) $ toWidget [cassius|
                     div.row
@@ -164,22 +219,24 @@ formRemoteCandidates tid extra = do
                         <figure style="text-align:center">
                           <span style="font-size:4rem">&varnothing;
                           <figcaption>
-                            _{MsgNoTestsYet}.
+                            _{MsgNoCandidatesYet}.
                     $else
                       <div *{attrs}>
                         $forall (i,opt) <- opts
-                          $maybe (Entity _ (Test tcode tname _ _ _ _ _)) <- findOpt opt options
+                          $maybe (Entity cid (Candidate fname gname aname _ _ _ _)) <- findOpt opt options
                             <div.max.row.no-margin.padding.wave onclick="document.getElementById('#{theId}-#{i}').click()">
+
+                              <img.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy>
 
                               <div.content.max>
                                 <h6.headline.large-text>
-                                  #{tname}
-                                <div.supporting-text.secondary-text>
-                                  #{tcode}
+                                  #{fname} #{gname}
+                                  $maybe aname <- aname
+                                    #{aname}
 
-                              <label.radio>
-                                <input type=radio ##{theId}-#{i} name=#{name} value=#{optionExternalValue opt}
-                                  :sel x opt:checked :isReq:required=true>
+                              <label.checkbox>
+                                <input type=checkbox ##{theId}-#{i} name=#{name} value=#{optionExternalValue opt}
+                                  :sel x opt:checked :isReq:required>
                                 <span>
 
                 |]
@@ -196,6 +253,7 @@ postRemoteNewTestR = do
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgRemoteExam
+              idFormRemoteNewTest <- newIdent
               $(widgetFile "data/remote/new/test")
 
 
@@ -207,15 +265,8 @@ getRemoteNewTestR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgRemoteExam
+        idFormRemoteNewTest <- newIdent
         $(widgetFile "data/remote/new/test")
-
-
-formRemoteExam :: Maybe (Entity Remote) -> Form Remote
-formRemoteExam remote extra = do
-    now <- liftIO getCurrentTime
-    let r = undefined -- Remote <$> testR <*> candidateR <*> tokenR <*> pure now <*> validR
-    let w = [whamlet|^{extra}|]
-    return (r,w)
 
 
 formRemoteTest :: Maybe (Entity Remote) -> Form TestId

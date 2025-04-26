@@ -83,6 +83,17 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 
 
+newtype Candidates = Candidates [CandidateId]
+    deriving (Show, Read, Eq)
+
+instance PathMultiPiece Candidates where
+    toPathMultiPiece :: Candidates -> [Text]
+    toPathMultiPiece (Candidates xs) = pack . show . fromSqlKey <$> xs
+
+    fromPathMultiPiece :: [Text] -> Maybe Candidates
+    fromPathMultiPiece xs = Candidates <$> mapM ((toSqlKey <$>) . readMaybe . unpack) xs
+
+
 newtype Skills = Skills { unSkills :: [SkillId] }
   deriving (Show, Read, Eq)
 
