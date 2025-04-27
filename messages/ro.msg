@@ -1,3 +1,8 @@
+TotalPoints: Total puncte
+ExamCode: Codul examenului
+ExamName: Numele examenului
+ThisIsTheStartPageOfTheExam: Aceasta este pagina de început a examenului
+NoExamFoundAtThisLink: Niciun examen nu a fost găsit pe acest link
 LinksForExamsGenerated: Au fost generate linkuri pentru examene
 CopyLink: Copiază linkul
 NoRegisteredCandidatesHaveBeenSelected: Niciun candidat înregistrat nu a fost selectat

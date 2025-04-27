@@ -189,14 +189,7 @@ instance Yesod App where
     isAuthorized DocsR _ = return Authorized
 
     
-    isAuthorized (RemoteExamR token) _ = do
-        runDB $ selectOne $ do
-            x <- from $ table @Remote
-            where_ $ x ^. RemoteToken ==. val token
-            where_ $ x ^. RemoteValid
-            return x
-            
-        return Authorized
+    isAuthorized (RemoteExamR _) _ = return Authorized
     
     isAuthorized SummaryR {} _ = return Authorized
     isAuthorized (CancelR uid _) _ = isAuthenticatedSelf uid

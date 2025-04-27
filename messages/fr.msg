@@ -1,3 +1,8 @@
+TotalPoints: Total des points
+ExamCode: Code d'examen
+ExamName: Nom de l'examen
+ThisIsTheStartPageOfTheExam: Ceci est la page de démarrage de l'examen
+NoExamFoundAtThisLink: Aucun examen trouvé sur ce lien
 LinksForExamsGenerated: Des liens pour les examens ont été générés
 CopyLink: Copier le lien
 NoRegisteredCandidatesHaveBeenSelected: Aucun candidat inscrit n'a été sélectionné

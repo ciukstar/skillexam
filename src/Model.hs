@@ -91,6 +91,31 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 
 
+instance PersistField UUID where
+    toPersistValue :: UUID -> PersistValue
+    toPersistValue = PersistText . toText
+
+    fromPersistValue :: PersistValue -> Either Text UUID
+    fromPersistValue (PersistText x) = case fromText x of
+                                         Just uuid -> Right uuid
+                                         Nothing -> Left "Invalid UUID"
+                                         
+    fromPersistValue _ = Left "Invalid UUID"
+
+
+instance PersistFieldSql UUID where
+    sqlType :: DP.Proxy UUID -> SqlType
+    sqlType _ = SqlString
+
+
+instance PathPiece UUID where
+    toPathPiece :: UUID -> Text
+    toPathPiece = toText
+
+    fromPathPiece :: Text -> Maybe UUID
+    fromPathPiece = fromText
+
+
 newtype Candidates = Candidates [CandidateId]
     deriving (Show, Read, Eq)
 

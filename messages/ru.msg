@@ -1,3 +1,8 @@
+TotalPoints: Всего баллов
+ExamCode: Код экзамена
+ExamName: Название экзамена
+ThisIsTheStartPageOfTheExam: Это начальная страница экзамена
+NoExamFoundAtThisLink: По этой ссылке экзамен не найден
 LinksForExamsGenerated: Ссылки на экзамены были созданы
 CopyLink: Копировать ссылку
 NoRegisteredCandidatesHaveBeenSelected: Ни один зарегистрированный кандидат не был выбран

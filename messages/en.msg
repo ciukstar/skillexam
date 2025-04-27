@@ -1,3 +1,5 @@
+ThisIsTheStartPageOfTheExam: This is the start page of the exam
+NoExamFoundAtThisLink: No reviews found at this link
 LinksForExamsGenerated: Links for exams have been generated
 CopyLink: Copy link
 NoRegisteredCandidatesHaveBeenSelected: No registered candidates have been selected

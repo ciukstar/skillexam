@@ -6,7 +6,7 @@ Remote
     token UUID
     timeCreated UTCTime
     valid Bool
-    
+    UniqueRemote token
 
 Answer
     exam ExamId OnDeleteCascade

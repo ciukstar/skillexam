@@ -1,4 +1,56 @@
 
+<header.fixed>
+  <nav.responsive.max>
+    <a.button.circle.transparent href=@{HomeR} role=button>
+      <i>close
 
-<h1>
-  WELCOME
+    <h1.title.max>
+      _{MsgAppName}
+
+<main.responsive.padding>
+
+  $maybe ((Entity rid _, Entity _ (Test code name dur unit pass descr _)),Value total) <- remote
+    <h2.small>_{MsgWelcome}
+    <p.secondary-text>_{MsgThisIsTheStartPageOfTheExam}.
+    
+    <dl>
+      <dt.bold>_{MsgExamName}:
+      <dd.left-padding>#{name}
+      
+      <dt.bold>_{MsgExamCode}:
+      <dd.left-padding>#{code}
+
+      $maybe description <- descr
+        <dt.bold>_{MsgDescr}:
+        <dd.left-padding>#{description}
+      
+      <dt.bold>_{MsgExamDuration}:
+      <dd.left-padding>
+        $with dur <- show dur
+          <span.duration data-value=#{dur}>
+            #{dur}
+        <span.lower>
+          $case unit
+            $of TimeUnitMinute
+              _{MsgMinutes}
+            $of TimeUnitHour
+              _{MsgHours}
+      
+      <dt.bold>_{MsgTotalPoints}:
+      <dd.left-padding>
+        <span>#{show total}
+        <span.lower>_{MsgPoints}
+      
+      <dt.bold>_{MsgPassMark}:
+      <dd.left-padding>
+        <span>#{show pass}
+        <span.lower>_{MsgPoints}
+
+    $maybe <- candidate
+    $nothing
+    
+  $nothing
+    <figure.center-align.padding>
+      <i.extra>sentiment_dissatisfied
+      <figcaption>
+        <p>_{MsgNoExamFoundAtThisLink}
