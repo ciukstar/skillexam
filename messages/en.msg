@@ -1,3 +1,8 @@
+RegisterForExam: Register for the exam
+PleaseRegisterAsCandidateForExam: Please register as a candidate before starting the exam
+TotalPoints: Total points
+ExamCode: Exam code
+ExamName: Exam name
 ThisIsTheStartPageOfTheExam: This is the start page of the exam
 NoExamFoundAtThisLink: No reviews found at this link
 LinksForExamsGenerated: Links for exams have been generated

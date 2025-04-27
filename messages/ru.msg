@@ -1,3 +1,5 @@
+RegisterForExam: Зарегистрироваться на экзамен
+PleaseRegisterAsCandidateForExam: Пожалуйста, зарегистрируйтесь в качестве кандидата перед началом экзамена
 TotalPoints: Всего баллов
 ExamCode: Код экзамена
 ExamName: Название экзамена

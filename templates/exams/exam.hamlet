@@ -42,7 +42,7 @@
           <th scope=row>_{MsgCandidate}
           <td>
             <div.row>
-              <img.small.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto}
+              <img.small.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
                 onerror="this.src = '@{PhotoPlaceholderR}'">
               <span>
                 #{candidateFamilyName candidate} #{candidateGivenName candidate}

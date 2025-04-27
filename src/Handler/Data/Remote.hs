@@ -147,33 +147,60 @@ postRemoteNewExamR tid candis@(Candidates cids) = do
     
     ((fr,fw),et) <- runFormPost formRemoteExam
     case fr of
-      FormSuccess uid -> do
-          eids <- forM cids $ \cid -> do
-              token <- liftIO nextRandom
-              now <- liftIO getCurrentTime 
-              runDB $ insert Remote { remoteOwner = uid
-                                    , remoteTest = tid
-                                    , remoteCandidate = Just cid
-                                    , remoteToken = token
-                                    , remoteTimeCreated = now
-                                    , remoteValid = True
-                                    }
+      FormSuccess uid | null candidates -> do
+                        token <- liftIO nextRandom
+                        now <- liftIO getCurrentTime 
+                        eid <- runDB $ insert Remote { remoteOwner = uid
+                                                     , remoteTest = tid
+                                                     , remoteCandidate = Nothing
+                                                     , remoteToken = token
+                                                     , remoteTimeCreated = now
+                                                     , remoteValid = True
+                                                     }
 
-          addMessageI msgSuccess MsgLinksForExamsGenerated
+                        addMessageI msgSuccess MsgLinksForExamsGenerated
 
-          tests <- runDB $ select $ do
-              x :& t <- from $ table @Remote
-                  `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
-              where_ $ x ^. RemoteId `in_` valList eids
-              return (x,t)
+                        tests <- runDB $ select $ do
+                            x :& t <- from $ table @Remote
+                                `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
+                            where_ $ x ^. RemoteId ==. val eid
+                            return (x,t)
 
-          rndr <- getUrlRender
-          msgs <- getMessages
-          defaultLayout $ do
-              setTitleI MsgRemoteExam
-              idAnchorExamLink <- newIdent
-              idButtonExamLink <- newIdent
-              $(widgetFile "data/remote/new/links")
+                        rndr <- getUrlRender
+                        msgs <- getMessages
+                        defaultLayout $ do
+                            setTitleI MsgRemoteExam
+                            idAnchorExamLink <- newIdent
+                            idButtonExamLink <- newIdent
+                            $(widgetFile "data/remote/new/links")
+
+                      | otherwise -> do
+                            eids <- forM cids $ \cid -> do
+                                token <- liftIO nextRandom
+                                now <- liftIO getCurrentTime 
+                                runDB $ insert Remote { remoteOwner = uid
+                                                      , remoteTest = tid
+                                                      , remoteCandidate = Just cid
+                                                      , remoteToken = token
+                                                      , remoteTimeCreated = now
+                                                      , remoteValid = True
+                                                      }
+
+                            addMessageI msgSuccess MsgLinksForExamsGenerated
+
+                            tests <- runDB $ select $ do
+                                x :& t <- from $ table @Remote
+                                    `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
+                                where_ $ x ^. RemoteId `in_` valList eids
+                                return (x,t)
+
+                            rndr <- getUrlRender
+                            msgs <- getMessages
+                            defaultLayout $ do
+                                setTitleI MsgRemoteExam
+                                idAnchorExamLink <- newIdent
+                                idButtonExamLink <- newIdent
+                                $(widgetFile "data/remote/new/links")
               
       _otherwise -> do
           msgs <- getMessages 

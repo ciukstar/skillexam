@@ -189,6 +189,7 @@ instance Yesod App where
     isAuthorized DocsR _ = return Authorized
 
     
+    isAuthorized (RemoteExamRegisterR _) _ = return Authorized
     isAuthorized (RemoteExamR _) _ = return Authorized
     
     isAuthorized SummaryR {} _ = return Authorized

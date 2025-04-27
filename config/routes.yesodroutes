@@ -1,5 +1,6 @@
 
-/remote/#UUID RemoteExamR GET
+/remote/#UUID/register RemoteExamRegisterR GET
+/remote/#UUID          RemoteExamR         GET
 
 /timeout/#ExamId        WebSocketTimeoutR GET
 /remaining-time/#ExamId RemainingTimeR    GET

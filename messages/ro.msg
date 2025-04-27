@@ -1,3 +1,5 @@
+RegisterForExam: Înscrie-te la examen
+PleaseRegisterAsCandidateForExam: Vă rugăm să vă înregistrați ca și candidat înainte de a începe examenul
 TotalPoints: Total puncte
 ExamCode: Codul examenului
 ExamName: Numele examenului

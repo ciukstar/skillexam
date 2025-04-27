@@ -1,0 +1,140 @@
+
+document.getElementById(#{fvId photoV}).addEventListener('change',function (e) {
+  for (const file of e.target.files) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById(#{idImgPhoto}).setAttribute('src',e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById(#{idButtonUploadPhoto}).addEventListener('click', e => {
+  document.getElementById(#{idLabelPhoto}).click();
+});
+
+document.getElementById(#{idButtonTakePhoto}).addEventListener('click', e => {
+
+  document.getElementById(#{idDialogSnapshot}).show();
+  
+  document.getElementById(#{idButtonCapture}).addEventListener('click', e => {
+    const video = document.getElementById(#{idVideo});
+    const canvas = document.createElement('canvas');
+    
+    canvas.setAttribute('width',video.videoWidth);
+    canvas.setAttribute('height',video.videoHeight);
+    canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+
+    document.getElementById(#{idImgPhoto}).src = canvas.toDataURL('image/png');
+
+    fetch(
+      document.getElementById(#{idImgPhoto}).src
+    ).then(x => x.arrayBuffer()).then(
+      buf => new File([buf],'MsgPhoto',{ type: 'image/png' })
+    ).then(file => {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      return dt;
+    }).then(dt => {
+      
+      document.getElementById(#{fvId photoV}).files = dt.files;
+      
+      video.srcObject.getVideoTracks().forEach(track => track.stop());
+      video.srcObject = null;
+      document.getElementById(#{idDialogSnapshot}).close();
+    });
+  }, { once: true });
+  
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(stream => {
+    document.getElementById(#{idVideo}).srcObject = stream;
+  });
+  
+});
+
+
+[#{idButtonCloseDialogSnapshot},#{idOverlay}].map(x => document.getElementById(x)).forEach(x => {
+    x.addEventListener('click', e => {
+      const video = document.getElementById(#{idVideo});
+      if (!video.srcObject) {
+        window.location.reload();
+      } else {
+        video.srcObject.getVideoTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        document.getElementById(#{idDialogSnapshot}).close();
+      }
+    });
+});
+
+
+fetch(
+  document.getElementById(#{idImgPhoto}).src
+).then(x => x.blob()).then(
+  blob => new File([blob],'MsgPhoto',{ 'type': blob.type })
+).then(file => {
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  return dt;
+}).then(dt => {
+  document.getElementById(#{fvId photoV}).files = dt.files;
+});
+
+
+document.getElementById(#{idButtonSocialAdd}).addEventListener('click', e => {
+  
+  [document.getElementById(#{idFigureEmptySocial})].filter(x => !!x).forEach(x => { x.remove(); });
+  
+  document.getElementById(#{idSocialMediaLinks}).appendChild((() => {
+    
+    const field = document.createElement('div');
+    field.classList.add('field','label','suffix','border','round','small');
+
+    const id = 'idInput' + (document.getElementById(#{idSocialMediaLinks}).childNodes.length + 1);
+
+    field.appendChild((() => {
+      const input = document.createElement('input');
+      input.setAttribute('type','url');
+      input.setAttribute('name',#{nameSocialMediaLink});
+      input.setAttribute('required','');
+      input.setAttribute('id',id);
+      return input;
+    }) ());
+
+    field.appendChild((() => {
+      const label = document.createElement('label');
+      label.setAttribute('for',id);
+      label.textContent = #{msgr MsgSocialMedia};
+
+      label.appendChild((() => {
+        const sup = document.createElement('sup');
+        sup.textContent = '*';
+        return sup;
+      }) ());
+      
+      return label;
+    }) ());
+    
+    field.appendChild((() => {
+      const button = document.createElement('button');
+      button.classList.add('small','circle','transparent');
+      button.setAttribute('type','button');
+      button.style.position = 'absolute';
+      button.style.inset = '10% 0 auto auto';
+      
+      button.appendChild((() => {
+        const icon = document.createElement('i');
+        icon.classList.add('error-text');
+        icon.textContent = 'delete';
+        return icon;
+      }) ());
+
+      button.addEventListener('click', e => {
+        field.remove();
+      });
+      
+      return button;
+      
+    }) ());
+    
+    return field;
+  }) ());
+});

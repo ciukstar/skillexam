@@ -38,19 +38,39 @@
       
       <dt.bold>_{MsgTotalPoints}:
       <dd.left-padding>
-        <span>#{show total}
+        $with total <- show total
+          <span.decimal data-value=#{total}>#{total}
         <span.lower>_{MsgPoints}
       
       <dt.bold>_{MsgPassMark}:
       <dd.left-padding>
-        <span>#{show pass}
+        $with pass <- show pass
+          <span.decimal data-value=#{pass}>#{pass}
         <span.lower>_{MsgPoints}
 
-    $maybe <- candidate
+    $maybe Entity cid (Candidate fname gname aname _ _ _ _) <- candidate
+      <fieldset>
+        <legend>_{MsgCandidate}
+        <figure.row>
+          <img.small.circle src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} loading=lazy
+                onerror="this.src = '@{PhotoPlaceholderR}'">
+          <figcaption>
+            #{fname} #{gname}
+            $maybe aname <- aname
+              #{aname}
+        
+      <nav.right-align>
+        <button>Start exam
+        
     $nothing
-    
+      <p>_{MsgPleaseRegisterAsCandidateForExam}. 
+      
+      <nav.right-align>
+        <a.button href=@{RemoteExamRegisterR token} role=button>
+          _{MsgRegisterForExam}
+        
   $nothing
     <figure.center-align.padding>
       <i.extra>sentiment_dissatisfied
       <figcaption>
-        <p>_{MsgNoExamFoundAtThisLink}
+        <p>_{MsgNoExamFoundAtThisLink}.
