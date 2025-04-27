@@ -1,3 +1,5 @@
+LinksForExamsGenerated: Au fost generate linkuri pentru examene
+CopyLink: Copiază linkul
 NoRegisteredCandidatesHaveBeenSelected: Niciun candidat înregistrat nu a fost selectat
 Create: Creează
 YouAreAboutToCreateExamForUnregisteredCandidates: Sunteți pe punctul de a crea un examen pentru candidați neînregistrați

@@ -1,0 +1,10 @@
+
+main
+
+    ul li a.link
+    
+        display: inline-block
+        max-width: 70vw
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis

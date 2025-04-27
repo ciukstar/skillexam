@@ -1,0 +1,4 @@
+
+document.getElementById(#{idButtonExamLink}).addEventListener('click', e => {
+  navigator.clipboard.writeText(document.getElementById(#{idAnchorExamLink}).href);
+});

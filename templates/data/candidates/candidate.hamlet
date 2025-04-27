@@ -121,7 +121,6 @@
                 
               <td>
                 <a.social.link target=_blank href=#{link}>
-
                   #{link}
             
 

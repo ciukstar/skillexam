@@ -20,25 +20,26 @@ import qualified Data.List as L (find)
 import Data.Maybe (fromMaybe)
 import Data.Text (pack)
 import Data.Time.Clock (getCurrentTime)
+import Data.UUID.V4 (nextRandom)
 
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, orderBy, desc, innerJoin, on
     , (^.), (==.), (:&) ((:&))
-    , where_, val, asc, in_, valList, PersistStoreWrite (insert)
+    , where_, val, asc, in_, valList
     )
 
-import Database.Persist (Entity (Entity), entityVal)
+import Database.Persist (Entity (Entity), entityVal, insert)
 import Database.Persist.Sql (fromSqlKey)
 
 import Foundation
     ( Handler, Form, widgetMainMenu, widgetAccount, widgetSnackbar
-    , Route (DataR)
+    , Route (DataR, RemoteExamR)
     , DataR
       ( RemotesR, RemoteNewTestR, RemoteR, RemoteEditR, CandidatePhotoR
       , RemoteNewCandidatesR, RemoteNewExamR, UserPhotoR, RemoteDeleR
       )
     , AppMessage
-      ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam, MsgSave
+      ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam
       , MsgCancel, MsgExamLink, MsgEdit, MsgName, MsgDeleteAreYouSure
       , MsgConfirmPlease, MsgCode, MsgDelete, MsgBack, MsgRemoteTests
       , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgUnpublished
@@ -46,14 +47,20 @@ import Foundation
       , MsgPassMark, MsgMinutes, MsgHours, MsgExamState, MsgDuration
       , MsgDescr, MsgDateCreated, MsgAuthor, MsgYes, MsgNo, MsgValid
       , MsgYouAreAboutToCreateExamForUnregisteredCandidates, MsgCreate
-      , MsgYouAreAboutToCreateExamForCandidate, MsgDetails
-      , MsgYouAreAboutToCreateExamForCandidates
-      , MsgNoRegisteredCandidatesHaveBeenSelected, MsgClose
+      , MsgYouAreAboutToCreateExamForCandidate, MsgDetails, MsgClose
+      , MsgYouAreAboutToCreateExamForCandidates, MsgCandidate
+      , MsgNoRegisteredCandidatesHaveBeenSelected, MsgCopyLink
+      , MsgLinksForExamsGenerated
       )
     )
     
 import Model
-    ( RemoteId, Remote(Remote, remoteTest, remoteCandidate, remoteToken, remoteTimeCreated)
+    ( msgSuccess
+    , RemoteId
+    , Remote
+      ( Remote, remoteTest, remoteToken, remoteTimeCreated, remoteOwner
+      , remoteCandidate, remoteValid
+      )
     , CandidateId, Candidate (Candidate), Candidates (Candidates)
     , TimeUnit (TimeUnitMinute, TimeUnitHour)
     , UserId, User (User)
@@ -74,11 +81,11 @@ import Text.Hamlet (Html)
 import Yesod.Auth (YesodAuth(maybeAuthId))
 import Yesod.Core
     ( MonadHandler (liftHandler), Yesod(defaultLayout), setTitleI, newIdent
-    , getMessages, handlerToWidget, redirect, notAuthenticated
+    , getMessages, handlerToWidget, redirect, notAuthenticated, getUrlRender
+    , addMessageI
     )
 import Yesod.Core.Widget (whamlet, toWidget)
 import Yesod.Form.Functions (generateFormPost, mreq, runFormPost, mopt)
-import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.Form.Fields
     ( OptionList (olOptions), Option (optionInternalValue, optionExternalValue)
     , optionsPairs, radioField', multiSelectField
@@ -87,6 +94,7 @@ import Yesod.Form.Types
     ( Field(fieldView), FieldView (fvInput)
     , FormResult (FormSuccess)
     )
+import Yesod.Persist.Core (YesodPersist(runDB))
 
 
 postRemoteDeleR :: RemoteId -> Handler Html
@@ -109,9 +117,12 @@ getRemoteR rid = do
 
     (fw0,et0) <- generateFormPost formRemoteTestDelete
 
+    rndr <- getUrlRender
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgRemoteExam 
+        setTitleI MsgRemoteExam
+        idAnchorExamLink <- newIdent
+        idButtonExamLink <- newIdent
         idOverlay <- newIdent
         idDialogDelete <- newIdent
         $(widgetFile "data/remote/test") 
@@ -134,24 +145,34 @@ postRemoteNewExamR tid candis@(Candidates cids) = do
         where_ $ x ^. CandidateId `in_` valList cids
         return x
     
-    ((fr,fw),et) <- runFormPost $ formRemoteExam tid cids
+    ((fr,fw),et) <- runFormPost formRemoteExam
     case fr of
-      FormSuccess r -> do
-          eids <- forM r $ \x -> do
-              token <- liftIO $ toText <$> nextRandom
-              now <- liftIO getCurrentTime
-              runDB $ insert x { remoteToken = token
-                               , remoteTimeCreated = now
-                               }
+      FormSuccess uid -> do
+          eids <- forM cids $ \cid -> do
+              token <- liftIO nextRandom
+              now <- liftIO getCurrentTime 
+              runDB $ insert Remote { remoteOwner = uid
+                                    , remoteTest = tid
+                                    , remoteCandidate = Just cid
+                                    , remoteToken = token
+                                    , remoteTimeCreated = now
+                                    , remoteValid = True
+                                    }
 
-          remotes <- runDB $ select $ do
-              x <- from $ table @Remote
+          addMessageI msgSuccess MsgLinksForExamsGenerated
+
+          tests <- runDB $ select $ do
+              x :& t <- from $ table @Remote
+                  `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
               where_ $ x ^. RemoteId `in_` valList eids
-              return x
-                  
-          msgs <- getMessages 
+              return (x,t)
+
+          rndr <- getUrlRender
+          msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgRemoteExam
+              idAnchorExamLink <- newIdent
+              idButtonExamLink <- newIdent
               $(widgetFile "data/remote/new/links")
               
       _otherwise -> do
@@ -175,7 +196,7 @@ getRemoteNewExamR tid candis@(Candidates cids) = do
         where_ $ x ^. CandidateId `in_` valList cids
         return x
     
-    (fw,et) <- generateFormPost $ formRemoteExam tid cids
+    (fw,et) <- generateFormPost formRemoteExam
     
     msgs <- getMessages 
     defaultLayout $ do
@@ -184,19 +205,12 @@ getRemoteNewExamR tid candis@(Candidates cids) = do
         $(widgetFile "data/remote/new/exam")
 
 
-formRemoteExam :: TestId -> [CandidateId] -> Form [Remote]
-formRemoteExam tid cids extra = do
-    now <- liftIO getCurrentTime
-
-    let token = "some token"
+formRemoteExam :: Form UserId
+formRemoteExam extra = do
     uid <- maybeAuthId
-
     case uid of
       Nothing -> notAuthenticated
-      Just uid' -> do
-          let r = pure $ (\cid -> Remote uid' tid (Just cid) token now True) <$> cids
-          let w = [whamlet|^{extra}|]
-          return (r,w)
+      Just uid' -> return (pure uid', [whamlet|^{extra}|])
 
 
 postRemoteNewCandidatesR :: TestId -> Handler Html

@@ -1,3 +1,5 @@
+LinksForExamsGenerated: Des liens pour les examens ont été générés
+CopyLink: Copier le lien
 NoRegisteredCandidatesHaveBeenSelected: Aucun candidat inscrit n'a été sélectionné
 Create: Créer
 YouAreAboutToCreateExamForUnregisteredCandidates: Vous êtes sur le point de créer un examen pour les candidats non inscrits

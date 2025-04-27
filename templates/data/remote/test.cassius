@@ -1,0 +1,11 @@
+
+
+main
+
+    table tr td a.link
+    
+        display: inline-block
+        max-width: 50vw
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis

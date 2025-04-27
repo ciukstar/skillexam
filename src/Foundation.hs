@@ -13,6 +13,8 @@
 
 module Foundation where
 
+import Control.Concurrent.STM.TChan (TChan)
+import Control.Concurrent.STM.TVar (TVar)
 import Control.Monad ((>>))
 import Control.Monad.Logger (LogSource)
 
@@ -20,12 +22,14 @@ import Data.Bool (Bool (False), otherwise)
 import qualified Data.CaseInsensitive as CI
 import Data.List (length, zip)
 import qualified Data.List.Safe as LS (head)
+import Data.Map (Map)
 import Data.Maybe (Maybe (..), fromMaybe, maybe)
 import Data.Monoid ((<>))
 import Data.Kind (Type)
 import Data.Ord ((<))
 import qualified Data.Text as T (intercalate)
 import qualified Data.Text.Encoding as TE
+import Data.UUID (UUID)
 
 import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, select, not_, unionAll_
@@ -36,8 +40,9 @@ import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 
 import Text.Email.Validate (emailAddress, localPart)
-import Text.Hamlet          (hamletFile)
-import Text.Jasmine         (minifym)
+import Text.Hamlet (hamletFile)
+import Text.Jasmine (minifym)
+import Text.Julius (juliusFile)
 import Text.Shakespeare.I18N (mkMessage)
 
 import Yesod.Auth.Message (AuthMessage(InvalidLogin, LoginTitle))
@@ -61,11 +66,6 @@ import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import Yesod.Form.Types (MForm, FormResult)
-
-import Control.Concurrent.STM.TChan (TChan)
-import Control.Concurrent.STM.TVar (TVar)
-import Data.Map (Map)
-import Text.Julius (juliusFile)
 
 
 -- | The foundation datatype for your application. This can be a good place to
@@ -187,6 +187,16 @@ instance Yesod App where
     
     isAuthorized HomeR _ = setUltDestCurrent >> return Authorized
     isAuthorized DocsR _ = return Authorized
+
+    
+    isAuthorized (RemoteExamR token) _ = do
+        runDB $ selectOne $ do
+            x <- from $ table @Remote
+            where_ $ x ^. RemoteToken ==. val token
+            where_ $ x ^. RemoteValid
+            return x
+            
+        return Authorized
     
     isAuthorized SummaryR {} _ = return Authorized
     isAuthorized (CancelR uid _) _ = isAuthenticatedSelf uid

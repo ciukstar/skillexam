@@ -24,15 +24,22 @@ import ClassyPrelude.Yesod
     
 import Control.Monad (mapM)
 
-import Data.Maybe (Maybe (Just))
+import Data.ByteString (ByteString)
+import Data.Either (Either (Left, Right))
+import Data.Maybe (Maybe (Just, Nothing))
 import Data.Ord (Ord)
+import qualified Data.Proxy as DP (Proxy)
 import Data.Text (Text, pack, unpack)
 import Data.Time (Day, UTCTime)
-import Data.ByteString (ByteString)
+import Data.UUID (UUID, fromText, toText)
 
 import Database.Esqueleto.Experimental (SqlString)
-import Database.Persist.Quasi ( lowerCaseSettings )
-import Database.Persist.Sql (fromSqlKey, toSqlKey)
+import Database.Persist.Class (PersistField, toPersistValue, fromPersistValue)
+import Database.Persist.PersistValue (PersistValue (PersistText))
+import Database.Persist.Quasi (lowerCaseSettings)
+import Database.Persist.Sql
+    ( sqlType, fromSqlKey, toSqlKey, SqlType (SqlString), PersistFieldSql
+    )
 import Database.Persist.TH (derivePersistField)
 
 import Text.Hamlet (Html)
@@ -42,6 +49,7 @@ import Text.Read (readMaybe)
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
 import Yesod.Core.Dispatch
     ( PathMultiPiece, toPathMultiPiece, fromPathMultiPiece
+    , PathPiece, toPathPiece, fromPathPiece
     )
     
 

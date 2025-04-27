@@ -83,7 +83,7 @@
               <div.max>
                 #{fname} #{gname}
                 $maybe aname <- aname
-                  #{name}
+                  #{aname}
 
   <form method=post action=@{DataR $ RemoteNewExamR tid candis} enctype=#{et} ##{idFormRemoteNewExam}>
     ^{fw}

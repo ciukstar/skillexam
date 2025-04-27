@@ -10,9 +10,16 @@
 <main.responsive.no-padding>
 
   <ul.list.border>
-    $forall Entity _ (Remote _ _ _ token _ _) <- remotes
-      <li>
-        #{token}
+    $forall (Entity _ (Remote _ _ _ token _ _),Entity _ (Test _ name _ _ _ _ _)) <- tests
+      <li.padding>
+        <div.max>
+          <h6.small>#{name}
+          <div>
+            <a.link href=@{RemoteExamR token} trget=_blank ##{idAnchorExamLink}>
+              #{rndr $ RemoteExamR token}
+
+        <button.small.circle.transparent type=button title=_{MsgCopyLink} ##{idButtonExamLink}>
+          <i>content_copy
 
   <nav.right-align>
     <a.button.transparent.link href=@{DataR RemotesR} role=button>

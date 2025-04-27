@@ -1,3 +1,5 @@
+LinksForExamsGenerated: Links for exams have been generated
+CopyLink: Copy link
 NoRegisteredCandidatesHaveBeenSelected: No registered candidates have been selected
 Create: Create
 YouAreAboutToCreateExamForUnregisteredCandidates: You are about to create an exam for unregistered candidates
@@ -5,7 +7,7 @@ YouAreAboutToCreateExamForCandidate: You are about to create an exam for a candi
 YouAreAboutToCreateExamForCandidates m@Int: You are about to create an exam for #{show m} candidates
 Valid: Valid
 Author: Author
-DateCreated: DateCreated
+DateCreated: Date created
 ForPotentialCandidates: For potential candidates
 ForRegisteredCandidate: For a registered candidate
 RemoteTest: Remote test

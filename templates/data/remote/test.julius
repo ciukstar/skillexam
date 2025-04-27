@@ -1,0 +1,27 @@
+
+Array.from(
+  document.querySelectorAll('time.daytime[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'short',
+      weekday: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('span.duration[data-value]')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
+    style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2
+  });
+});
+
+document.getElementById(#{idButtonExamLink}).addEventListener('click', e => {
+  navigator.clipboard.writeText(document.getElementById(#{idAnchorExamLink}).href);
+});

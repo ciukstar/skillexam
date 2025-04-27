@@ -85,6 +85,10 @@ import System.Log.FastLogger
     ( defaultBufSize, newStdoutLoggerSet, toLogStr
     )
 
+import  Handler.RemoteExams
+  ( getRemoteExamR
+  )
+
 import Handler.Candidates
     ( getCandidatesR
     , getCandidateNewR

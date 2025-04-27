@@ -15,82 +15,98 @@
         <i>edit
 
 <main.responsive>
-  $maybe (Entity _ (Remote _ _ _ _ created valid),(test,owner)) <- test
-    <table>
-      <tbody>
-        <tr.wave>
-          <th scope=row>_{MsgValid}
-          <td>
-            $if valid
-              _{MsgYes}
-            $else
-              _{MsgNo}
-              
-        <tr.wave>
-          <th scope=row>_{MsgDateCreated}
-          <td>
-            $with dt <- show created
-              <time.daytime datetime=#{dt}>#{dt}
-
-        <tr.wave>
-          <th scope=row>_{MsgAuthor}
-          <td>
-            $with Entity uid (User email _ name _ _ _ _ _) <- owner
-              <figure>
-                <img.circle src=@{DataR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
-                <figcaption>
-                  $maybe name <- name
-                    #{name}
-                  $nothing
-                    #{email}
-
-        <tr.wave>
-          <th scope=row>_{MsgExamLink}
-          <td>
-     
-        $with Entity _ (Test code name dur unit pass descr state) <- test
+  $maybe (Entity _ (Remote _ _ _ token created valid),(test,owner)) <- test
+    <fieldset>
+      <legend>_{MsgDetails}
+      <table>
+        <tbody>
           <tr.wave>
-            <th scope=row>_{MsgCode}
-            <td>#{code}
+            <th scope=row>_{MsgValid}
+            <td>
+              $if valid
+                _{MsgYes}
+              $else
+                _{MsgNo}
 
           <tr.wave>
-            <th scope=row>_{MsgName}
-            <td>#{name}
-     
-          <tr.wave>
-            <th>_{MsgDuration}
+            <th scope=row>_{MsgDateCreated}
             <td>
-              $with dur <- show dur
-                <span.duration data-value=#{dur}>
-                  #{dur}
-              <span style="text-transform:lowercase">
-                $case unit
-                  $of TimeUnitMinute
-                    _{MsgMinutes}
-                  $of TimeUnitHour
-                    _{MsgHours}
+              $with dt <- show created
+                <time.daytime datetime=#{dt}>#{dt}
 
           <tr.wave>
-            <th>_{MsgPassMark}
+            <th scope=row>_{MsgAuthor}
             <td>
-              $with pass <- show pass 
-                <span.integral data-value=#{pass}>#{pass}
-              <span style="text-transform:lowercase">_{MsgPoints}
-       
-          <tr.wave>
-            <th>_{MsgDescr}
-            <td>
-              $maybe description <- descr
-                #{description}
-  
-          <tr.wave>
-            <th>_{MsgExamState}
-            <td>
-              $case state
-                $of TestStatePublished
-                  _{MsgPublished}
-                $of TestStateUnpublished
-                  _{MsgUnpublished}
+              $with Entity uid (User email _ name _ _ _ _ _) <- owner
+                <figure.row>
+                  <img.small.circle src=@{DataR $ UserPhotoR uid} alt=_{MsgPhoto} loading=lazy>
+                  <figcaption>
+                    $maybe name <- name
+                      #{name}
+                    $nothing
+                      #{email}
+
+          <tr>
+            <th scope=row>_{MsgExamLink}
+            <td.row>
+              <a.link href=@{RemoteExamR token} trget=_blank ##{idAnchorExamLink}>
+                #{rndr $ RemoteExamR token}
+
+              <button.small.circle.transparent type=button title=_{MsgCopyLink} ##{idButtonExamLink}>
+                <i>content_copy
+            
+    <fieldset>
+      <legend>_{MsgCandidate}
+      ...
+            
+    <fieldset>
+      <legend>_{MsgTest}
+      <table>
+        <tbody>
+
+          $with Entity _ (Test code name dur unit pass descr state) <- test
+            <tr.wave>
+              <th scope=row>_{MsgCode}
+              <td>#{code}
+
+            <tr.wave>
+              <th scope=row>_{MsgName}
+              <td>#{name}
+
+            <tr.wave>
+              <th>_{MsgDuration}
+              <td>
+                $with dur <- show dur
+                  <span.duration data-value=#{dur}>
+                    #{dur}
+                <span style="text-transform:lowercase">
+                  $case unit
+                    $of TimeUnitMinute
+                      _{MsgMinutes}
+                    $of TimeUnitHour
+                      _{MsgHours}
+
+            <tr.wave>
+              <th>_{MsgPassMark}
+              <td>
+                $with pass <- show pass 
+                  <span.integral data-value=#{pass}>#{pass}
+                <span style="text-transform:lowercase">_{MsgPoints}
+
+            <tr.wave>
+              <th>_{MsgDescr}
+              <td>
+                $maybe description <- descr
+                  #{description}
+
+            <tr.wave>
+              <th>_{MsgExamState}
+              <td>
+                $case state
+                  $of TestStatePublished
+                    _{MsgPublished}
+                  $of TestStateUnpublished
+                    _{MsgUnpublished}
 
 ^{widgetSnackbar msgs}
 

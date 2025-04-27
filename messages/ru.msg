@@ -1,3 +1,5 @@
+LinksForExamsGenerated: Ссылки на экзамены были созданы
+CopyLink: Копировать ссылку
 NoRegisteredCandidatesHaveBeenSelected: Ни один зарегистрированный кандидат не был выбран
 Create: Создать
 YouAreAboutToCreateExamForUnregisteredCandidates: Вы собираетесь создать экзамен для незарегистрированных кандидатов
