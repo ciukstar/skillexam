@@ -1,24 +1,50 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Handler.RemoteExams
   ( getRemoteExamR
-  , getRemoteExamRegisterR
+  , getRemoteExamRegisterR, postRemoteExamRegisterR
   ) where
 
+import qualified Data.Set as S (fromList, toList)
+import Data.Text (Text)
+import qualified Data.Text as T (null, strip)
 import Data.UUID (UUID)
 
 import Database.Esqueleto.Experimental
-    ( SqlExpr, Value (Value), selectOne, from, table, where_, val, innerJoin, on
+    ( SqlExpr, Value (Value), selectOne, from, table, where_, val
     , (^.), (==.), (:&) ((:&))
-    , coalesceDefault, sum_, subSelectUnsafe
+    , coalesceDefault, sum_, subSelectUnsafe, innerJoin, on
     )
 import Database.Persist (Entity (Entity), entityVal)
 
+import Foundation
+    ( Form, Handler
+    , Route
+      ( HomeR, PhotoPlaceholderR, DataR, RemoteExamRegisterR, StaticR
+      , RemoteExamR
+      )
+    , DataR (CandidatePhotoR)
+    , AppMessage
+      ( MsgRemoteExam, MsgAppName, MsgNoExamFoundAtThisLink, MsgWelcome
+      , MsgThisIsTheStartPageOfTheExam, MsgExamName, MsgExamDuration
+      , MsgExamCode, MsgMinutes, MsgHours, MsgPassMark, MsgDescr, MsgPoints
+      , MsgTotalPoints, MsgPoints, MsgCandidate, MsgRegisterForExam
+      , MsgPhoto, MsgPleaseRegisterAsCandidateForExam, MsgFamilyName
+      , MsgGivenName, MsgAdditionalName, MsgBirthday, MsgEmail, MsgPhone
+      , MsgUploadPhoto, MsgTakePhoto, MsgSocialMedia, MsgPersonalData
+      , MsgNoSocialMediaLinks, MsgContacts, MsgClose, MsgAdd, MsgSave
+      , MsgCancel
+      )
+    )
+    
+import Material3 (md3widget)
+
 import Model
     ( Candidate (Candidate)
-    , Remote(Remote, remoteCandidate)
+    , Remote(remoteCandidate)
     , Test (Test), TimeUnit (TimeUnitMinute, TimeUnitHour)
     , Option, Stem
     , EntityField
@@ -27,28 +53,25 @@ import Model
       )
     )
 
-import Foundation
-    ( Handler
-    , Route (HomeR, PhotoPlaceholderR, DataR, RemoteExamRegisterR)
-    , DataR (CandidatePhotoR)
-    , AppMessage
-      ( MsgRemoteExam, MsgAppName, MsgNoExamFoundAtThisLink, MsgWelcome
-      , MsgThisIsTheStartPageOfTheExam, MsgExamName, MsgExamDuration
-      , MsgExamCode, MsgMinutes, MsgHours, MsgPassMark, MsgDescr, MsgPoints
-      , MsgTotalPoints, MsgPoints, MsgCandidate, MsgRegisterForExam
-      , MsgPhoto, MsgPleaseRegisterAsCandidateForExam
-      ), Form
-    )
-
 import Settings (widgetFile)
+import Settings.StaticFiles
+    ( img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg
+    , img_camera_24dp_0000F5_FILL0_wght400_GRAD0_opsz24_svg
+    )
 
 import Text.Hamlet (Html)
 
-import Yesod.Core (Yesod(defaultLayout), setTitleI, FileInfo)
-import Yesod.Core.Widget (whamlet)
-import Yesod.Form.Functions (generateFormPost)
+import Yesod.Core
+    ( Yesod(defaultLayout), setTitleI, FileInfo, SomeMessage (SomeMessage)
+    , newIdent, getMessageRender, lookupPostParams
+    )
+import Yesod.Form.Fields (textField, dayField, emailField, fileField)
+import Yesod.Form.Functions (generateFormPost, mreq, mopt)
+import Yesod.Form.Types
+    ( FieldView (fvId, fvErrors, fvInput)
+    , FieldSettings (FieldSettings, fsLabel, fsId, fsName, fsTooltip, fsAttrs)
+    )
 import Yesod.Persist.Core (YesodPersist(runDB))
-import Data.Text (Text)
 
 
 getRemoteExamRegisterR :: UUID -> Handler Html
@@ -62,40 +85,40 @@ getRemoteExamRegisterR token = do
 
 
 formRegister :: Form ((Candidate,Maybe FileInfo),[Text])
-formRegister medias candidate extra = do
+formRegister extra = do
     (fnameR,fnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgFamilyName
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (gnameR,gnameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgGivenName
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (anameR,anameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgAdditionalName
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (bdayR,bdayV) <- mopt dayField FieldSettings
         { fsLabel = SomeMessage MsgBirthday
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (emailR,emailV) <- mopt emailField FieldSettings
         { fsLabel = SomeMessage MsgEmail
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (phoneR,phoneV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgPhone
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing, fsAttrs = []
         } Nothing
         
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsId = Nothing, fsName = Nothing, fsTooltip = Nothing
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
 
@@ -127,34 +150,12 @@ formRegister medias candidate extra = do
     msgr <- getMessageRender
     
     return ( r
-           , $(widgetFile "remote/candidate/form")
+           , $(widgetFile "remote/candidate/form") 
            )
         
   where
-      
-      fieldListOptions = (bimap ((\(x,y) -> fromMaybe y x) . bimap unValue unValue) unValue <$>)
-
       nameSocialMediaLink :: Text
       nameSocialMediaLink = "social-media-link"
-
-      md3widgetDeleteButton :: FieldView App -> WidgetFor App ()
-      md3widgetDeleteButton v = [whamlet|
-        <div.field.label.border.round.small.suffix :isJust (fvErrors v):.invalid #idField#{fvId v}>
-
-          ^{fvInput v}
-          
-          <label for=#{fvId v}>
-            #{fvLabel v}
-            $if fvRequired v
-              <sup>*
-
-          <button.small.circle.transparent type=button style="position: absolute; inset: 10% 0px auto auto;"
-              onclick="document.getElementById('idField#{fvId v}').remove()">
-            <i.error-text>delete
-
-          $maybe err <- fvErrors v
-            <span.error>#{err}
-      |]
 
 
 getRemoteExamR :: UUID -> Handler Html

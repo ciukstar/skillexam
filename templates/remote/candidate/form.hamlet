@@ -3,12 +3,8 @@
 
 <figure.center-align>
   <label for=#{fvId photoV} ##{idLabelPhoto}>
-    $maybe Entity cid _ <- candidate
-      <img.circle.extra src=@{DataR $ CandidatePhotoR cid} ##{idImgPhoto}
-                        loading=lazy alt=_{MsgPhoto} width=64 height=64>
-    $nothing
-      <img.circle.extra src=@{StaticR img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg}
-           ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
+    <img.circle.extra src=@{StaticR img_account_circle_24dp_013048_FILL0_wght400_GRAD0_opsz24_svg}
+         ##{idImgPhoto} loading=lazy alt=_{MsgPhoto} width=64 height=64>
 
     ^{fvInput photoV}
 
@@ -40,8 +36,6 @@
   $forall v <- [fnameV,gnameV,anameV,bdayV]
     ^{md3widget v}
 
-  ^{md3widgetSelect userV}
-
 <div.page.top-padding.horizontal-padding ##{idPageContacts}>
   $forall v <- [emailV,phoneV]
     ^{md3widget v}
@@ -49,15 +43,10 @@
 <div.page.top-padding.horizontal-padding ##{idPageSocialMedia}>
   
   <div ##{idSocialMediaLinks}>
-    $if null linksRV
-      <figure.center-align ##{idFigureEmptySocial}>
-        <i.extra>folder_open
-        <figcaption>
-          <div>_{MsgNoSocialMediaLinks}.
-
-    $else
-      $forall (_,v) <- linksRV
-        ^{md3widgetDeleteButton v}
+    <figure.center-align ##{idFigureEmptySocial}>
+      <i.extra>folder_open
+      <figcaption>
+        <div>_{MsgNoSocialMediaLinks}.
 
   <nav.center-align>
     <button.fill type=button formethod=post ##{idButtonSocialAdd}>
