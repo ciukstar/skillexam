@@ -9,7 +9,7 @@
 
 <main.responsive.padding>
 
-  <form method=post action=@{RemoteExamRegisterR token} enctype=#{et}>
+  <form method=post action=@{RemoteExamRegisterR rid token} enctype=#{et}>
     ^{fw}
     <nav.right-align>
       <a.button.transparent.link href=@{RemoteExamR token} role=button>
@@ -17,3 +17,5 @@
       
       <button type=submit>
         _{MsgSave}
+
+^{widgetSnackbar msgs}

@@ -6,7 +6,10 @@
 module Handler.RemoteExams
   ( getRemoteExamR
   , getRemoteExamRegisterR, postRemoteExamRegisterR
+  , getRemoteExamStartR
   ) where
+
+import Control.Monad (void)
 
 import qualified Data.Set as S (fromList, toList)
 import Data.Text (Text)
@@ -15,16 +18,20 @@ import Data.UUID (UUID)
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, Value (Value), selectOne, from, table, where_, val
-    , (^.), (==.), (:&) ((:&))
-    , coalesceDefault, sum_, subSelectUnsafe, innerJoin, on
+    , (^.), (==.), (:&) ((:&)), (=.)
+    , coalesceDefault, sum_, subSelectUnsafe, innerJoin, on, set
+    , update, just
     )
-import Database.Persist (Entity (Entity), entityVal)
+import Database.Persist
+    ( Entity (Entity), entityVal, insert, upsert, insertMany_
+    )
+import qualified Database.Persist as P ((=.))
 
 import Foundation
-    ( Form, Handler
+    ( Form, Handler, widgetSnackbar
     , Route
       ( HomeR, PhotoPlaceholderR, DataR, RemoteExamRegisterR, StaticR
-      , RemoteExamR
+      , RemoteExamR, RemoteExamStartR
       )
     , DataR (CandidatePhotoR)
     , AppMessage
@@ -36,20 +43,23 @@ import Foundation
       , MsgGivenName, MsgAdditionalName, MsgBirthday, MsgEmail, MsgPhone
       , MsgUploadPhoto, MsgTakePhoto, MsgSocialMedia, MsgPersonalData
       , MsgNoSocialMediaLinks, MsgContacts, MsgClose, MsgAdd, MsgSave
-      , MsgCancel
+      , MsgCancel, MsgRegistrationSuccessful
       )
     )
     
 import Material3 (md3widget)
 
 import Model
-    ( Candidate (Candidate)
-    , Remote(remoteCandidate)
+    ( msgSuccess
+    , CandidateId, Candidate (Candidate)
+    , RemoteId, Remote(remoteCandidate)
     , Test (Test), TimeUnit (TimeUnitMinute, TimeUnitHour)
     , Option, Stem
+    , Social (Social), Photo (Photo)
     , EntityField
       ( RemoteToken, RemoteTest, TestId, CandidateId, OptionStem, StemId
-      , StemTest, OptionPoints, OptionKey
+      , StemTest, OptionPoints, OptionKey, PhotoPhoto, PhotoMime, RemoteId
+      , RemoteCandidate
       )
     )
 
@@ -63,22 +73,66 @@ import Text.Hamlet (Html)
 
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, FileInfo, SomeMessage (SomeMessage)
-    , newIdent, getMessageRender, lookupPostParams
+    , newIdent, getMessageRender, lookupPostParams, getMessages, redirect
+    , addMessageI
     )
+import Yesod.Core.Handler (fileSourceByteString, fileContentType)
 import Yesod.Form.Fields (textField, dayField, emailField, fileField)
-import Yesod.Form.Functions (generateFormPost, mreq, mopt)
+import Yesod.Form.Functions (generateFormPost, mreq, mopt, runFormPost)
 import Yesod.Form.Types
-    ( FieldView (fvId, fvErrors, fvInput)
+    ( FieldView (fvId, fvErrors, fvInput), FormResult (FormSuccess)
     , FieldSettings (FieldSettings, fsLabel, fsId, fsName, fsTooltip, fsAttrs)
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
 
 
-getRemoteExamRegisterR :: UUID -> Handler Html
-getRemoteExamRegisterR token = do
+postRemoteExamRegisterR :: RemoteId -> UUID -> Handler Html
+postRemoteExamRegisterR rid token = do
+
+    ((fr,fw),et) <- runFormPost formRegister
+
+    case fr of
+      FormSuccess ((c,Just fi),links) -> do
+          cid <- runDB $ insert c
+          bs <- fileSourceByteString fi
+          void $ runDB $ upsert (Photo cid bs (fileContentType fi))
+              [ PhotoPhoto P.=. bs
+              , PhotoMime P.=. fileContentType fi
+              ]
+
+          runDB $ insertMany_ (Social cid <$> links)
+
+          runDB $ update $ \x -> do
+              set x [RemoteCandidate =. just (val cid)]
+              where_ $ x ^. RemoteId ==. val rid
+              
+          addMessageI msgSuccess MsgRegistrationSuccessful
+          redirect $ RemoteExamStartR rid cid token
+          
+      FormSuccess ((c,Nothing),links) -> do
+          cid <- runDB $ insert c
+          runDB $ insertMany_ (Social cid <$> links)
+
+          runDB $ update $ \x -> do
+              set x [RemoteCandidate =. just (val cid)]
+              where_ $ x ^. RemoteId ==. val rid
+              
+          addMessageI msgSuccess MsgRegistrationSuccessful
+          redirect $ RemoteExamStartR rid cid token
+          
+      _otherwise -> do
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgRemoteExam 
+              $(widgetFile "remote/candidate/new")
+
+
+getRemoteExamRegisterR :: RemoteId -> UUID -> Handler Html
+getRemoteExamRegisterR rid token = do
 
     (fw,et) <- generateFormPost formRegister
     
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgRemoteExam
         $(widgetFile "remote/candidate/new")

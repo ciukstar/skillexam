@@ -1,3 +1,4 @@
+RegistrationSuccessful: Înregistrare reușită
 RegisterForExam: Înscrie-te la examen
 PleaseRegisterAsCandidateForExam: Vă rugăm să vă înregistrați ca și candidat înainte de a începe examenul
 TotalPoints: Total puncte

@@ -1,3 +1,4 @@
+RegistrationSuccessful: Registration successful
 RegisterForExam: Register for the exam
 PleaseRegisterAsCandidateForExam: Please register as a candidate before starting the exam
 TotalPoints: Total points

@@ -1,6 +1,7 @@
 
-/remote/#UUID/register RemoteExamRegisterR GET POST
-/remote/#UUID          RemoteExamR         GET
+/remotes/#RemoteId/candidates/#CandidateId/exam/#UUID RemoteExamStartR    GET
+/remotes/register/#UUID                               RemoteExamRegisterR GET POST
+/remotes/#UUID                                        RemoteExamR         GET
 
 /timeout/#ExamId        WebSocketTimeoutR GET
 /remaining-time/#ExamId RemainingTimeR    GET

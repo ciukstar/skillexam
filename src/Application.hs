@@ -87,7 +87,7 @@ import System.Log.FastLogger
 
 import  Handler.RemoteExams
   ( getRemoteExamR
-  , getRemoteExamRegisterR
+  , getRemoteExamRegisterR, postRemoteExamRegisterR
   )
 
 import Handler.Candidates

@@ -1,3 +1,4 @@
+RegistrationSuccessful: Регистрация прошла успешно
 RegisterForExam: Зарегистрироваться на экзамен
 PleaseRegisterAsCandidateForExam: Пожалуйста, зарегистрируйтесь в качестве кандидата перед началом экзамена
 TotalPoints: Всего баллов

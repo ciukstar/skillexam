@@ -51,7 +51,8 @@ import Yesod.Core.Handler
     ( getYesod, defaultCsrfCookieName, defaultCsrfHeaderName
     , withUrlRenderer, languages, HandlerFor, newIdent, getMessages
     , setUltDestCurrent, selectRep, provideRep, getMessageRender
-    , getRouteToParent, getUrlRender, lookupSession, setUltDest, getUrlRenderParams
+    , getRouteToParent, getUrlRender, lookupSession, setUltDest
+    , getUrlRenderParams
     )
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Core
@@ -189,7 +190,8 @@ instance Yesod App where
     isAuthorized DocsR _ = return Authorized
 
     
-    isAuthorized (RemoteExamRegisterR _) _ = return Authorized
+    isAuthorized (RemoteExamStartR {}) _ = return Authorized
+    isAuthorized (RemoteExamRegisterR _ _) _ = return Authorized
     isAuthorized (RemoteExamR _) _ = return Authorized
     
     isAuthorized SummaryR {} _ = return Authorized

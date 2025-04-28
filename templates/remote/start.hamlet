@@ -74,3 +74,6 @@
       <i.extra>sentiment_dissatisfied
       <figcaption>
         <p>_{MsgNoExamFoundAtThisLink}.
+
+
+^{widgetSnackbar msgs}
