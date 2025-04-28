@@ -88,6 +88,8 @@ import System.Log.FastLogger
 import  Handler.RemoteExams
   ( getRemoteExamR
   , getRemoteExamRegisterR, postRemoteExamRegisterR
+  , getRemoteExamStartR
+  , postRemoteExamEnrollR
   )
 
 import Handler.Candidates

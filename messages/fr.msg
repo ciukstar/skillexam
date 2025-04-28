@@ -1,3 +1,5 @@
+PleaseClickStartExamButton: Veuillez cliquer sur le bouton « Commencer l'examen »
+AreYouReadyToStartTheExam: Êtes-vous prêt à commencer l'examen ?
 RegistrationSuccessful: Inscription réussie
 RegisterForExam: S'inscrire à l'examen
 PleaseRegisterAsCandidateForExam: Veuillez vous inscrire en tant que candidat avant de commencer l'examen

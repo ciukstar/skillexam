@@ -1,0 +1,13 @@
+
+Array.from(
+  document.body.querySelectorAll('.duration[data-value]')
+).forEach(function (x) {
+  x.textContent = new Number(x.dataset.value).toLocaleString(
+    navigator.language,
+    { style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+      useGrouping: true
+    }
+  );
+});

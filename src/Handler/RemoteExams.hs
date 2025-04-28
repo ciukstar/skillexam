@@ -7,20 +7,29 @@ module Handler.RemoteExams
   ( getRemoteExamR
   , getRemoteExamRegisterR, postRemoteExamRegisterR
   , getRemoteExamStartR
+  , postRemoteExamEnrollR
   ) where
 
+import Control.Concurrent (forkIO, threadDelay)
+import Control.Concurrent.STM
+    ( atomically, readTVar, newBroadcastTChan, writeTVar, writeTChan
+    )
 import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
 
+import Data.Bifunctor (Bifunctor(bimap))
+import qualified Data.Map as M (insert, delete)
 import qualified Data.Set as S (fromList, toList)
 import Data.Text (Text)
 import qualified Data.Text as T (null, strip)
+import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 
 import Database.Esqueleto.Experimental
-    ( SqlExpr, Value (Value), selectOne, from, table, where_, val
-    , (^.), (==.), (:&) ((:&)), (=.)
+    ( SqlExpr, Value (Value, unValue), selectOne, from, table, where_, val
+    , (^.), (?.), (==.), (:&) ((:&)), (=.)
     , coalesceDefault, sum_, subSelectUnsafe, innerJoin, on, set
-    , update, just
+    , update, just, leftJoin, subSelectMaybe, selectQuery, min_, max_
     )
 import Database.Persist
     ( Entity (Entity), entityVal, insert, upsert, insertMany_
@@ -31,7 +40,7 @@ import Foundation
     ( Form, Handler, widgetSnackbar
     , Route
       ( HomeR, PhotoPlaceholderR, DataR, RemoteExamRegisterR, StaticR
-      , RemoteExamR, RemoteExamStartR
+      , RemoteExamR, RemoteExamStartR, RemoteExamEnrollR
       )
     , DataR (CandidatePhotoR)
     , AppMessage
@@ -43,23 +52,28 @@ import Foundation
       , MsgGivenName, MsgAdditionalName, MsgBirthday, MsgEmail, MsgPhone
       , MsgUploadPhoto, MsgTakePhoto, MsgSocialMedia, MsgPersonalData
       , MsgNoSocialMediaLinks, MsgContacts, MsgClose, MsgAdd, MsgSave
-      , MsgCancel, MsgRegistrationSuccessful
+      , MsgCancel, MsgRegistrationSuccessful, MsgPleaseClickStartExamButton
+      , MsgAreYouReadyToStartTheExam, MsgName, MsgExam, MsgDuration
+      , MsgStartExam, MsgInvalidFormData, MsgNoQuestionsForTheTest
       )
     )
+import qualified Foundation as F (App (exams))
     
 import Material3 (md3widget)
 
 import Model
-    ( msgSuccess
+    ( msgSuccess, msgError
     , CandidateId, Candidate (Candidate)
+    , Exam (Exam), ExamStatus (ExamStatusOngoing, ExamStatusTimeout)
     , RemoteId, Remote(remoteCandidate)
-    , Test (Test), TimeUnit (TimeUnitMinute, TimeUnitHour)
+    , TestId, Test (Test), TimeUnit (TimeUnitMinute, TimeUnitHour)
     , Option, Stem
     , Social (Social), Photo (Photo)
     , EntityField
       ( RemoteToken, RemoteTest, TestId, CandidateId, OptionStem, StemId
       , StemTest, OptionPoints, OptionKey, PhotoPhoto, PhotoMime, RemoteId
-      , RemoteCandidate
+      , RemoteCandidate, StemOrdinal, TestDuration, TestDurationUnit, ExamTest
+      , ExamCandidate, ExamAttempt
       )
     )
 
@@ -74,9 +88,10 @@ import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, FileInfo, SomeMessage (SomeMessage)
     , newIdent, getMessageRender, lookupPostParams, getMessages, redirect
-    , addMessageI
+    , addMessageI, getYesod, setUltDest, MonadHandler (liftHandler)
     )
 import Yesod.Core.Handler (fileSourceByteString, fileContentType)
+import Yesod.Core.Widget (whamlet)
 import Yesod.Form.Fields (textField, dayField, emailField, fileField)
 import Yesod.Form.Functions (generateFormPost, mreq, mopt, runFormPost)
 import Yesod.Form.Types
@@ -84,6 +99,90 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsId, fsName, fsTooltip, fsAttrs)
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
+
+
+postRemoteExamEnrollR :: RemoteId -> CandidateId -> TestId -> UUID -> Handler Html
+postRemoteExamEnrollR rid cid tid token = do
+    
+    ((fr,_),_) <- runFormPost $ formEnrollment cid tid
+    case fr of
+      FormSuccess (cid',tid', attempt) -> do
+          now <- liftIO getCurrentTime
+          eid <- runDB $ insert (Exam tid' cid' ExamStatusOngoing attempt now Nothing)
+          stem <- runDB $ selectOne $ do
+              x <- from $ table @Stem
+              where_ $ x ^. StemTest ==. val tid
+              where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe ( from $ selectQuery $ do
+                  y <- from $ table @Stem
+                  where_ $ y ^. StemTest ==. x ^. StemTest
+                  return $ min_ $ y ^. StemOrdinal )
+              return x
+
+          (duration, unit) <- (maybe (0,TimeUnitMinute) (bimap unValue unValue) <$>) $ runDB $ selectOne $ do
+              x <- from $ table @Test
+              where_ $ x ^. TestId ==. val tid
+              return (x ^. TestDuration, x ^. TestDurationUnit)
+              
+          case stem of
+            Just (Entity qid _) -> do
+                ongoing <- F.exams <$> getYesod
+                chan <- liftIO $ atomically $ do
+                    m <- readTVar ongoing
+                    chan <- newBroadcastTChan
+                    writeTVar ongoing (M.insert eid chan m)
+                    return chan
+
+                _ <- liftIO $ forkIO $ do
+                    threadDelay (round (duration * toSeconds unit * 1000000))                        
+                    atomically $ writeTChan chan ExamStatusTimeout
+                    atomically $ do
+                        m <- readTVar ongoing
+                        writeTVar ongoing $ M.delete eid m
+                        
+                setUltDest $ RemoteExamR token
+                undefined -- redirect $ StepR uid tid eid qid
+            
+            Nothing -> do
+                addMessageI msgError MsgNoQuestionsForTheTest
+                redirect $ RemoteExamR token
+      
+      _otherwise -> do
+          addMessageI msgError MsgInvalidFormData
+          redirect $ RemoteExamR token
+
+  where
+      toSeconds unit = case unit of
+        TimeUnitMinute -> 60
+        TimeUnitHour -> 3600
+
+
+formEnrollment :: CandidateId -> TestId -> Form (CandidateId, TestId, Int)
+formEnrollment cid tid extra = do
+    attempt <- liftHandler $ runDB $ maybe 1 (+1) . (unValue =<<) <$> selectOne ( do
+          x <- from $ table @Exam
+          where_ $ x ^. ExamTest ==. val tid
+          where_ $ x ^. ExamCandidate ==. val cid
+          return $ max_ $ x ^. ExamAttempt )
+      
+    return (pure (cid,tid,attempt), [whamlet|^{extra}|])
+
+
+getRemoteExamStartR :: RemoteId -> CandidateId -> UUID -> Handler Html
+getRemoteExamStartR rid cid token = do
+
+    remote <- runDB $ selectOne $ do
+        x :& t :& c <- from $ table @Remote
+            `innerJoin` table @Test `on` (\(x :& t) -> x ^. RemoteTest ==. t ^. TestId)
+            `leftJoin` table @Candidate `on` (\(x :& _ :& c) -> x ^. RemoteCandidate ==. c ?. CandidateId)
+        where_ $ x ^. RemoteId ==. val rid
+        where_ $ x ^. RemoteToken ==. val token
+        where_ $ c ?. CandidateId ==. just (val cid)
+        return (x,(t,c))
+    
+    msgs <- getMessages
+    defaultLayout $ do
+        setTitleI MsgRemoteExam
+        $(widgetFile "remote/start")
 
 
 postRemoteExamRegisterR :: RemoteId -> UUID -> Handler Html

@@ -1,16 +1,17 @@
 
-/remotes/#RemoteId/candidates/#CandidateId/exam/#UUID RemoteExamStartR    GET
-/remotes/register/#UUID                               RemoteExamRegisterR GET POST
-/remotes/#UUID                                        RemoteExamR         GET
+/remotes/#RemoteId/candidates/#CandidateId/tests/#TestId/enroll/#UUID RemoteExamEnrollR   POST
+/remotes/#RemoteId/candidates/#CandidateId/exam/#UUID                 RemoteExamStartR    GET
+/remotes/#RemoteId/register/#UUID                                     RemoteExamRegisterR GET POST
+/remotes/#UUID                                                        RemoteExamR         GET
 
 /timeout/#ExamId        WebSocketTimeoutR GET
 /remaining-time/#ExamId RemainingTimeR    GET
 
-/users/#UserId/tests/#TestId/exams/#ExamId/summary                SummaryR     GET
-/users/#UserId/tests/#TestId/exams/#ExamId/stems/#StemId/complete CompleteR    POST
-/users/#UserId/exams/#ExamId/cancel                               CancelR      POST
-/users/#UserId/tests/#TestId/exams/#ExamId/invalid                StepInvalidR GET
-/users/#UserId/tests/#TestId/exams/#ExamId/stems/#StemId/steps    StepR        GET POST
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/summary                SummaryR     GET
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/complete CompleteR    POST
+/candidates/#CandidateId/exams/#ExamId/cancel                               CancelR      POST
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/invalid                StepInvalidR GET
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/steps    StepR        GET POST
 
 
 /users/#UserId/search/exams/#ExamId SearchExamR  GET

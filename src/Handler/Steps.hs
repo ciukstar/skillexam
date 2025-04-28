@@ -28,14 +28,16 @@ import Data.Complex (Complex ((:+)))
 import qualified Data.Map as M (lookup)
 import Data.Text (pack, Text)
 import Data.Time.Clock
-    (getCurrentTime, UTCTime (utctDayTime), secondsToDiffTime)
+    ( getCurrentTime, UTCTime (utctDayTime), secondsToDiffTime
+    )
 import Data.Time.Format.ISO8601 (iso8601Show)
 
 import Database.Esqueleto.Experimental
     ( selectOne, select, from, table, where_, val, min_, max_
     , (^.), (==.), (>.), (<.), (=.), (:&) ((:&))
-    , Value (unValue, Value), orderBy, asc, just, selectQuery, subSelectMaybe
+    , Value (unValue, Value), orderBy, asc, just, selectQuery
     , delete, update, set, innerJoin, on, sum_, coalesceDefault
+    , subSelectMaybe
     )
 import Database.Persist
     ( Entity (Entity), entityVal, insertMany_
