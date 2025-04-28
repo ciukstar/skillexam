@@ -7,11 +7,11 @@
 /timeout/#ExamId        WebSocketTimeoutR GET
 /remaining-time/#ExamId RemainingTimeR    GET
 
-/candidates/#CandidateId/tests/#TestId/exams/#ExamId/summary                SummaryR     GET
-/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/complete CompleteR    POST
-/candidates/#CandidateId/exams/#ExamId/cancel                               CancelR      POST
-/candidates/#CandidateId/tests/#TestId/exams/#ExamId/invalid                StepInvalidR GET
-/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/steps    StepR        GET POST
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/summary/+Tokens                SummaryR     GET
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/complete/+Tokens CompleteR    POST
+/candidates/#CandidateId/exams/#ExamId/cancel/+Tokens                               CancelR      POST
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/invalid/+Tokens                StepInvalidR GET
+/candidates/#CandidateId/tests/#TestId/exams/#ExamId/stems/#StemId/steps/+Tokens    StepR        GET POST
 
 
 /users/#UserId/search/exams/#ExamId SearchExamR  GET

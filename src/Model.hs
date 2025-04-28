@@ -116,6 +116,17 @@ instance PathPiece UUID where
     fromPathPiece = fromText
 
 
+newtype Tokens = Tokens [UUID]
+    deriving (Show, Read, Eq)
+
+instance PathMultiPiece Tokens where
+    toPathMultiPiece :: Tokens -> [Text]
+    toPathMultiPiece (Tokens xs) = toText <$> xs
+
+    fromPathMultiPiece :: [Text] -> Maybe Tokens
+    fromPathMultiPiece xs = Tokens <$> mapM fromText xs
+
+
 newtype Candidates = Candidates [CandidateId]
     deriving (Show, Read, Eq)
 

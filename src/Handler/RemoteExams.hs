@@ -40,7 +40,7 @@ import Foundation
     ( Form, Handler, widgetSnackbar
     , Route
       ( HomeR, PhotoPlaceholderR, DataR, RemoteExamRegisterR, StaticR
-      , RemoteExamR, RemoteExamStartR, RemoteExamEnrollR
+      , RemoteExamR, RemoteExamStartR, RemoteExamEnrollR, StepR
       )
     , DataR (CandidatePhotoR)
     , AppMessage
@@ -54,7 +54,7 @@ import Foundation
       , MsgNoSocialMediaLinks, MsgContacts, MsgClose, MsgAdd, MsgSave
       , MsgCancel, MsgRegistrationSuccessful, MsgPleaseClickStartExamButton
       , MsgAreYouReadyToStartTheExam, MsgName, MsgExam, MsgDuration
-      , MsgStartExam, MsgInvalidFormData, MsgNoQuestionsForTheTest
+      , MsgStartExam, MsgInvalidFormData, MsgNoQuestionsForTheTest, MsgInvalidData
       )
     )
 import qualified Foundation as F (App (exams))
@@ -74,7 +74,7 @@ import Model
       , StemTest, OptionPoints, OptionKey, PhotoPhoto, PhotoMime, RemoteId
       , RemoteCandidate, StemOrdinal, TestDuration, TestDurationUnit, ExamTest
       , ExamCandidate, ExamAttempt
-      )
+      ), Tokens (Tokens)
     )
 
 import Settings (widgetFile)
@@ -88,7 +88,7 @@ import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, FileInfo, SomeMessage (SomeMessage)
     , newIdent, getMessageRender, lookupPostParams, getMessages, redirect
-    , addMessageI, getYesod, setUltDest, MonadHandler (liftHandler)
+    , addMessageI, getYesod, setUltDest, MonadHandler (liftHandler), invalidArgsI
     )
 import Yesod.Core.Handler (fileSourceByteString, fileContentType)
 import Yesod.Core.Widget (whamlet)
@@ -140,7 +140,7 @@ postRemoteExamEnrollR rid cid tid token = do
                         writeTVar ongoing $ M.delete eid m
                         
                 setUltDest $ RemoteExamR token
-                undefined -- redirect $ StepR uid tid eid qid
+                redirect $ StepR cid tid eid qid (Tokens [token])
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest
@@ -178,11 +178,16 @@ getRemoteExamStartR rid cid token = do
         where_ $ x ^. RemoteToken ==. val token
         where_ $ c ?. CandidateId ==. just (val cid)
         return (x,(t,c))
-    
-    msgs <- getMessages
-    defaultLayout $ do
-        setTitleI MsgRemoteExam
-        $(widgetFile "remote/start")
+
+    case remote of
+      Nothing -> invalidArgsI [MsgInvalidData]
+      Just (_,(Entity tid _,_)) -> do
+          (fw,et) <- generateFormPost $ formEnrollment cid tid
+
+          msgs <- getMessages
+          defaultLayout $ do
+              setTitleI MsgRemoteExam
+              $(widgetFile "remote/start")
 
 
 postRemoteExamRegisterR :: RemoteId -> UUID -> Handler Html

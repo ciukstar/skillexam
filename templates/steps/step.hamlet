@@ -4,8 +4,8 @@
     $maybe pid <- prev
       $maybe Entity qid _ <- stem
         <button.circle.transparent rel=prev aria-label=_{MsgPrevious}
-          type=submit form=#{idFormOptions} formaction=@{StepR uid tid eid qid}
-          name=location value=@{StepR uid tid eid pid}>
+          type=submit form=#{idFormOptions} formaction=@{StepR cid tid eid qid tokens}
+          name=location value=@{StepR cid tid eid pid tokens}>
           <i>arrow_back
    
     $nothing
@@ -20,8 +20,8 @@
     $maybe nid <- next
       $maybe Entity qid _ <- stem
         <button.circle.transparent aria-label=_{MsgNext} rel=next
-          type=submit form=#{idFormOptions} formaction=@{StepR uid tid eid qid}
-          name=location value=@{StepR uid tid eid nid}>
+          type=submit form=#{idFormOptions} formaction=@{StepR cid tid eid qid tokens}
+          name=location value=@{StepR cid tid eid nid tokens}>
           <i>arrow_forward
 
 <main.responsive>
@@ -46,7 +46,7 @@
       
       <hr.bottom-margin>
       
-      <form method=post action=@{StepR uid tid eid qid} enctype=#{et} novalidate ##{idFormOptions}>
+      <form method=post action=@{StepR cid tid eid qid tokens} enctype=#{et} novalidate ##{idFormOptions}>
         
         <div.inputs>
           ^{fw}
@@ -55,11 +55,11 @@
 
       <nav.right-align>
         $maybe nid <- next
-          <button.border type=submit form=#{idFormOptions} rel=next name=location value=@{StepR uid tid eid nid}>
+          <button.border type=submit form=#{idFormOptions} rel=next name=location value=@{StepR cid tid eid nid tokens}>
             <span>_{MsgNext}
             <i>arrow_forward
         $nothing
-          <button type=submit form=#{idFormOptions} formaction=@{CompleteR uid tid eid qid}>
+          <button type=submit form=#{idFormOptions} formaction=@{CompleteR cid tid eid qid tokens}>
             _{MsgComplete}
         
 
@@ -74,7 +74,7 @@
     _{MsgAllottedExamTimeHasExpired}.
   
   <nav.right-align.no-space>
-    <a.button.primary href=@{SummaryR uid tid eid}>
+    <a.button.primary href=@{SummaryR cid tid eid tokens}>
       _{MsgFinish}
 
 
@@ -88,6 +88,6 @@
     <button.transparent type=button data-ui=##{idDialogTerminate}>
       _{MsgCancel}
 
-    <form method=post action=@{CancelR uid eid}>
+    <form method=post action=@{CancelR cid eid tokens}>
       <button type=submit>
         _{MsgStop}

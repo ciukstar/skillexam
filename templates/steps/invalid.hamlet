@@ -23,7 +23,7 @@
               <a.button.transparent href=@{HomeR} role=button>
                 _{MsgHome}
 
-              <a.button href=@{SummaryR uid tid eid} role=button>
+              <a.button href=@{SummaryR cid tid eid tokens} role=button>
                 _{MsgSummary}
             
           $of ExamStatusTimeout
@@ -34,7 +34,7 @@
               <a.button.transparent href=@{HomeR} role=button>
                 _{MsgHome}
 
-              <a.button href=@{SummaryR uid tid eid} role=button>
+              <a.button href=@{SummaryR cid tid eid tokens} role=button>
                 _{MsgSummary}
             
           $of ExamStatusCanceled

@@ -90,18 +90,20 @@ import Model
       ( ExamStatusTimeout, ExamStatusCanceled, ExamStatusOngoing
       , ExamStatusCompleted
       )
+    , CandidateId
     , Candidate
       ( Candidate, candidateGivenName, candidateAdditionalName
       , candidateFamilyName
       )
-    , UserId
+    , TimeUnit (TimeUnitMinute, TimeUnitHour)
+    , Tokens
     , EntityField
       ( StemId, StemTest, StemOrdinal, OptionStem, OptionOrdinal
       , AnswerExam, AnswerStem, AnswerOption, ExamEnd, TestCode
       , ExamId, TestId, CandidateId, ExamTest, ExamStart, TestDuration
       , OptionKey, OptionPoints, ExamAttempt, TestPass, ExamCandidate
       , TestName, OptionId, ExamStatus, TestDurationUnit
-      ), TimeUnit (TimeUnitMinute, TimeUnitHour)
+      )
     )
 
 import Settings (widgetFile)
@@ -184,8 +186,8 @@ getRemainingTimeR eid = do
         TimeUnitHour -> 3600
 
 
-postCancelR :: UserId -> ExamId -> Handler Html
-postCancelR _uid eid = do
+postCancelR :: CandidateId -> ExamId -> Tokens -> Handler Html
+postCancelR _cid eid _tokens = do
     now <- liftIO getCurrentTime
     runDB $ update $ \x -> do
         set x [ ExamStatus =. val ExamStatusCanceled
@@ -197,8 +199,8 @@ postCancelR _uid eid = do
     redirectUltDest HomeR
 
 
-getSummaryR :: UserId -> TestId -> ExamId -> Handler TypedContent
-getSummaryR uid tid eid = do
+getSummaryR :: CandidateId -> TestId -> ExamId -> Tokens -> Handler TypedContent
+getSummaryR cid tid eid tokens = do
     
     let unv (Value code,Value name,Value attempt,Value start,Value end,Value score,Value pass) =
             (code,name,attempt,start,end,score,pass)
@@ -421,17 +423,20 @@ instance HasContentType (PDF ()) where
     getContentType _ = mimePdf
 
 
-postCompleteR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
-postCompleteR uid tid eid qid = do
-    cnt <- (unValue =<<) <$> runDB ( selectOne $ do
+postCompleteR :: CandidateId -> TestId -> ExamId -> StemId -> Tokens -> Handler Html
+postCompleteR cid tid eid qid tokens = do
+    
+    cnt <- ((unValue =<<) <$>) $ runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
-        return $ max_ $ x ^. StemOrdinal )
+        return $ max_ $ x ^. StemOrdinal
+        
     stem <- runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemId ==. val qid
         return x
-    prev <- (unValue <$>) <$> runDB ( selectOne $ do
+        
+    prev <- ((unValue <$>) <$>) $ runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
         where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
@@ -441,8 +446,9 @@ postCompleteR uid tid eid qid = do
                   where_ $ just (y ^. StemOrdinal) <. val (stemOrdinal . entityVal <$> stem)
                   return $ max_ $ y ^. StemOrdinal
             )
-        return $ x ^. StemId )
-    next <- (unValue <$>) <$> runDB ( selectOne $ do
+        return $ x ^. StemId
+        
+    next <- ((unValue <$>) <$>) $ runDB $ selectOne $ do
         x <- from $ table @Stem
         where_ $ x ^. StemTest ==. val tid
         where_ $ just (x ^. StemOrdinal) ==. subSelectMaybe
@@ -452,13 +458,14 @@ postCompleteR uid tid eid qid = do
                   where_ $ just (y ^. StemOrdinal) >. val (stemOrdinal . entityVal <$> stem)
                   return $ min_ $ y ^. StemOrdinal
             )
-        return $ x ^. StemId )
+        return $ x ^. StemId
 
     options <- runDB $ select $ do
         x <- from $ table @Option
         where_ $ x ^. OptionStem ==. val qid
         orderBy [asc (x ^. OptionOrdinal)]
         return x
+        
     ((fr,fw),et) <- runFormPost $ formOptions eid qid options
     case fr of
       FormSuccess rs -> do
@@ -474,7 +481,7 @@ postCompleteR uid tid eid qid = do
               update $ \x -> do
                   set x [ExamEnd =. just (val now)]
                   where_ $ x ^. ExamId ==. val eid
-          redirect $ SummaryR uid tid eid
+          redirect $ SummaryR cid tid eid tokens
           
       _otherwise -> do
           msgr <- getMessageRender
@@ -491,8 +498,8 @@ postCompleteR uid tid eid qid = do
               $(widgetFile "steps/step")
 
 
-getStepInvalidR :: UserId -> TestId -> ExamId -> Handler Html
-getStepInvalidR uid tid eid = do
+getStepInvalidR :: CandidateId -> TestId -> ExamId -> Tokens -> Handler Html
+getStepInvalidR cid tid eid tokens = do
     
     exam <- runDB $ selectOne $ do
         x <- from $ table @Exam
@@ -505,8 +512,8 @@ getStepInvalidR uid tid eid = do
         $(widgetFile "steps/invalid")
 
 
-postStepR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
-postStepR uid tid eid qid = do
+postStepR :: CandidateId -> TestId -> ExamId -> StemId -> Tokens -> Handler Html
+postStepR cid tid eid qid tokens = do
     
     exam <- runDB $ selectOne $ do
         x <- from $ table @Exam
@@ -515,7 +522,7 @@ postStepR uid tid eid qid = do
         return x
 
     case exam of
-      Nothing -> redirect $ StepInvalidR uid tid eid
+      Nothing -> redirect $ StepInvalidR cid tid eid tokens
       Just _ -> do
           location <- runInputPost $ ireq urlField "location"
 
@@ -587,8 +594,8 @@ postStepR uid tid eid qid = do
                     $(widgetFile "steps/step")
 
 
-getStepR :: UserId -> TestId -> ExamId -> StemId -> Handler Html
-getStepR uid tid eid qid = do
+getStepR :: CandidateId -> TestId -> ExamId -> StemId -> Tokens -> Handler Html
+getStepR cid tid eid qid tokens = do
     
     exam <- runDB $ selectOne $ do
         x <- from $ table @Exam
@@ -597,7 +604,7 @@ getStepR uid tid eid qid = do
         return x
 
     case exam of
-      Nothing -> redirect $ StepInvalidR uid tid eid
+      Nothing -> redirect $ StepInvalidR cid tid eid tokens
       Just _ -> do
           cnt <- ((unValue =<<) <$>) $ runDB $ selectOne $ do
               x <- from $ table @Stem

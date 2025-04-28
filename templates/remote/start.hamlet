@@ -44,12 +44,16 @@
             #{fname} #{gname}
             $maybe aname <- aname
               #{aname}
+
+      <form method=post action=@{RemoteExamEnrollR rid cid tid token} enctype=#{et}>
+        ^{fw}
         
-      <nav.right-align>
-        <a.button.transparent.link href=@{HomeR} role=button>
-          _{MsgCancel}
-          
-        <button>_{MsgStartExam}
+        <nav.right-align>
+          <a.button.transparent.link href=@{HomeR} role=button>
+            _{MsgCancel}
+
+          <button type=submit>
+            _{MsgStartExam}
         
     $nothing
       <p>_{MsgPleaseRegisterAsCandidateForExam}. 

@@ -75,7 +75,7 @@ import Model
       , ExamTest, AnswerOption, OptionId, AnswerExam, OptionKey, ExamCandidate
       , ExamId, CandidateId, StemOrdinal, StemId, OptionStem, OptionPoints
       , ExamAttempt, CandidateUser, TestDuration, TestDurationUnit
-      )
+      ), Tokens (Tokens)
     )
 
 import Settings ( widgetFile )
@@ -161,7 +161,7 @@ postTestExamEnrollmentFormR tid uid cid = do
                         writeTVar ongoing $ M.delete eid m
                                         
                 setUltDest TestExamsR
-                redirect $ StepR uid tid eid qid
+                redirect $ StepR cid tid eid qid (Tokens [])
             
             Nothing -> do
                 addMessageI msgError MsgNoQuestionsForTheTest

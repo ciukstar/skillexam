@@ -15,7 +15,7 @@ module Foundation where
 
 import Control.Concurrent.STM.TChan (TChan)
 import Control.Concurrent.STM.TVar (TVar)
-import Control.Monad ((>>))
+import Control.Monad ((>>), (=<<))
 import Control.Monad.Logger (LogSource)
 
 import Data.Bool (Bool (False), otherwise)
@@ -33,7 +33,7 @@ import Data.UUID (UUID)
 
 import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, select, not_, unionAll_
-    , (^.), (==.)
+    , (^.), (==.), Value (unValue)
     )
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 
@@ -61,8 +61,8 @@ import Yesod.Core
     , TypedContent (TypedContent), Yesod (errorHandler), defaultErrorHandler
     , setTitleI, WidgetFor, typeJavascript, ToContent (toContent)
     )
-import Yesod.Core.Types     (Logger)
-import Yesod.Default.Util   (addStaticContentExternal)
+import Yesod.Core.Types (Logger)
+import Yesod.Default.Util (addStaticContentExternal)
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
@@ -196,10 +196,10 @@ instance Yesod App where
     isAuthorized (RemoteExamR _) _ = return Authorized
     
     isAuthorized SummaryR {} _ = return Authorized
-    isAuthorized (CancelR uid _) _ = isAuthenticatedSelf uid
-    isAuthorized (CompleteR uid _ _ _) _ = isAuthenticatedSelf uid
-    isAuthorized (StepInvalidR uid _ _) _ = isAuthenticatedSelf uid
-    isAuthorized (StepR uid _ _ _) _ = isAuthenticatedSelf uid
+    isAuthorized (CancelR cid _ tokens) _ = isAuthenticatedCandidate cid tokens
+    isAuthorized (CompleteR cid _ _ _ tokens) _ = isAuthenticatedCandidate cid tokens
+    isAuthorized (StepInvalidR cid _ _ tokens) _ = isAuthenticatedCandidate cid tokens
+    isAuthorized (StepR cid _ _ _ tokens) _ = isAuthenticatedCandidate cid tokens
 
     
     isAuthorized r@(SearchExamR uid _) _ = setUltDest r >> isAuthenticatedSelf uid
@@ -357,6 +357,16 @@ instance Yesod App where
         provideRep $ return $ T.intercalate ", " msgs
 
     errorHandler x = defaultErrorHandler x
+
+
+isAuthenticatedCandidate :: CandidateId -> Tokens -> Handler AuthResult
+isAuthenticatedCandidate _ (Tokens (_:_)) = return Authorized
+isAuthenticatedCandidate cid _ = do
+    
+    case uid of
+        (Just _) | uid == cuid -> return Authorized
+                 | otherwise -> unauthorizedI MsgAnotherAccountAccessProhibited
+        Nothing -> unauthorizedI MsgLoginPlease
 
 
 isAuthenticatedSelf :: UserId -> Handler AuthResult
