@@ -10,13 +10,22 @@
 <main.responsive.no-padding>
 
   <ul.list.border>
-    $forall (Entity _ (Remote _ _ _ token _ _),Entity _ (Test _ name _ _ _ _ _)) <- tests
+    $forall ((Entity _ (Remote _ _ _ token _ _),Entity _ (Test _ name _ _ _ _ _)),candidate) <- tests
       <li.padding>
         <div.max>
           <h6.small>#{name}
           <div>
             <a.link href=@{RemoteExamR token} trget=_blank ##{idAnchorExamLink}>
               #{rndr $ RemoteExamR token}
+              
+          $maybe Entity cid (Candidate fname gname aname _ _ _ _) <- candidate
+            <figure.row.no-margin>
+              <img.circle.small src=@{DataR $ CandidatePhotoR cid} alt=_{MsgPhoto} onerror="this.src = '@{PhotoPlaceholderR}'">
+
+              <figcaption>
+                #{fname} #{gname}
+                $maybe aname <- aname
+                  \ #{aname}
 
         <button.small.circle.transparent type=button title=_{MsgCopyLink} ##{idButtonExamLink}>
           <i>content_copy

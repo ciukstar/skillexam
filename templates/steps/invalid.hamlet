@@ -9,7 +9,7 @@
 
 <main.responsive>
 
-  $maybe Entity eid (Exam _ _ status _ _ _) <- exam
+  $maybe Entity eid (Exam _ _ status _ _ _ _) <- exam
 
     <figure.center-align>
       <i.extra.error-text>block

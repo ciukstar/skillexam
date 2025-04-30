@@ -76,7 +76,9 @@ Once the exam time has expired, the system notifies the candidate and forces him
 
 ### Remote exam
 
-...
+The exam administrator can generate a URL for a selected test and, optionally, for one or more registered candidates.
+
+If no candidate is selected when generating the exam link, the link recipient will be prompted to register as a candidate in the system. In this case, user registration is not required.
 
 ### Answer
 

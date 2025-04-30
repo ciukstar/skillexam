@@ -79,7 +79,9 @@ Odată ce timpul de examen a expirat, sistemul îl anunță pe candidat și îl 
 
 ### Examen la distanță
 
-...
+Administratorul examenului poate genera o adresă URL pentru un test selectat și, opțional, pentru unul sau mai mulți candidați înregistrați.
+
+Dacă nu este selectat niciun candidat la generarea linkului de examen, destinatarul linkului va fi solicitat să se înregistreze ca și candidat în sistem. În acest caz, înregistrarea utilizatorului nu este necesară.
 
 
 ### Răspuns

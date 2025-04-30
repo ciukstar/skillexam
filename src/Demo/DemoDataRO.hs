@@ -28,7 +28,10 @@ import Model
       )
     , Photo (Photo, photoCandidate, photoPhoto, photoMime)
     , StemType (SingleRespose, MultiResponse)
-    , Exam (Exam, examTest, examCandidate, examAttempt, examStart, examEnd, examStatus)
+    , Exam
+      ( Exam, examTest, examCandidate, examAttempt, examStart, examEnd, examStatus
+      , examRemote
+      )
     , Answer (Answer, answerExam, answerStem, answerOption, answerTime)
     , TestState (TestStatePublished)
     , User
@@ -1254,6 +1257,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-20) now
         , examEnd = pure $ addUTCTime (-10) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,d001_3)
@@ -1289,6 +1293,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-40) now
         , examEnd = pure $ addUTCTime (-10) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1325,6 +1330,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-10) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1361,6 +1367,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-15) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1397,6 +1404,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-50) now
         , examEnd = pure $ addUTCTime (-15) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1433,6 +1441,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-3000) now
         , examEnd = pure $ addUTCTime (-2955) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1469,6 +1478,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-4000) now
         , examEnd = pure $ addUTCTime (-3950) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1505,6 +1515,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-5000) now
         , examEnd = pure $ addUTCTime (-4965) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1541,6 +1552,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-6000) now
         , examEnd = pure $ addUTCTime (-5960) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,k001)
@@ -1577,6 +1589,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-6040) now
         , examEnd = pure $ addUTCTime (-6000) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,d001_3)
@@ -1613,6 +1626,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q001,d001_3)
@@ -2169,6 +2183,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-5040) now
         , examEnd = pure $ addUTCTime (-5005) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2198,6 +2213,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-45) now
         , examEnd = pure $ addUTCTime (-35) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2227,6 +2243,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-55) now
         , examEnd = pure $ addUTCTime (-47) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,d101_1)
@@ -2256,6 +2273,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-65) now
         , examEnd = pure $ addUTCTime (-56) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,d101_1)
@@ -2285,6 +2303,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-80) now
         , examEnd = pure $ addUTCTime (-50) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,d101_1)
@@ -2314,6 +2333,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-90) now
         , examEnd = pure $ addUTCTime (-80) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2343,6 +2363,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-100) now
         , examEnd = pure $ addUTCTime (-95) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2372,6 +2393,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-103) now
         , examEnd = pure $ addUTCTime (-96) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2401,6 +2423,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-203) now
         , examEnd = pure $ addUTCTime (-194) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2430,6 +2453,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-302) now
         , examEnd = pure $ addUTCTime (-296) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2458,6 +2482,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-312) now
         , examEnd = pure $ addUTCTime (-302) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q101,k101)
@@ -2996,6 +3021,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-3012) now
         , examEnd = pure $ addUTCTime (-3002) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,k201)
@@ -3023,6 +3049,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-4015) now
         , examEnd = pure $ addUTCTime (-4005) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,d201_1)
@@ -3050,6 +3077,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-2015) now
         , examEnd = pure $ addUTCTime (-2005) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,d201_1)
@@ -3077,6 +3105,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-1013) now
         , examEnd = pure $ addUTCTime (-1003) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,k201)
@@ -3104,6 +3133,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1003) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,k201)
@@ -3131,6 +3161,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-2021) now
         , examEnd = pure $ addUTCTime (-2002) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,k201)
@@ -3158,6 +3189,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-5021) now
         , examEnd = pure $ addUTCTime (-5001) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q201,d201_2)
@@ -3693,6 +3725,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-4024) now
         , examEnd = pure $ addUTCTime (-4001) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_2)
@@ -3720,6 +3753,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-3024) now
         , examEnd = pure $ addUTCTime (-3001) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,k301)
@@ -3747,6 +3781,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-2024) now
         , examEnd = pure $ addUTCTime (-2001) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,k301)
@@ -3774,6 +3809,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-1026) now
         , examEnd = pure $ addUTCTime (-1002) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_1)
@@ -3801,6 +3837,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-926) now
         , examEnd = pure $ addUTCTime (-900) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,k301)
@@ -3828,6 +3865,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-823) now
         , examEnd = pure $ addUTCTime (-800) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,k301)
@@ -3855,6 +3893,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-720) now
         , examEnd = pure $ addUTCTime (-700) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_3)
@@ -3882,6 +3921,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-820) now
         , examEnd = pure $ addUTCTime (-803) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_3)
@@ -3909,6 +3949,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-920) now
         , examEnd = pure $ addUTCTime (-904) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_3)
@@ -3936,6 +3977,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-1020) now
         , examEnd = pure $ addUTCTime (-1005) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,d301_3)
@@ -3963,6 +4005,7 @@ Găsiți valoarea lui <code>value[i]</code>?|]
         , examAttempt = 1
         , examStart = addUTCTime (-1112) now
         , examEnd = pure $ addUTCTime (-1100) now
+        , examRemote = Nothing
         }
 
     forM_ [ (q301,k301)

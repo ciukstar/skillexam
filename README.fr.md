@@ -81,7 +81,9 @@ Une fois le temps d'examen expiré, le système avertit le candidat et l'oblige 
 
 ### Examen à distance
 
-...
+L'administrateur de l'examen peut générer une URL pour un test sélectionné et, éventuellement, pour un ou plusieurs candidats inscrits.
+
+Si aucun candidat n'est sélectionné lors de la génération du lien d'examen, le destinataire du lien sera invité à s'inscrire comme candidat dans le système. Dans ce cas, l'inscription de l'utilisateur n'est pas requise.
 
 
 ### Réponse
