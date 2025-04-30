@@ -3,7 +3,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handler.RemoteExams
+module Handler.Remote
   ( getRemoteExamR
   , getRemoteExamRegisterR, postRemoteExamRegisterR
   , getRemoteExamStartR
@@ -54,7 +54,8 @@ import Foundation
       , MsgNoSocialMediaLinks, MsgContacts, MsgClose, MsgAdd, MsgSave
       , MsgCancel, MsgRegistrationSuccessful, MsgPleaseClickStartExamButton
       , MsgAreYouReadyToStartTheExam, MsgName, MsgExam, MsgDuration
-      , MsgStartExam, MsgInvalidFormData, MsgNoQuestionsForTheTest, MsgInvalidData
+      , MsgInvalidFormData, MsgNoQuestionsForTheTest, MsgInvalidData
+      , MsgStartExam
       )
     )
 import qualified Foundation as F (App (exams))
@@ -88,7 +89,7 @@ import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, FileInfo, SomeMessage (SomeMessage)
     , newIdent, getMessageRender, lookupPostParams, getMessages, redirect
-    , addMessageI, getYesod, setUltDest, MonadHandler (liftHandler), invalidArgsI
+    , addMessageI, getYesod, setUltDest, invalidArgsI
     )
 import Yesod.Core.Handler (fileSourceByteString, fileContentType)
 import Yesod.Core.Widget (whamlet)
@@ -104,11 +105,18 @@ import Yesod.Persist.Core (YesodPersist(runDB))
 postRemoteExamEnrollR :: RemoteId -> CandidateId -> TestId -> UUID -> Handler Html
 postRemoteExamEnrollR rid cid tid token = do
     
-    ((fr,_),_) <- runFormPost $ formEnrollment cid tid
+    ((fr,_),_) <- runFormPost formEnrollment
     case fr of
-      FormSuccess (cid',tid', attempt) -> do
+      FormSuccess () -> do
           now <- liftIO getCurrentTime
-          eid <- runDB $ insert (Exam tid' cid' ExamStatusOngoing attempt now Nothing)
+
+          attempt <- runDB $ (maybe 1 (+1) . (unValue =<<) <$>) $ selectOne $ do
+                x <- from $ table @Exam
+                where_ $ x ^. ExamTest ==. val tid
+                where_ $ x ^. ExamCandidate ==. val cid
+                return $ max_ $ x ^. ExamAttempt
+               
+          eid <- runDB $ insert (Exam tid cid ExamStatusOngoing attempt now Nothing (Just rid))
           stem <- runDB $ selectOne $ do
               x <- from $ table @Stem
               where_ $ x ^. StemTest ==. val tid
@@ -156,15 +164,9 @@ postRemoteExamEnrollR rid cid tid token = do
         TimeUnitHour -> 3600
 
 
-formEnrollment :: CandidateId -> TestId -> Form (CandidateId, TestId, Int)
-formEnrollment cid tid extra = do
-    attempt <- liftHandler $ runDB $ maybe 1 (+1) . (unValue =<<) <$> selectOne ( do
-          x <- from $ table @Exam
-          where_ $ x ^. ExamTest ==. val tid
-          where_ $ x ^. ExamCandidate ==. val cid
-          return $ max_ $ x ^. ExamAttempt )
-      
-    return (pure (cid,tid,attempt), [whamlet|^{extra}|])
+formEnrollment :: Form ()
+formEnrollment extra = do      
+    return (pure (), [whamlet|^{extra}|])
 
 
 getRemoteExamStartR :: RemoteId -> CandidateId -> UUID -> Handler Html
@@ -182,7 +184,7 @@ getRemoteExamStartR rid cid token = do
     case remote of
       Nothing -> invalidArgsI [MsgInvalidData]
       Just (_,(Entity tid _,_)) -> do
-          (fw,et) <- generateFormPost $ formEnrollment cid tid
+          (fw,et) <- generateFormPost formEnrollment
 
           msgs <- getMessages
           defaultLayout $ do
@@ -340,6 +342,8 @@ getRemoteExamR token = do
           x <- from $ table @Candidate
           where_ $ x ^. CandidateId ==. val cid
           return x
+
+    (fw,et) <- generateFormPost formEnrollment
     
     defaultLayout $ do
         setTitleI MsgRemoteExam 

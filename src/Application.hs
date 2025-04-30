@@ -85,22 +85,12 @@ import System.Log.FastLogger
     ( defaultBufSize, newStdoutLoggerSet, toLogStr
     )
 
-import  Handler.RemoteExams
+import  Handler.Remote
   ( getRemoteExamR
   , getRemoteExamRegisterR, postRemoteExamRegisterR
   , getRemoteExamStartR
   , postRemoteExamEnrollR
   )
-
-import Handler.Candidates
-    ( getCandidatesR
-    , getCandidateNewR
-    , postCandidatesR, getCandidatePhotoR, getCandidateR
-    , getCandidateEditFormR, postCandidateR
-    , postCandidateDeleR, getCandidatesSearchR
-    , getCandidateExamsR, getCandidateExamR
-    , getCandidateSkillsR, getCandidatePhotosR
-    )
 
 import Handler.Common
     ( getWebAppManifestR, getSitemapR, getFaviconR, getRobotsR
@@ -183,6 +173,16 @@ import Handler.Data.Tests
     , getTestEditFormR, postTestR, getTestR
     , postTestDeleR, getTestSearchR
     , postTestPublishR, postTestUnpublishR
+    )
+
+import Handler.Data.Candidates
+    ( getCandidatesR
+    , getCandidateNewR
+    , postCandidatesR, getCandidatePhotoR, getCandidateR
+    , getCandidateEditFormR, postCandidateR
+    , postCandidateDeleR, getCandidatesSearchR
+    , getCandidateExamsR, getCandidateExamR
+    , getCandidateSkillsR, getCandidatePhotosR
     )
 
 import Handler.Data.Users

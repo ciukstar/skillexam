@@ -1,5 +1,8 @@
+Done: Done
+RecipientWillBeAskedToRegisterAsCandidate: The recipient of the exam link will be invited to register as a candidate
+OptionallySelectCandidatesForTheExam: Optionally select candidates for the exam
 PleaseClickStartExamButton: Please click the "Start exam" button
-AreYouReadyToStartTheExam: Are you ready to start the exam
+AreYouReadyToStartTheExam: Are you ready to start the exam?
 RegistrationSuccessful: Registration successful
 RegisterForExam: Register for the exam
 PleaseRegisterAsCandidateForExam: Please register as a candidate before starting the exam

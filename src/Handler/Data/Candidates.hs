@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
-module Handler.Candidates
+module Handler.Data.Candidates
   ( getCandidatesR, postCandidatesR
   , getCandidateNewR
   , getCandidatePhotoR

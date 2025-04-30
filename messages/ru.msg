@@ -1,3 +1,6 @@
+Done: Готово
+RecipientWillBeAskedToRegisterAsCandidate: Получателю ссылки на экзамен будет предложено зарегистрироваться в качестве кандидата
+OptionallySelectCandidatesForTheExam: По желанию выберите кандидатов на экзамен
 PleaseClickStartExamButton: Нажмите кнопку «Начать экзамен»
 AreYouReadyToStartTheExam: Вы готовы приступить к экзамену?
 RegistrationSuccessful: Регистрация прошла успешно
@@ -119,7 +122,7 @@ PassExamInvite: Сдайте экзамен, чтобы оценить и под
 NoExamsYet: Экзаменов пока нет
 NoSkillsYet: Навыков пока нет
 DiagramERD: Диаграмма «Сущность-связь»
-ExamDuration: Время экзамена
+ExamDuration: Продолжительность экзамена
 ExamTime: Время экзамена
 NumberOfQuestions: Количество вопросов
 OfTotal: из

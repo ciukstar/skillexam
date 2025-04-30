@@ -39,18 +39,19 @@ import Foundation
       , RemoteNewCandidatesR, RemoteNewExamR, UserPhotoR, RemoteDeleR
       )
     , AppMessage
-      ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam
+      ( MsgRemoteExams, MsgNoTestsYet, MsgAdd, MsgRemoteExam, MsgDone
       , MsgCancel, MsgExamLink, MsgEdit, MsgName, MsgDeleteAreYouSure
       , MsgConfirmPlease, MsgCode, MsgDelete, MsgBack, MsgRemoteTests
       , MsgRemoteTest, MsgCandidates, MsgTest, MsgExam, MsgUnpublished
       , MsgNext, MsgPhoto, MsgPublished, MsgPoints, MsgNoCandidatesYet
       , MsgPassMark, MsgMinutes, MsgHours, MsgExamState, MsgDuration
       , MsgDescr, MsgDateCreated, MsgAuthor, MsgYes, MsgNo, MsgValid
-      , MsgYouAreAboutToCreateExamForUnregisteredCandidates, MsgCreate
-      , MsgYouAreAboutToCreateExamForCandidate, MsgDetails, MsgClose
-      , MsgYouAreAboutToCreateExamForCandidates, MsgCandidate
-      , MsgNoRegisteredCandidatesHaveBeenSelected, MsgCopyLink
-      , MsgLinksForExamsGenerated
+      , MsgCreate, MsgYouAreAboutToCreateExamForCandidates
+      , MsgYouAreAboutToCreateExamForCandidate, MsgDetails, MsgCopyLink
+      , MsgCandidate, MsgNoRegisteredCandidatesHaveBeenSelected
+      , MsgLinksForExamsGenerated, MsgSelectATestForTheExam
+      , MsgOptionallySelectCandidatesForTheExam
+      , MsgRecipientWillBeAskedToRegisterAsCandidate
       )
     )
     
@@ -427,7 +428,8 @@ formRemoteTest remote extra = do
                                 <input type=radio ##{theId}-#{i} name=#{name} value=#{optionExternalValue opt}
                                   :sel x opt:checked :isReq:required=true>
                                 <span>
-
+                                
+                            <hr>
                 |]
                     }
 

@@ -36,6 +36,8 @@
 
 <main.responsive.no-padding>
 
+  <p.italic.secondary-text.left-padding>
+    _{MsgSelectATestForTheExam}
 
   <form method=post action=@{DataR RemoteNewTestR} enctype=#{et} ##{idFormRemoteNewTest}>
     ^{fw}

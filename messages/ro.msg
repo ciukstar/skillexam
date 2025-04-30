@@ -1,5 +1,8 @@
+Done: Gata
+RecipientWillBeAskedToRegisterAsCandidate: Destinatarul linkului de examen va fi invitat să se înregistreze ca și candidat
+OptionallySelectCandidatesForTheExam: Opțional, selectați candidații pentru examen
 PleaseClickStartExamButton: Vă rugăm să faceți clic pe butonul „Începe examenul”
-AreYouReadyToStartTheExam: Sunteți gata să începeți examenul
+AreYouReadyToStartTheExam: Sunteți gata să începeți examenul?
 RegistrationSuccessful: Înregistrare reușită
 RegisterForExam: Înscrie-te la examen
 PleaseRegisterAsCandidateForExam: Vă rugăm să vă înregistrați ca și candidat înainte de a începe examenul

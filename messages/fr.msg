@@ -1,3 +1,6 @@
+Done: Terminé 
+RecipientWillBeAskedToRegisterAsCandidate: Le destinataire du lien d'examen sera invité à s'inscrire en tant que candidat
+OptionallySelectCandidatesForTheExam: Sélectionner éventuellement les candidats à l'examen
 PleaseClickStartExamButton: Veuillez cliquer sur le bouton « Commencer l'examen »
 AreYouReadyToStartTheExam: Êtes-vous prêt à commencer l'examen ?
 RegistrationSuccessful: Inscription réussie

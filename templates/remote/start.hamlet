@@ -10,18 +10,18 @@
 <main.responsive.padding>
 
   $maybe (Entity rid _,(Entity _ (Test _ name dur unit _ _ _),candidate)) <- remote
-    <h2.small>_{MsgAreYouReadyToStartTheExam}?
-    <p.secondary-text>_{MsgPleaseClickStartExamButton}.
+    <h2.small>_{MsgAreYouReadyToStartTheExam}
+    <p.secondary-text>_{MsgPleaseClickStartExamButton}
     
     <fieldset>
       <legend>_{MsgExam}
       <table>
         <tbody>
-          <tr>
+          <tr.wave>
             <th scope=row>_{MsgName}
             <td>#{name}
       
-          <tr>
+          <tr.wave>
             <th scope=row>_{MsgDuration}:
             <td>
               $with dur <- show dur

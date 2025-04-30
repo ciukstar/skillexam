@@ -7,3 +7,11 @@ Array.from(
     x.querySelector('summary .ellipsis').textContent = x.open ? '' : '... ';
   });
 });
+
+Array.from(
+  document.querySelectorAll('span.duration[data-value]')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
+    style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2
+  });
+});

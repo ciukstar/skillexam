@@ -37,17 +37,16 @@
 
 <main.responsive>
 
-  <p>
-    $if null cids
-      _{MsgYouAreAboutToCreateExamForUnregisteredCandidates}.
-    $elseif length cids == 1
-      _{MsgYouAreAboutToCreateExamForCandidate}.
-    $else
-      _{MsgYouAreAboutToCreateExamForCandidates (length cids)}.
+  <p.italic.secondary-text>
+    $with n <- length cids
+      $if n > 1
+        _{MsgYouAreAboutToCreateExamForCandidates (n)}
+      $else
+        _{MsgYouAreAboutToCreateExamForCandidate}
 
-  <details>
+  <details open>
     <summary>
-      <i>expand_circle_down
+      <i>expand_circle_up
       _{MsgDetails}
       <span.ellipsis>...
     
@@ -61,7 +60,7 @@
             $with dur <- show dur
               <span.duration data-value=#{dur}>
                 #{dur}
-            <span style="text-transform:lowercase">
+            <span.lower>
               $case unit
                 $of TimeUnitMinute
                   _{MsgMinutes}
@@ -74,7 +73,8 @@
       <legend>_{MsgCandidates}
       
       $if null candidates
-        <p>_{MsgNoRegisteredCandidatesHaveBeenSelected}.
+        <p>_{MsgNoRegisteredCandidatesHaveBeenSelected}
+        <p.italic.secondary-text>_{MsgRecipientWillBeAskedToRegisterAsCandidate}
       $else 
         $forall Entity cid (Candidate fname gname aname _ _ _ _) <- candidates
           <ul.list.border>

@@ -1,5 +1,5 @@
 
-$forall (Entity eid (Exam _ _ _ attempt _ end),Entity _ (Test _ name _ _ pass _ _),(Value score,Value total)) <- exams
+$forall (Entity eid (Exam _ _ _ attempt _ end _),Entity _ (Test _ name _ _ pass _ _),(Value score,Value total)) <- exams
   <a.row.padding.wave href=@{ExamR uid eid}>
 
     $if score >= pass

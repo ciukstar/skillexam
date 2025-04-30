@@ -22,6 +22,7 @@ Exam
     attempt Int
     start UTCTime
     end UTCTime Maybe
+    remote RemoteId Maybe
     UniqueExam test candidate attempt
 
 Photo

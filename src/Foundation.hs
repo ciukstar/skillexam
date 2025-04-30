@@ -362,6 +362,13 @@ instance Yesod App where
 isAuthenticatedCandidate :: CandidateId -> Tokens -> Handler AuthResult
 isAuthenticatedCandidate _ (Tokens (_:_)) = return Authorized
 isAuthenticatedCandidate cid _ = do
+
+    cuid <- ((unValue =<<) <$>) $ runDB $ selectOne $ do
+        x <- from $ table @Candidate
+        where_ $ x ^. CandidateId ==. val cid
+        return $ x ^. CandidateUser
+    
+    uid <- maybeAuthId
     
     case uid of
         (Just _) | uid == cuid -> return Authorized

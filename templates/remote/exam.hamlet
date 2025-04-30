@@ -9,44 +9,53 @@
 
 <main.responsive.padding>
 
-  $maybe ((Entity rid _, Entity _ (Test code name dur unit pass descr _)),Value total) <- remote
-    <h2.small>_{MsgWelcome}
-    <p.secondary-text>_{MsgThisIsTheStartPageOfTheExam}.
+  $maybe ((Entity rid _, Entity tid (Test code name dur unit pass descr _)),Value total) <- remote
+    <h2.small>
+      _{MsgWelcome}
+    <p.italic.secondary-text>
+      _{MsgThisIsTheStartPageOfTheExam}
     
-    <dl>
-      <dt.bold>_{MsgExamName}:
-      <dd.left-padding>#{name}
-      
-      <dt.bold>_{MsgExamCode}:
-      <dd.left-padding>#{code}
+    <table>
+      <tbody>
+        <tr.wave>
+          <th scope=row>_{MsgExamName}
+          <td>#{name}
 
-      $maybe description <- descr
-        <dt.bold>_{MsgDescr}:
-        <dd.left-padding>#{description}
-      
-      <dt.bold>_{MsgExamDuration}:
-      <dd.left-padding>
-        $with dur <- show dur
-          <span.duration data-value=#{dur}>
-            #{dur}
-        <span.lower>
-          $case unit
-            $of TimeUnitMinute
-              _{MsgMinutes}
-            $of TimeUnitHour
-              _{MsgHours}
-      
-      <dt.bold>_{MsgTotalPoints}:
-      <dd.left-padding>
-        $with total <- show total
-          <span.decimal data-value=#{total}>#{total}
-        <span.lower>_{MsgPoints}
-      
-      <dt.bold>_{MsgPassMark}:
-      <dd.left-padding>
-        $with pass <- show pass
-          <span.decimal data-value=#{pass}>#{pass}
-        <span.lower>_{MsgPoints}
+        <tr.wave>
+          <th scope=row>_{MsgExamCode}
+          <td>#{code}
+
+        $maybe description <- descr
+          <tr.wave>
+            <th scope=row>_{MsgDescr}
+            <td>#{description}
+
+        <tr.wave>
+          <th scope=row>_{MsgExamDuration}
+          <td>
+            $with dur <- show dur
+              <span.duration data-value=#{dur}>
+                #{dur}
+            <span.lower>
+              $case unit
+                $of TimeUnitMinute
+                  _{MsgMinutes}
+                $of TimeUnitHour
+                  _{MsgHours}
+
+        <tr.wave>
+          <th scope=row>_{MsgTotalPoints}
+          <td>
+            $with total <- show total
+              <span.decimal data-value=#{total}>#{total}
+            <span.lower>_{MsgPoints}
+
+        <tr.wave>
+          <th scope=row>_{MsgPassMark}
+          <td>
+            $with pass <- show pass
+              <span.decimal data-value=#{pass}>#{pass}
+            <span.lower>_{MsgPoints}
 
     $maybe Entity cid (Candidate fname gname aname _ _ _ _) <- candidate
       <fieldset>
@@ -58,14 +67,23 @@
             #{fname} #{gname}
             $maybe aname <- aname
               #{aname}
+      
+
+      <form method=post action=@{RemoteExamEnrollR rid cid tid token} enctype=#{et}>
+        ^{fw}
         
-      <nav.right-align>
-        <button>Start exam
+        <nav.right-align>
+          <a.button.transparent.link href=@{HomeR} role=button>
+            _{MsgCancel}
+
+          <button type=submit>
+            _{MsgStartExam}
         
     $nothing
-      <p>_{MsgPleaseRegisterAsCandidateForExam}. 
+      <p.italic.secondary-text>
+        _{MsgPleaseRegisterAsCandidateForExam}
       
-      <nav.right-align>
+      <nav.center-align>
         <a.button href=@{RemoteExamRegisterR rid token} role=button>
           _{MsgRegisterForExam}
         

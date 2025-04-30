@@ -21,9 +21,9 @@
         <button.small.circle.transparent type=button title=_{MsgCopyLink} ##{idButtonExamLink}>
           <i>content_copy
 
-  <nav.right-align>
-    <a.button.transparent.link href=@{DataR RemotesR} role=button>
-      _{MsgClose}
+  <nav.center-align>
+    <a.button href=@{DataR RemotesR} role=button>
+      _{MsgDone}
 
 
 ^{widgetSnackbar msgs}
